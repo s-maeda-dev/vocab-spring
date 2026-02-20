@@ -15,14 +15,18 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Word {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String term;
+    // 英語表記 (Technical Term in English)
+    private String english;
 
-    private String definition;
+    // 日本語表記 (Technical Term in Japanese / Meaning)
+    private String japanese;
 
+    // 例文
     private String exampleSentence;
 
     @ManyToOne

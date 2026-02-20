@@ -15,12 +15,12 @@
 
     <form th:action="${word.id == null ? '/words' : '/words/update/' + word.id}" th:object="${word}" method="post">
         <div>
-            <label for="term">単語:</label>
-            <input type="text" id="term" th:field="*{term}" required>
+            <label for="english">英語表記 (English):</label>
+            <input type="text" id="english" th:field="*{english}" placeholder="例: Vocabulary" required>
         </div>
         <div>
-            <label for="definition">意味:</label>
-            <input type="text" id="definition" th:field="*{definition}" required>
+            <label for="japanese">日本語表記 (Japanese):</label>
+            <input type="text" id="japanese" th:field="*{japanese}" placeholder="例: 語彙 / 用語集" required>
         </div>
         <div>
             <label for="exampleSentence">例文:</label>

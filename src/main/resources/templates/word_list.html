@@ -17,8 +17,8 @@
     <table border="1">
         <thead>
             <tr>
-                <th>単語</th>
-                <th>意味</th>
+                <th>英語 (English)</th>
+                <th>日本語 (Japanese)</th>
                 <th>例文</th>
                 <th>カテゴリ</th>
                 <th>操作</th>
@@ -26,8 +26,8 @@
         </thead>
         <tbody>
             <tr th:each="word : ${words}">
-                <td th:text="${word.term}">Apple</td>
-                <td th:text="${word.definition}">りんご</td>
+                <td th:text="${word.english}">Vocabulary</td>
+                <td th:text="${word.japanese}">語彙</td>
                 <td th:text="${word.exampleSentence}">I eat an apple.</td>
                 <td th:text="${word.category != null ? word.category.name : '未分類'}">日常</td>
                 <td>
