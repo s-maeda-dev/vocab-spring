@@ -20,11 +20,13 @@ public class Word {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 英語表記 (Technical Term in English)
-    private String english;
+    // 単語・用語 (カンマ区切りで複数表記可能)
+    // 例: "Apple" or "Dependency Injection, 依存性の注入"
+    private String term;
 
-    // 日本語表記 (Technical Term in Japanese / Meaning)
-    private String japanese;
+    // 意味・定義・翻訳
+    // 例: "りんご" or "依存オブジェクトを外部から渡すデザインパターン"
+    private String definition;
 
     // 例文
     private String exampleSentence;

@@ -15,12 +15,13 @@
 
     <form th:action="${word.id == null ? '/words' : '/words/update/' + word.id}" th:object="${word}" method="post">
         <div>
-            <label for="english">英語表記 (English):</label>
-            <input type="text" id="english" th:field="*{english}" placeholder="例: Vocabulary" required>
+            <label for="term">単語 (Words): <small>※複数ある場合はカンマ(,)で区切ってください（最大5つまで）</small></label>
+            <input type="text" id="term" th:field="*{term}" placeholder="例: Dependency Injection, 依存性の注入" required>
         </div>
         <div>
-            <label for="japanese">日本語表記 (Japanese):</label>
-            <input type="text" id="japanese" th:field="*{japanese}" placeholder="例: 語彙 / 用語集" required>
+            <label for="definition">意味 (Meaning/Definition):</label>
+            <input type="text" id="definition" th:field="*{definition}" placeholder="例: ソフトウェア等の依存関係を外部から注入するデザインパターン"
+                required>
         </div>
         <div>
             <label for="exampleSentence">例文:</label>
