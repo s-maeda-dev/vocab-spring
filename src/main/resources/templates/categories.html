@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>カテゴリ管理 - VocabSpring</title>
+</head>
+
+<body>
+    <h1>カテゴリ管理</h1>
+
+    <nav>
+        <a href="/">ホームへ戻る</a>
+    </nav>
+
+    <h2>新しいカテゴリを追加</h2>
+    <form th:action="@{/categories/add}" method="post">
+        <div>
+            <label for="name">カテゴリ名:</label>
+            <input type="text" id="name" name="name" required>
+            <button type="submit">追加</button>
+        </div>
+    </form>
+
+    <h2>カテゴリ一覧</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>カテゴリ名</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="category : ${categories}">
+                <td th:text="${category.id}">1</td>
+                <td th:text="${category.name}">日常</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(categories)}">
+                <td colspan="2">カテゴリが登録されていません。</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>

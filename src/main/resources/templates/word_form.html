@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${word.id == null ? '単語登録' : '単語編集'} + ' - VocabSpring'"></title>
+</head>
+
+<body>
+    <h1 th:text="${word.id == null ? '新しい単語を登録' : '単語を編集'}"></h1>
+
+    <nav>
+        <a href="/words">一覧へ戻る</a>
+    </nav>
+
+    <form th:action="${word.id == null ? '/words' : '/words/update/' + word.id}" th:object="${word}" method="post">
+        <div>
+            <label for="term">単語:</label>
+            <input type="text" id="term" th:field="*{term}" required>
+        </div>
+        <div>
+            <label for="definition">意味:</label>
+            <input type="text" id="definition" th:field="*{definition}" required>
+        </div>
+        <div>
+            <label for="exampleSentence">例文:</label>
+            <textarea id="exampleSentence" th:field="*{exampleSentence}"></textarea>
+        </div>
+        <div>
+            <label for="category">カテゴリ:</label>
+            <select id="category" th:field="*{category}">
+                <option value="">カテゴリなし</option>
+                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+            </select>
+        </div>
+        <div>
+            <button type="submit" th:text="${word.id == null ? '登録' : '更新'}"></button>
+        </div>
+    </form>
+</body>
+
+</html>

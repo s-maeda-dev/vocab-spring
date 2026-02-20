@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>単語一覧 - VocabSpring</title>
+</head>
+
+<body>
+    <h1>単語一覧</h1>
+
+    <nav>
+        <a href="/">ホームへ戻る</a> |
+        <a href="/words/new">新しい単語を追加</a>
+    </nav>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>単語</th>
+                <th>意味</th>
+                <th>例文</th>
+                <th>カテゴリ</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="word : ${words}">
+                <td th:text="${word.term}">Apple</td>
+                <td th:text="${word.definition}">りんご</td>
+                <td th:text="${word.exampleSentence}">I eat an apple.</td>
+                <td th:text="${word.category != null ? word.category.name : '未分類'}">日常</td>
+                <td>
+                    <a th:href="@{/words/edit/{id}(id=${word.id})}">編集</a>
+                    <form th:action="@{/words/delete/{id}(id=${word.id})}" method="post" style="display:inline;">
+                        <button type="submit" onclick="return confirm('本当に削除しますか？')">削除</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(words)}">
+                <td colspan="5">単語が登録されていません。</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>

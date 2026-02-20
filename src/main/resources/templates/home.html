@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ホーム - VocabSpring</title>
+</head>
+
+<body>
+    <h1>ダッシュボード</h1>
+
+    <div sec:authorize="isAuthenticated()">
+        <p>ようこそ、<span sec:authentication="name">ユーザー名</span>さん！</p>
+
+        <nav>
+            <ul>
+                <li><a href="/categories">カテゴリ一覧</a></li>
+                <li><a href="/words">単語一覧</a></li>
+                <li><a href="/words/new">新しい単語を登録</a></li>
+            </ul>
+        </nav>
+
+        <!-- Logout Form -->
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">ログアウト</button>
+        </form>
+    </div>
+
+    <div sec:authorize="!isAuthenticated()">
+        <p>ログインしてください。</p>
+        <a href="/login">ログイン</a>
+    </div>
+</body>
+
+</html>
