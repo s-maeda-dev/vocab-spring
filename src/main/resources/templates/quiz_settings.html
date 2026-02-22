@@ -43,11 +43,6 @@
         #categorySection {
             transition: opacity 0.2s;
         }
-
-        #categorySection.disabled {
-            opacity: 0.4;
-            pointer-events: none;
-        }
     </style>
 </head>
 
@@ -76,9 +71,9 @@
             </div>
         </fieldset>
 
-        <!-- ── カテゴリ選択（苦手モード時は非活性） ── -->
+        <!-- ── カテゴリ選択（両モードで選択可能） ── -->
         <div id="categorySection">
-            <label for="categoryId">カテゴリを選択:</label>
+            <label id="categoryLabel" for="categoryId">カテゴリを選択:</label>
             <select id="categoryId" name="categoryId">
                 <option value="">全カテゴリから出題</option>
                 <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">
@@ -103,16 +98,14 @@
 
     <script>
         /**
-         * 出題モードが変わったときにカテゴリ選択の表示を制御する。
-         * 苦手モードの場合はカテゴリ選択を灰色にして選べないようにする。
+         * 出題モードが変わったときに説明文の表示を切り替える（カテゴリはどちらのモードでも選択可能）。
          */
         function onModeChange(mode) {
-            const categorySection = document.getElementById('categorySection');
+            const categoryLabel = document.getElementById('categoryLabel');
             if (mode === 'weak') {
-                categorySection.classList.add('disabled');
-                document.getElementById('categoryId').value = ''; // 選択をリセット
+                categoryLabel.textContent = 'カテゴリを絞り込む（任意）:';
             } else {
-                categorySection.classList.remove('disabled');
+                categoryLabel.textContent = 'カテゴリを選択:';
             }
         }
     </script>

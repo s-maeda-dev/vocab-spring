@@ -57,26 +57,38 @@ public class QuizService {
     // ─────────────────────────────────────────────
 
     /**
-     * ユーザーの苦手単語リストを返す（不正解回数が多い順・最大50件）。
+     * ユーザーの苦手単語リストを返す（全カテゴリ・不正解回数が多い順・最大50件）。
      */
     public List<Word> getWeakWords(User user) {
         return quizHistoryRepository.findWeakWordsByUserId(user.getId(), PageRequest.of(0, 50));
     }
 
     /**
+     * ユーザーの苦手単語リストをカテゴリ絞り込みで返す（不正解回数が多い順・最大50件）。
+     */
+    public List<Word> getWeakWordsByCategory(User user, Long categoryId) {
+        return quizHistoryRepository.findWeakWordsByUserIdAndCategoryId(user.getId(), categoryId,
+                PageRequest.of(0, 50));
+    }
+
+    /**
      * 苦手単語リストの中から、除外ID以外のものをランダムに1件返す。
-     * 除外リストが空の場合はリスト全体からランダムに選ぶ。
+     * categoryId が null の場合は全カテゴリ対象。
      *
      * @param user        ログインユーザー
+     * @param categoryId  絞り込むカテゴリID（null=全カテゴリ）
      * @param excludedIds すでに出題済みのWordのIDリスト
      * @return ランダムに選ばれた苦手単語（見つからなければ null）
      */
-    public Word getRandomWeakWord(User user, Collection<Long> excludedIds) {
-        List<Word> weakWords = getWeakWords(user);
+    public Word getRandomWeakWord(User user, Long categoryId, Collection<Long> excludedIds) {
+        List<Word> weakWords = (categoryId != null)
+                ? getWeakWordsByCategory(user, categoryId)
+                : getWeakWords(user);
+
         if (weakWords.isEmpty()) {
             return null;
         }
-        // 除外リストを適用してフィルタリング
+        // 出題済みIDを除外してフィルタリング
         List<Word> candidates;
         if (excludedIds == null || excludedIds.isEmpty()) {
             candidates = weakWords;
@@ -92,11 +104,17 @@ public class QuizService {
     }
 
     /**
-     * ユーザーの苦手単語の件数を返す。
-     * 出題前に「苦手単語が存在するか」を確認するために使う。
+     * ユーザーの苦手単語の件数を返す（全カテゴリ）。
      */
     public long countWeakWords(User user) {
         return quizHistoryRepository.countWeakWordsByUserId(user.getId());
+    }
+
+    /**
+     * ユーザーの苦手単語の件数を返す（カテゴリ絞り込みあり）。
+     */
+    public long countWeakWordsByCategory(User user, Long categoryId) {
+        return quizHistoryRepository.countWeakWordsByUserIdAndCategoryId(user.getId(), categoryId);
     }
 
     // ─────────────────────────────────────────────

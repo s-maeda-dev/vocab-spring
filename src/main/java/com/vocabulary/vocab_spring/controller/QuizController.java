@@ -80,10 +80,16 @@ public class QuizController {
 
         // ── 苦手単語モード ──
         if ("weak".equals(quizMode)) {
-            long weakWordCount = quizService.countWeakWords(user);
+            // カテゴリ絞り込みの有無で対象件数を切り替え
+            long weakWordCount = (categoryId != null)
+                    ? quizService.countWeakWordsByCategory(user, categoryId)
+                    : quizService.countWeakWords(user);
 
             if (weakWordCount == 0) {
-                model.addAttribute("error", "苦手な単語がまだありません。まずは通常モードでクイズに挑戦してみましょう！");
+                String errorMsg = (categoryId != null)
+                        ? "指定カテゴリに苦手な単語がまだありません。まずは通常モードでクイズに挑戦してみましょう！"
+                        : "苦手な単語がまだありません。まずは通常モードでクイズに挑戦してみましょう！";
+                model.addAttribute("error", errorMsg);
                 model.addAttribute("categories", categoryService.getCategoriesByUser(user));
                 return "quiz_settings";
             }
@@ -98,6 +104,7 @@ public class QuizController {
 
             QuizSessionDto quizSession = new QuizSessionDto();
             quizSession.setQuizMode("weak");
+            quizSession.setCategoryId(categoryId); // 苦手モードでもカテゴリを記憶
             quizSession.setTotalQuestions(totalQuestions);
             quizSession.setCurrentQuestionNumber(1);
             quizSession.setCorrectAnswers(0);
@@ -169,9 +176,9 @@ public class QuizController {
             } else {
                 excludedIds = quizSession.getAskedWordIds();
             }
-            randomWord = quizService.getRandomWeakWord(user, excludedIds);
+            randomWord = quizService.getRandomWeakWord(user, quizSession.getCategoryId(), excludedIds);
             if (randomWord == null) {
-                randomWord = quizService.getRandomWeakWord(user, null);
+                randomWord = quizService.getRandomWeakWord(user, quizSession.getCategoryId(), null);
             }
 
             // ── 全単語モードの出題 ──
