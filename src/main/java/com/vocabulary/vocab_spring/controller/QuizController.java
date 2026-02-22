@@ -9,8 +9,10 @@ import com.vocabulary.vocab_spring.repository.QuizHistoryRepository;
 import com.vocabulary.vocab_spring.service.CategoryService;
 import com.vocabulary.vocab_spring.service.GeminiService;
 import com.vocabulary.vocab_spring.service.QuizService;
+import com.vocabulary.vocab_spring.service.QuoteService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -30,17 +32,20 @@ public class QuizController {
     private final WordRepository wordRepository;
     private final QuizHistoryRepository quizHistoryRepository;
     private final GeminiService geminiService;
+    private final QuoteService quoteService;
 
     @Autowired
     public QuizController(QuizService quizService, CategoryService categoryService,
             UserRepository userRepository, WordRepository wordRepository,
-            QuizHistoryRepository quizHistoryRepository, GeminiService geminiService) {
+            QuizHistoryRepository quizHistoryRepository, GeminiService geminiService,
+            QuoteService quoteService) {
         this.quizService = quizService;
         this.categoryService = categoryService;
         this.userRepository = userRepository;
         this.wordRepository = wordRepository;
         this.quizHistoryRepository = quizHistoryRepository;
         this.geminiService = geminiService;
+        this.quoteService = quoteService;
     }
 
     private User getCurrentUser() {
@@ -49,19 +54,59 @@ public class QuizController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    // ──────────────────────────────────────────────────────────────
+    // クイズ設定画面
+    // ──────────────────────────────────────────────────────────────
+
     @GetMapping("/settings")
     public String showSettings(Model model) {
         model.addAttribute("categories", categoryService.getCategoriesByUser(getCurrentUser()));
         return "quiz_settings";
     }
 
+    // ──────────────────────────────────────────────────────────────
+    // クイズ開始: 設定を受け取りセッションを初期化する
+    // ──────────────────────────────────────────────────────────────
+
     @PostMapping("/start")
     public String startQuiz(@RequestParam(required = false) Long categoryId,
             @RequestParam int totalQuestions,
+            @RequestParam(defaultValue = "all") String quizMode,
             @RequestParam(defaultValue = "false") boolean forceStart,
             Model model,
             HttpSession session) {
+
         User user = getCurrentUser();
+
+        // ── 苦手単語モード ──
+        if ("weak".equals(quizMode)) {
+            long weakWordCount = quizService.countWeakWords(user);
+
+            if (weakWordCount == 0) {
+                model.addAttribute("error", "苦手な単語がまだありません。まずは通常モードでクイズに挑戦してみましょう！");
+                model.addAttribute("categories", categoryService.getCategoriesByUser(user));
+                return "quiz_settings";
+            }
+
+            if (weakWordCount < totalQuestions && !forceStart) {
+                model.addAttribute("quizMode", quizMode);
+                model.addAttribute("categoryId", categoryId);
+                model.addAttribute("totalQuestions", totalQuestions);
+                model.addAttribute("wordCount", weakWordCount);
+                return "quiz_confirm";
+            }
+
+            QuizSessionDto quizSession = new QuizSessionDto();
+            quizSession.setQuizMode("weak");
+            quizSession.setTotalQuestions(totalQuestions);
+            quizSession.setCurrentQuestionNumber(1);
+            quizSession.setCorrectAnswers(0);
+            quizSession.setInsufficientWords(weakWordCount < totalQuestions);
+            session.setAttribute("quizSession", quizSession);
+            return "redirect:/quiz";
+        }
+
+        // ── 全単語モード（デフォルト）──
         long wordCount;
         if (categoryId != null) {
             wordCount = quizService.getWordCountByCategory(user, categoryId);
@@ -76,13 +121,15 @@ public class QuizController {
         }
 
         if (wordCount < totalQuestions && !forceStart) {
+            model.addAttribute("quizMode", quizMode);
             model.addAttribute("categoryId", categoryId);
             model.addAttribute("totalQuestions", totalQuestions);
             model.addAttribute("wordCount", wordCount);
-            return "quiz_confirm"; // 確認画面
+            return "quiz_confirm";
         }
 
         QuizSessionDto quizSession = new QuizSessionDto();
+        quizSession.setQuizMode("all");
         quizSession.setCategoryId(categoryId);
         quizSession.setTotalQuestions(totalQuestions);
         quizSession.setCurrentQuestionNumber(1);
@@ -92,6 +139,10 @@ public class QuizController {
         return "redirect:/quiz";
     }
 
+    // ──────────────────────────────────────────────────────────────
+    // クイズ画面: 問題を1問表示する
+    // ──────────────────────────────────────────────────────────────
+
     @GetMapping
     public String showQuiz(HttpSession session, Model model) {
         QuizSessionDto quizSession = (QuizSessionDto) session.getAttribute("quizSession");
@@ -100,40 +151,61 @@ public class QuizController {
         }
 
         if (quizSession.getCurrentQuestionNumber() > quizSession.getTotalQuestions()) {
-            return "redirect:/quiz/summary"; // Phase5: まとめ画面へ
+            return "redirect:/quiz/summary";
         }
 
         User user = getCurrentUser();
-
-        java.util.List<Long> excludedIds;
-        if (quizSession.isInsufficientWords()) {
-            excludedIds = new java.util.ArrayList<>();
-            if (!quizSession.getAskedWordIds().isEmpty()) {
-                excludedIds.add(quizSession.getAskedWordIds().get(quizSession.getAskedWordIds().size() - 1));
-            }
-        } else {
-            excludedIds = quizSession.getAskedWordIds();
-        }
-
         Word randomWord;
-        if (quizSession.getCategoryId() != null) {
-            randomWord = quizService.getRandomWordByCategory(user, quizSession.getCategoryId(), excludedIds);
+
+        // ── 苦手単語モードの出題 ──
+        if ("weak".equals(quizSession.getQuizMode())) {
+            java.util.List<Long> excludedIds;
+            if (quizSession.isInsufficientWords()) {
+                // 単語数が少ない場合は直前に出した単語だけ除外（連続出題を防ぐ）
+                excludedIds = new java.util.ArrayList<>();
+                if (!quizSession.getAskedWordIds().isEmpty()) {
+                    excludedIds.add(quizSession.getAskedWordIds().get(quizSession.getAskedWordIds().size() - 1));
+                }
+            } else {
+                excludedIds = quizSession.getAskedWordIds();
+            }
+            randomWord = quizService.getRandomWeakWord(user, excludedIds);
+            if (randomWord == null) {
+                randomWord = quizService.getRandomWeakWord(user, null);
+            }
+
+            // ── 全単語モードの出題 ──
         } else {
-            randomWord = quizService.getRandomWord(user, excludedIds);
+            java.util.List<Long> excludedIds;
+            if (quizSession.isInsufficientWords()) {
+                excludedIds = new java.util.ArrayList<>();
+                if (!quizSession.getAskedWordIds().isEmpty()) {
+                    excludedIds.add(quizSession.getAskedWordIds().get(quizSession.getAskedWordIds().size() - 1));
+                }
+            } else {
+                excludedIds = quizSession.getAskedWordIds();
+            }
+
+            if (quizSession.getCategoryId() != null) {
+                randomWord = quizService.getRandomWordByCategory(user, quizSession.getCategoryId(), excludedIds);
+            } else {
+                randomWord = quizService.getRandomWord(user, excludedIds);
+            }
+
+            // 除外ありで見つからない場合は除外なしで再取得
+            if (randomWord == null) {
+                if (quizSession.getCategoryId() != null) {
+                    randomWord = quizService.getRandomWordByCategory(user, quizSession.getCategoryId(), null);
+                } else {
+                    randomWord = quizService.getRandomWord(user, null);
+                }
+            }
         }
 
         if (randomWord == null) {
-            // 該当除外で単語が見つからない場合(登録が1件のみ等)は除外なしで取得
-            if (quizSession.getCategoryId() != null) {
-                randomWord = quizService.getRandomWordByCategory(user, quizSession.getCategoryId(), null);
-            } else {
-                randomWord = quizService.getRandomWord(user, null);
-            }
-            if (randomWord == null) {
-                model.addAttribute("error", "該当する単語が登録されていません。");
-                model.addAttribute("categories", categoryService.getCategoriesByUser(getCurrentUser()));
-                return "quiz_settings";
-            }
+            model.addAttribute("error", "該当する単語が見つかりませんでした。");
+            model.addAttribute("categories", categoryService.getCategoriesByUser(getCurrentUser()));
+            return "quiz_settings";
         }
 
         quizSession.setCurrentWordId(randomWord.getId());
@@ -141,6 +213,10 @@ public class QuizController {
         model.addAttribute("quizSession", quizSession);
         return "quiz";
     }
+
+    // ──────────────────────────────────────────────────────────────
+    // 解答処理: 正誤判定 & 履歴保存
+    // ──────────────────────────────────────────────────────────────
 
     @PostMapping("/answer")
     public String checkAnswer(@RequestParam String answer, HttpSession session, Model model) {
@@ -168,7 +244,7 @@ public class QuizController {
             quizSession.setCorrectAnswers(quizSession.getCorrectAnswers() + 1);
         }
 
-        // 履歴をDBに保存
+        // 学習履歴をDBに保存
         quizService.saveQuizHistory(getCurrentUser(), currentWord, isCorrect);
 
         // セッションのリストにも追加（結果画面での表示用）
@@ -185,12 +261,16 @@ public class QuizController {
         model.addAttribute("correctWord", currentWord);
         model.addAttribute("quizSession", quizSession);
 
-        // 次の問題のために問題番号を進める
+        // 次の問題へ
         quizSession.getAskedWordIds().add(currentWord.getId());
         quizSession.setCurrentQuestionNumber(quizSession.getCurrentQuestionNumber() + 1);
 
         return "quiz_result";
     }
+
+    // ──────────────────────────────────────────────────────────────
+    // クイズまとめ画面: AIフィードバック & 名言を表示
+    // ──────────────────────────────────────────────────────────────
 
     @GetMapping("/summary")
     public String showSummary(HttpSession session, Model model) {
@@ -200,26 +280,24 @@ public class QuizController {
         }
 
         User user = getCurrentUser();
-        java.util.List<String> recentMistakes = quizHistoryRepository.findRecentMistakesByUserId(user.getId());
+
+        // Pageableを使って最近の苦手単語を最大10件取得
+        java.util.List<String> recentMistakes = quizHistoryRepository
+                .findRecentMistakesByUserId(user.getId(), PageRequest.of(0, 10));
 
         String aiFeedback = geminiService.getFeedback(
                 quizSession.getCorrectAnswers(),
                 quizSession.getResults().size(),
                 recentMistakes);
 
-        String[] quotes = {
-                "「天才とは、1％のひらめきと99％の努力である。」 - トーマス・エジソン",
-                "「失敗したわけではない。それを誤りだと言ってはいけない。勉強したのだと言いたまえ。」 - トーマス・エジソン",
-                "「ステップ・バイ・ステップ。どんなことでも、何かを達成する場合にとるべき方法はただひとつ、一歩ずつ着実に立ち向かうことだ。」 - マイケル・ジョーダン",
-                "「人生最大の栄光は、決して倒れないことではない。倒れるたびに起き上がることである。」 - ネルソン・マンデラ"
-        };
-        String randomQuote = quotes[new java.util.Random().nextInt(quotes.length)];
+        // QuoteService から名言を取得（ランダム）
+        String randomQuote = quoteService.getRandomQuote();
 
         model.addAttribute("quizSession", quizSession);
         model.addAttribute("aiFeedback", aiFeedback);
         model.addAttribute("quote", randomQuote);
 
-        // セッションをクリアする
+        // セッションをクリア
         session.removeAttribute("quizSession");
         return "quiz_summary";
     }

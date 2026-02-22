@@ -11,6 +11,9 @@ public class QuizSessionDto implements Serializable {
     private int correctAnswers;
     private Long currentWordId; // currently displayed Word ID
 
+    /** 出題モード: "all"=全単語から出題, "weak"=苦手単語のみ出題 */
+    private String quizMode = "all";
+
     private java.util.List<Long> askedWordIds = new java.util.ArrayList<>();
     private boolean isInsufficientWords = false; // true if total available words < totalQuestions
 

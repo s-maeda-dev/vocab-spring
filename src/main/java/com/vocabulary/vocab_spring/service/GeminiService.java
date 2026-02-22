@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class GeminiService {
 
+    private static final Logger log = LoggerFactory.getLogger(GeminiService.class);
+
     @Value("${gemini.api.key}")
     private String apiKey;
 
@@ -26,11 +30,11 @@ public class GeminiService {
 
     public String getFeedback(int correctAnswers, int totalQuestions, List<String> recentMistakes) {
         if (apiKey == null || apiKey.isBlank()) {
-            System.out.println("[GeminiService] GEMINI_API_KEY が未設定のため、AIコメントをスキップします。");
+            log.warn("[GeminiService] GEMINI_API_KEY が未設定のため、AIコメントをスキップします。");
             return "（Gemini APIキーが設定されていないため、AIからのコメントはスキップされました。.envファイルのGEMINI_API_KEYを確認してください。）";
         }
 
-        System.out.println("[GeminiService] APIキー設定済み。Gemini APIを呼び出します...");
+        log.info("[GeminiService] APIキー設定済み。Gemini APIを呼び出します...");
 
         double correctRate = totalQuestions > 0 ? (double) correctAnswers / totalQuestions * 100 : 0;
         String mistakesText = recentMistakes.isEmpty() ? "特になし" : String.join(", ", recentMistakes);
@@ -53,7 +57,7 @@ public class GeminiService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            // リクエストボディの組み立て (Gemini 1.5 Flash 形式)
+            // リクエストボディの組み立て (Gemini 2.0 Flash 形式)
             Map<String, Object> content = new HashMap<>();
             Map<String, Object> part = new HashMap<>();
             part.put("text", prompt);

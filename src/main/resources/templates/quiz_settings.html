@@ -4,21 +4,90 @@
 <head>
     <meta charset="UTF-8">
     <title>クイズ設定 - VocabSpring</title>
+    <style>
+        .mode-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .mode-card {
+            flex: 1;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .mode-card:has(input:checked) {
+            border-color: #4f46e5;
+            background-color: #eef2ff;
+        }
+
+        .mode-card input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        .mode-title {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .mode-desc {
+            font-size: 0.82rem;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        #categorySection {
+            transition: opacity 0.2s;
+        }
+
+        #categorySection.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+    </style>
 </head>
 
 <body>
     <h1>クイズ設定</h1>
 
-    <div th:if="${error}" style="color: red;" th:text="${error}"></div>
+    <div th:if="${error}" style="color: red; margin-bottom: 12px;" th:text="${error}"></div>
 
     <form th:action="@{/quiz/start}" method="post">
-        <label for="categoryId">カテゴリを選択:</label>
-        <select id="categoryId" name="categoryId">
-            <option value="">全カテゴリから出題</option>
-            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
-        </select>
-        <br><br>
 
+        <!-- ── 出題モード選択 ── -->
+        <fieldset style="border: none; padding: 0; margin-bottom: 16px;">
+            <legend style="font-weight: bold; margin-bottom: 8px;">出題モードを選択:</legend>
+            <div class="mode-selector">
+                <label class="mode-card">
+                    <input type="radio" id="modeAll" name="quizMode" value="all" checked
+                        onchange="onModeChange(this.value)">
+                    <span class="mode-title">📚 全単語から出題</span>
+                    <div class="mode-desc">登録されているすべての単語の中から出題します</div>
+                </label>
+                <label class="mode-card">
+                    <input type="radio" id="modeWeak" name="quizMode" value="weak" onchange="onModeChange(this.value)">
+                    <span class="mode-title">🎯 苦手な単語から出題</span>
+                    <div class="mode-desc">過去に間違えた単語を優先的に出題します</div>
+                </label>
+            </div>
+        </fieldset>
+
+        <!-- ── カテゴリ選択（苦手モード時は非活性） ── -->
+        <div id="categorySection">
+            <label for="categoryId">カテゴリを選択:</label>
+            <select id="categoryId" name="categoryId">
+                <option value="">全カテゴリから出題</option>
+                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">
+                </option>
+            </select>
+            <br><br>
+        </div>
+
+        <!-- ── 出題数選択 ── -->
         <label for="totalQuestions">出題数を選択:</label>
         <select id="totalQuestions" name="totalQuestions">
             <option value="5">5問</option>
@@ -31,6 +100,22 @@
 
     <br>
     <a href="/">ホームへ戻る</a>
+
+    <script>
+        /**
+         * 出題モードが変わったときにカテゴリ選択の表示を制御する。
+         * 苦手モードの場合はカテゴリ選択を灰色にして選べないようにする。
+         */
+        function onModeChange(mode) {
+            const categorySection = document.getElementById('categorySection');
+            if (mode === 'weak') {
+                categorySection.classList.add('disabled');
+                document.getElementById('categoryId').value = ''; // 選択をリセット
+            } else {
+                categorySection.classList.remove('disabled');
+            }
+        }
+    </script>
 </body>
 
 </html>

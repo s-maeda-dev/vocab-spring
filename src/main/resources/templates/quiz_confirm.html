@@ -18,6 +18,7 @@
     <form th:action="@{/quiz/start}" method="post" style="display: inline-block;">
         <input type="hidden" name="categoryId" th:value="${categoryId}" />
         <input type="hidden" name="totalQuestions" th:value="${totalQuestions}" />
+        <input type="hidden" name="quizMode" th:value="${quizMode}" />
         <input type="hidden" name="forceStart" value="true" />
         <button type="submit">はい、開始します</button>
     </form>
