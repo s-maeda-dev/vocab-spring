@@ -1,27 +1,85 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head>
-    <meta charset="UTF-8">
-    <title>クイズ回答 - VocabSpring</title>
+<head th:replace="~{fragments/common :: common_head}">
+    <title>クイズ実行中 - VocabSpring</title>
 </head>
 
-<body>
-    <h1>クイズ</h1>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display">
 
-    <p>問題 <span th:text="${quizSession.currentQuestionNumber}"></span> / <span
-            th:text="${quizSession.totalQuestions}"></span></p>
+    <!-- Header Navigation -->
+    <header class="flex items-center justify-between p-6 max-w-pc mx-auto w-full">
+        <div class="flex items-center gap-4">
+            <a th:href="@{/quiz/settings}"
+                class="neu-icon-pill w-12 h-12 rounded-2xl flex items-center justify-center text-slate-400 bg-white/50 active:scale-90 transition-all">
+                <span class="material-symbols-outlined !text-3xl">close</span>
+            </a>
+            <div>
+                <h1 class="text-slate-900 dark:text-slate-100 font-black text-xl leading-none">クイズ学習</h1>
+                <p class="text-primary text-[10px] font-black uppercase tracking-[0.2em] mt-1">Focus Session</p>
+            </div>
+        </div>
+        <div class="w-12"></div>
+    </header>
 
-    <h2>問題：<span th:text="${word.definition}">意味</span></h2>
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col px-6 py-4 max-w-2xl mx-auto w-full justify-center">
+        <!-- Progress Bar -->
+        <div class="mb-12">
+            <div class="flex justify-between items-end mb-4 px-2">
+                <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest">現在の進捗</span>
+                <span class="text-primary font-black text-lg"
+                    th:text="${quizSession.currentQuestionNumber} + ' / ' + ${quizSession.totalQuestions}">1 / 5</span>
+            </div>
+            <div class="neu-pressed h-5 w-full rounded-full p-1 bg-slate-100 flex items-center">
+                <div class="h-full bg-primary rounded-full transition-all duration-700 ease-out shadow-sm"
+                    th:style="'width: ' + (${quizSession.currentQuestionNumber} * 100 / ${quizSession.totalQuestions}) + '%'">
+                </div>
+            </div>
+        </div>
 
-    <form th:action="@{/quiz/answer}" method="post">
-        <label for="answer">解答:</label>
-        <input type="text" id="answer" name="answer" required autofocus />
-        <button type="submit">回答する</button>
-    </form>
+        <!-- Flashcard Centerpiece -->
+        <div class="space-y-12">
+            <section
+                class="neu-raised w-full min-h-[300px] rounded-[3rem] flex flex-col items-center justify-center p-12 text-center relative overflow-hidden bg-white/60 shadow-2xl border border-white/50 group">
+                <!-- Abstract Decorative Element -->
+                <div
+                    class="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-20 -mt-20 blur-2xl group-hover:scale-125 transition-transform duration-1000">
+                </div>
+                <div class="absolute bottom-0 left-0 w-32 h-32 bg-primary/5 rounded-full -ml-10 -mb-10 blur-xl"></div>
 
-    <br>
-    <a href="/quiz/settings">クイズをやめる</a>
+                <div class="z-10 space-y-8">
+                    <span
+                        class="text-[10px] uppercase font-black tracking-[0.3em] text-primary/60 bg-primary/5 px-6 py-2 rounded-full border border-primary/10">Definition
+                        / 意味</span>
+                    <h2 class="text-slate-800 dark:text-slate-100 text-4xl font-extrabold tracking-tight leading-tight max-w-md"
+                        th:text="${word.definition}">意味から単語を思い出しましょう</h2>
+                </div>
+            </section>
+
+            <!-- Quiz Input -->
+            <form th:action="@{/quiz/answer}" method="post" class="w-full space-y-6">
+                <div class="space-y-3">
+                    <label for="answer"
+                        class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-4">あなたの回答
+                        (英単語を入力)</label>
+                    <div class="relative">
+                        <input type="text" id="answer" name="answer" required autofocus autocomplete="off"
+                            class="neu-recessed w-full py-7 px-8 rounded-3xl focus:ring-8 focus:ring-primary/5 border-none transition-all outline-none text-2xl font-black text-center text-slate-800 placeholder:text-slate-300 bg-slate-50/50"
+                            placeholder="単語を入力してください..." />
+                    </div>
+                </div>
+                <button type="submit"
+                    class="neu-button-primary w-full py-6 rounded-3xl text-white font-black text-xl tracking-widest uppercase active:scale-[0.98] transition-all shadow-2xl shadow-primary/30">
+                    回答を送信する
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Bottom Nav Spacer -->
+    <div class="h-12 hidden md:block"></div>
+
 </body>
 
 </html>

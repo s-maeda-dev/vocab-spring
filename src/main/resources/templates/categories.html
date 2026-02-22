@@ -1,45 +1,94 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head>
-    <meta charset="UTF-8">
+<head th:replace="~{fragments/common :: common_head}">
     <title>カテゴリ管理 - VocabSpring</title>
 </head>
 
-<body>
-    <h1>カテゴリ管理</h1>
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
 
-    <nav>
-        <a href="/">ホームへ戻る</a>
-    </nav>
+    <!-- Header Fragment -->
+    <header th:replace="~{fragments/common :: header}"></header>
 
-    <h2>新しいカテゴリを追加</h2>
-    <form th:action="@{/categories/add}" method="post">
-        <div>
-            <label for="name">カテゴリ名:</label>
-            <input type="text" id="name" name="name" required>
-            <button type="submit">追加</button>
+    <main class="flex-1 px-6 pb-32 space-y-10 overflow-y-auto max-w-pc w-full">
+
+        <div class="pt-2 text-center md:text-left">
+            <h2 class="text-3xl font-black tracking-tight text-slate-800">カテゴリ管理</h2>
+            <p class="text-sm text-slate-500 font-medium mt-1">単語を整理するためのタグを作成・管理します。</p>
         </div>
-    </form>
 
-    <h2>カテゴリ一覧</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>カテゴリ名</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="category : ${categories}">
-                <td th:text="${category.id}">1</td>
-                <td th:text="${category.name}">日常</td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(categories)}">
-                <td colspan="2">カテゴリが登録されていません。</td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
+
+            <!-- Left: Add Form -->
+            <section class="lg:col-span-1 space-y-6">
+                <div class="neu-raised rounded-3xl p-8 bg-white/50 border border-white/50">
+                    <h3
+                        class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">add_circle</span>
+                        新しいカテゴリを追加
+                    </h3>
+                    <form th:action="@{/categories/add}" method="post" class="space-y-6">
+                        <div class="space-y-2">
+                            <label for="name"
+                                class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">カテゴリ名</label>
+                            <input type="text" id="name" name="name" required
+                                class="neu-recessed w-full py-4 px-5 rounded-2xl focus:ring-2 focus:ring-primary/20 border-none transition-all outline-none text-slate-800 font-bold placeholder:text-slate-300"
+                                placeholder="例：ビジネス, 旅行..." />
+                        </div>
+                        <button type="submit"
+                            class="neu-button-primary w-full py-4 rounded-2xl text-white font-black tracking-widest uppercase active:scale-[0.98] transition-all shadow-lg shadow-primary/20">
+                            追加する
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Right: List -->
+            <section class="lg:col-span-2 space-y-6">
+                <div class="flex items-center gap-3 px-2">
+                    <div
+                        class="w-8 h-8 rounded-lg neu-pressed flex items-center justify-center text-primary/60 bg-slate-50">
+                        <span class="material-symbols-outlined text-sm">loyalty</span>
+                    </div>
+                    <h3 class="text-sm font-black text-slate-700 uppercase tracking-widest">現在のカテゴリ一覧</h3>
+                </div>
+
+                <div th:if="${!#lists.isEmpty(categories)}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div th:each="category : ${categories}"
+                        class="neu-raised rounded-2xl p-6 flex items-center justify-between group transition-all hover:bg-white bg-white/40">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined">label</span>
+                            </div>
+                            <span class="font-black text-slate-700" th:text="${category.name}">Category Name</span>
+                        </div>
+                        <form th:action="@{/categories/delete/{id}(id=${category.id})}" method="post"
+                            onsubmit="return confirm('このカテゴリを削除しますか？紐付いている単語のカテゴリ設定が解除されます。')">
+                            <button type="submit"
+                                class="w-10 h-10 rounded-xl neu-raised-sm flex items-center justify-center text-red-300 hover:text-red-500 transition-colors bg-white/50">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div th:if="${#lists.isEmpty(categories)}"
+                    class="text-center py-20 neu-pressed rounded-3xl bg-slate-50/50 flex flex-col items-center gap-4">
+                    <span class="material-symbols-outlined text-slate-200 !text-6xl">label_off</span>
+                    <p class="text-slate-400 font-medium italic">カテゴリがまだ登録されていません。</p>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- Bottom Navigation Fragment -->
+    <nav th:replace="~{fragments/common :: bottom_nav('tags')}"></nav>
+
 </body>
 
 </html>

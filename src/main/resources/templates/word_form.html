@@ -1,43 +1,99 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${word.id == null ? '単語登録' : '単語編集'} + ' - VocabSpring'"></title>
+<head th:replace="~{fragments/common :: common_head}">
+    <title>単語登録 - VocabSpring</title>
 </head>
 
-<body>
-    <h1 th:text="${word.id == null ? '新しい単語を登録' : '単語を編集'}"></h1>
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
 
-    <nav>
-        <a href="/words">一覧へ戻る</a>
-    </nav>
+    <!-- Header Navigation -->
+    <header class="flex items-center justify-between p-6 max-w-pc mx-auto w-full">
+        <a th:href="@{/words}"
+            class="neu-icon-pill p-2 rounded-xl flex items-center justify-center text-primary transition-all active:scale-95 bg-white/50">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <h1 class="text-xl font-black tracking-tight text-slate-800"
+            th:text="${word.id == null ? '新しい単語を登録' : '単語を編集'}">単語の登録</h1>
+        <div class="w-10"></div>
+    </header>
 
-    <form th:action="${word.id == null ? '/words' : '/words/update/' + word.id}" th:object="${word}" method="post">
-        <div>
-            <label for="term">単語 (Words): <small>※複数ある場合はカンマ(,)で区切ってください（最大5つまで）</small></label>
-            <input type="text" id="term" th:field="*{term}" placeholder="例: Dependency Injection, 依存性の注入" required>
-        </div>
-        <div>
-            <label for="definition">意味 (Meaning/Definition):</label>
-            <input type="text" id="definition" th:field="*{definition}" placeholder="例: ソフトウェア等の依存関係を外部から注入するデザインパターン"
-                required>
-        </div>
-        <div>
-            <label for="exampleSentence">例文:</label>
-            <textarea id="exampleSentence" th:field="*{exampleSentence}"></textarea>
-        </div>
-        <div>
-            <label for="category">カテゴリ:</label>
-            <select id="category" th:field="*{category}">
-                <option value="">カテゴリなし</option>
-                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
-            </select>
-        </div>
-        <div>
-            <button type="submit" th:text="${word.id == null ? '登録' : '更新'}"></button>
-        </div>
-    </form>
+    <main class="flex-1 px-6 pb-32 space-y-10 overflow-y-auto max-w-2xl mx-auto w-full">
+
+        <form th:action="@{/words/save}" th:object="${word}" method="post" class="space-y-10">
+            <input type="hidden" th:field="*{id}" />
+
+            <!-- Term Input -->
+            <section class="space-y-4">
+                <div class="flex items-center gap-2 px-1">
+                    <span class="material-symbols-outlined text-primary text-sm">edit_square</span>
+                    <label for="term" class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">単語 (英語 /
+                        スペル)</label>
+                </div>
+                <input type="text" id="term" th:field="*{term}" required autofocus
+                    class="neu-recessed w-full py-5 px-6 rounded-2xl focus:ring-4 focus:ring-primary/10 border-none transition-all outline-none text-xl font-black text-slate-800 bg-slate-50/50"
+                    placeholder="例: Persistence" />
+            </section>
+
+            <!-- Meaning/Definition -->
+            <section class="space-y-4">
+                <div class="flex items-center gap-2 px-1">
+                    <span class="material-symbols-outlined text-primary text-sm">translate</span>
+                    <label for="definition" class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">意味 /
+                        定義 (日本語)</label>
+                </div>
+                <textarea id="definition" th:field="*{definition}" required rows="2"
+                    class="neu-recessed w-full py-5 px-6 rounded-2xl focus:ring-4 focus:ring-primary/10 border-none transition-all outline-none text-lg font-bold text-slate-700 bg-slate-50/50"
+                    placeholder="例: 粘り強さ、持続すること"></textarea>
+            </section>
+
+            <!-- Categorization -->
+            <section class="space-y-4">
+                <div class="flex items-center gap-2 px-1">
+                    <span class="material-symbols-outlined text-primary text-sm">loyalty</span>
+                    <label for="categoryId"
+                        class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">カテゴリ</label>
+                </div>
+                <div class="relative group">
+                    <select id="categoryId" th:field="*{category.id}"
+                        class="neu-recessed w-full py-5 px-6 rounded-2xl focus:ring-4 focus:ring-primary/10 border-none appearance-none transition-all outline-none text-slate-700 font-bold bg-slate-50/50">
+                        <option value="">カテゴリを選択なし</option>
+                        <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">
+                        </option>
+                    </select>
+                    <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                        <span class="material-symbols-outlined">expand_more</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Example Sentence -->
+            <section class="space-y-4">
+                <div class="flex items-center gap-2 px-1">
+                    <span class="material-symbols-outlined text-primary text-sm">short_text</span>
+                    <label for="exampleSentence"
+                        class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">例文 (任意)</label>
+                </div>
+                <textarea id="exampleSentence" th:field="*{exampleSentence}" rows="3"
+                    class="neu-recessed w-full py-5 px-6 rounded-2xl focus:ring-4 focus:ring-primary/10 border-none transition-all outline-none text-sm font-medium text-slate-600 bg-slate-50/50"
+                    placeholder="例: Success requires persistence and hard work."></textarea>
+            </section>
+
+            <!-- Action Button -->
+            <div class="pt-6">
+                <button type="submit"
+                    class="neu-button-primary w-full py-6 rounded-2xl text-white font-black text-xl tracking-widest uppercase active:scale-[0.98] transition-all shadow-xl shadow-primary/20"
+                    th:text="${word.id == null ? '作成する' : '更新する'}">
+                    保存する
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <!-- Bottom Navigation Fragment -->
+    <nav th:replace="~{fragments/common :: bottom_nav('add')}"></nav>
+
 </body>
 
 </html>

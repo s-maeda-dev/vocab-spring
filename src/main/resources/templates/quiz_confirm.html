@@ -1,31 +1,53 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head>
-    <meta charset="UTF-8">
-    <title>クイズ開始の確認 - VocabSpring</title>
+<head th:replace="~{fragments/common :: common_head}">
+    <title>開始の確認 - VocabSpring</title>
 </head>
 
-<body>
-    <h1>クイズ開始の確認</h1>
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 min-h-screen flex flex-col items-center justify-center p-6 text-center">
 
-    <div style="color: red; margin-bottom: 20px;">
-        <p>登録されている単語数が、選択した出題数より少ないです。</p>
-        <p>（登録単語数: <span th:text="${wordCount}"></span>個 / 出題数: <span th:text="${totalQuestions}"></span>問）</p>
-        <p>同じ問題が繰り返し出題されますが、クイズを開始しますか？<br>（連続して同じ問題が出題されることはありません）</p>
+    <div class="max-w-md w-full space-y-10">
+        <div
+            class="w-24 h-24 rounded-[2rem] neu-raised mx-auto flex items-center justify-center text-orange-500 bg-white/50">
+            <span class="material-symbols-outlined !text-5xl">warning</span>
+        </div>
+
+        <div class="space-y-4">
+            <h1 class="text-3xl font-black text-slate-800 tracking-tight">クイズを開始しますか？</h1>
+            <p class="text-slate-500 text-sm leading-relaxed font-medium">
+                <span class="font-black text-slate-800" th:text="${totalQuestions}">10</span>問の出題を希望されましたが、<br>
+                対象となる単語は現在<span class="font-black text-slate-800" th:text="${wordCount}">5</span>語のみ登録されています。
+            </p>
+            <div class="neu-pressed bg-orange-50/50 p-4 rounded-2xl border border-orange-100/50">
+                <p class="text-xs text-orange-600 font-bold">
+                    ※ 一部の単語が重複して出題されますが、連続して同じ問題が出ることはありません。
+                </p>
+            </div>
+        </div>
+
+        <div class="space-y-5 pt-4">
+            <form th:action="@{/quiz/start}" method="post">
+                <input type="hidden" name="categoryId" th:value="${categoryId}" />
+                <input type="hidden" name="totalQuestions" th:value="${totalQuestions}" />
+                <input type="hidden" name="quizMode" th:value="${quizMode}" />
+                <input type="hidden" name="forceStart" value="true" />
+                <button type="submit"
+                    class="neu-button-primary w-full py-5 rounded-3xl text-white font-black text-lg tracking-widest uppercase active:scale-[0.98] transition-all shadow-xl shadow-primary/20">
+                    了解して開始する
+                </button>
+            </form>
+
+            <a th:href="@{/quiz/settings}" class="block">
+                <button
+                    class="neu-raised w-full py-4 rounded-3xl text-slate-500 font-black active:scale-95 transition-all bg-white/80 hover:bg-white">
+                    設定に戻る
+                </button>
+            </a>
+        </div>
     </div>
 
-    <form th:action="@{/quiz/start}" method="post" style="display: inline-block;">
-        <input type="hidden" name="categoryId" th:value="${categoryId}" />
-        <input type="hidden" name="totalQuestions" th:value="${totalQuestions}" />
-        <input type="hidden" name="quizMode" th:value="${quizMode}" />
-        <input type="hidden" name="forceStart" value="true" />
-        <button type="submit">はい、開始します</button>
-    </form>
-
-    <form th:action="@{/quiz/settings}" method="get" style="display: inline-block; margin-left: 10px;">
-        <button type="submit">いいえ、設定に戻ります</button>
-    </form>
 </body>
 
 </html>

@@ -1,37 +1,132 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head>
-    <meta charset="UTF-8">
-    <title>ホーム - VocabSpring</title>
+<head th:replace="~{fragments/common :: common_head}">
+    <title>Dashboard - VocabSpring</title>
 </head>
 
-<body>
-    <h1>ダッシュボード</h1>
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
 
-    <div sec:authorize="isAuthenticated()">
-        <p>ようこそ、<span sec:authentication="name">ユーザー名</span>さん！</p>
+    <!-- Header Fragment -->
+    <header th:replace="~{fragments/common :: header}"></header>
 
-        <nav>
-            <ul>
-                <li><a href="/categories">カテゴリ一覧</a></li>
-                <li><a href="/words">単語一覧</a></li>
-                <li><a href="/words/new">新しい単語を登録</a></li>
-                <li><b><a href="/quiz/settings" style="color: blue;">クイズを開始する</a></b></li>
-                <li><a href="/stats">📊 学習統計</a></li>
-            </ul>
-        </nav>
+    <main class="flex-1 px-6 pb-24 space-y-6 overflow-y-auto max-w-pc w-full">
 
-        <!-- Logout Form -->
-        <form th:action="@{/logout}" method="post">
-            <button type="submit">ログアウト</button>
-        </form>
-    </div>
+        <!-- Welcome Section -->
+        <div class="pt-2 text-center md:text-left">
+            <h2 class="text-2xl font-black tracking-tight text-slate-800">ダッシュボード</h2>
+            <p class="text-sm text-slate-500 font-medium">学習の進捗を確認して、新しい単語を学びましょう。</p>
+        </div>
 
-    <div sec:authorize="!isAuthenticated()">
-        <p>ログインしてください。</p>
-        <a href="/login">ログイン</a>
-    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+
+            <!-- Left Column: Streak & Gauge -->
+            <div class="space-y-6">
+                <!-- Streak Info -->
+                <div class="neu-pressed rounded-2xl p-4 flex items-center justify-between bg-white/40">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-2xl neu-raised flex items-center justify-center text-orange-500 bg-background-light">
+                            <span class="material-symbols-outlined fill-1 !text-2xl">local_fire_department</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-black text-slate-700">12日間連続学習中！</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Keep pushing your
+                                limits</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mastery Gauge -->
+                <section
+                    class="neu-raised rounded-3xl p-8 flex flex-col items-center justify-center bg-white/30 relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl"></div>
+                    <div
+                        class="relative w-48 h-48 flex items-center justify-center rounded-full neu-raised bg-background-light">
+                        <div class="absolute inset-3 rounded-full neu-pressed"></div>
+                        <svg class="w-36 h-36 transform -rotate-90">
+                            <circle class="text-slate-200" cx="72" cy="72" fill="transparent" r="64"
+                                stroke="currentColor" stroke-width="10"></circle>
+                            <circle class="text-primary" cx="72" cy="72" fill="transparent" r="64" stroke="currentColor"
+                                stroke-dasharray="402.1"
+                                th:attr="stroke-dashoffset=${402.1 * (1 - (totalStats != null ? totalStats.correctRate : 0) / 100.0)}"
+                                stroke-linecap="round" stroke-width="10">
+                            </circle>
+                        </svg>
+                        <div class="absolute flex flex-col items-center">
+                            <span class="text-3xl font-black text-slate-800"
+                                th:text="${totalStats != null ? #numbers.formatDecimal(totalStats.correctRate, 1, 0) + '%' : '0%'}">75%</span>
+                            <span
+                                class="text-[9px] uppercase font-black tracking-[0.2em] text-primary/60">Mastery</span>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-center">
+                        <h3 class="font-black text-slate-700">総合習得レベル</h3>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Overall
+                            Vocabulary Strength</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Stats & Actions -->
+            <div class="space-y-6">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="neu-raised rounded-2xl p-5 flex flex-col items-center text-center bg-white/50">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3">
+                            <span class="material-symbols-outlined">menu_book</span>
+                        </div>
+                        <span class="text-2xl font-black text-slate-800"
+                            th:text="${totalStats != null ? totalStats.totalWords : '0'}">0</span>
+                        <span class="text-[10px] uppercase text-slate-400 font-bold tracking-widest mt-1">学習済み単語数</span>
+                    </div>
+                    <div class="neu-raised rounded-2xl p-5 flex flex-col items-center text-center bg-white/50">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3">
+                            <span class="material-symbols-outlined">trending_up</span>
+                        </div>
+                        <span class="text-2xl font-black text-slate-800"
+                            th:text="${totalStats != null ? totalStats.totalAnswered : '0'}">0</span>
+                        <span class="text-[10px] uppercase text-slate-400 font-bold tracking-widest mt-1">総解答件数</span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <section class="space-y-4">
+                    <h3 class="text-xs font-black text-primary uppercase tracking-[0.2em] px-2">クイックアクション</h3>
+                    <div class="grid grid-cols-1 gap-4">
+                        <a th:href="@{/quiz/settings}"
+                            class="neu-raised rounded-2xl p-6 flex items-center justify-center gap-4 group cursor-pointer active:scale-95 transition-all bg-primary text-white shadow-lg shadow-primary/20">
+                            <span class="material-symbols-outlined !text-3xl">play_circle</span>
+                            <span class="font-black text-lg tracking-wider">クイズを開始する</span>
+                        </a>
+                        <div class="grid grid-cols-2 gap-4">
+                            <a th:href="@{/words/new}"
+                                class="neu-raised rounded-2xl p-4 flex flex-col items-center gap-2 text-center text-slate-700 bg-white/60 hover:bg-white transition-colors">
+                                <span class="material-symbols-outlined text-primary !text-2xl">add_circle</span>
+                                <span class="text-xs font-black">単語を追加</span>
+                            </a>
+                            <a th:href="@{/words}"
+                                class="neu-raised rounded-2xl p-4 flex flex-col items-center gap-2 text-center text-slate-700 bg-white/60 hover:bg-white transition-colors">
+                                <span class="material-symbols-outlined text-primary !text-2xl">visibility</span>
+                                <span class="text-xs font-black">リストを見る</span>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+
+    </main>
+
+    </main>
+
+    <!-- Bottom Navigation Fragment -->
+    <nav th:replace="~{fragments/common :: bottom_nav('home')}"></nav>
+
 </body>
 
 </html>

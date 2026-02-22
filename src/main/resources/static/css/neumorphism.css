@@ -1,0 +1,77 @@
+/* Neumorphism Design Variables & Utilities */
+
+:root {
+    --primary: #a49279;
+    --bg-light: #f5f4f2;
+    --bg-dark: #1b1917;
+    --neu-light-highlight: #ffffff;
+    --neu-light-shadow: #d1ccc2;
+    --text-slate-900: #0f172a;
+    --text-slate-500: #64748b;
+}
+
+/* Base Styles */
+body {
+    background-color: var(--bg-light);
+    color: var(--text-slate-900);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Neumorphism Utility Classes */
+
+/* Raised Effect (Elements popping out) */
+.neu-raised {
+    background: var(--bg-light);
+    box-shadow: 5px 5px 10px var(--neu-light-shadow), 
+                -5px -5px 10px var(--neu-light-highlight);
+}
+
+.neu-raised-sm {
+    background: var(--bg-light);
+    box-shadow: 3px 3px 6px var(--neu-light-shadow), 
+                -3px -3px 6px var(--neu-light-highlight);
+}
+
+/* Pressed Effect (Elements sinking in, like inputs or active buttons) */
+.neu-pressed {
+    background: var(--bg-light);
+    box-shadow: inset 4px 4px 8px var(--neu-light-shadow), 
+                inset -4px -4px 8px var(--neu-light-highlight);
+}
+
+/* Primary Button with Neumorphism */
+.neu-button-primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 5px 5px 10px #d9d9d9, 
+                -5px -5px 10px #ffffff;
+    transition: all 0.2s ease;
+}
+
+.neu-button-primary:active {
+    transform: scale(0.98);
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Icon Pill style */
+.neu-icon-pill {
+    background: var(--bg-light);
+    box-shadow: 3px 3px 6px var(--neu-light-shadow), 
+                -3px -3px 6px var(--neu-light-highlight);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.neu-icon-pill:active {
+    box-shadow: inset 2px 2px 4px var(--neu-light-shadow), 
+                inset -2px -2px 4px var(--neu-light-highlight);
+}
+
+/* Progress Ring Transitions */
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.35s;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}

@@ -1,35 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+
+<head th:replace="~{fragments/common :: common_head}">
     <title>ログイン - VocabSpring</title>
 </head>
-<body>
-    <h1>ログイン</h1>
 
-    <div th:if="${param.error}">
-        <p style="color: red;">ユーザー名またはパスワードが間違っています。</p>
-    </div>
-    <div th:if="${param.logout}">
-        <p style="color: green;">ログアウトしました。</p>
-    </div>
-    <div th:if="${param.registered}">
-        <p style="color: green;">登録が完了しました。ログインしてください。</p>
+<body
+    class="bg-background-light dark:bg-background-dark font-display flex items-center justify-center min-h-screen p-6">
+
+    <div class="max-w-md w-full space-y-12">
+        <div class="text-center space-y-4">
+            <div
+                class="w-24 h-24 rounded-[2.5rem] neu-raised mx-auto flex items-center justify-center text-primary bg-white/50">
+                <span class="material-symbols-outlined !text-5xl">menu_book</span>
+            </div>
+            <div class="space-y-2">
+                <h1 class="text-4xl font-black tracking-tighter text-slate-800">VocabSpring</h1>
+                <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Your Vocabulary Partner</p>
+            </div>
+        </div>
+
+        <div class="neu-raised rounded-[3rem] p-10 space-y-10 bg-white/40 border border-white">
+            <div class="text-center space-y-1">
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight">おかえりなさい</h2>
+                <p class="text-xs text-slate-400 font-bold">ログインして学習を続けましょう</p>
+            </div>
+
+            <!-- Error/Success Messages -->
+            <div th:if="${param.error}"
+                class="neu-pressed bg-red-50 p-4 rounded-2xl text-red-600 text-xs font-black text-center border border-red-100">
+                ユーザー名またはパスワードが正しくありません。
+            </div>
+            <div th:if="${param.logout}"
+                class="neu-pressed bg-blue-50 p-4 rounded-2xl text-blue-600 text-xs font-black text-center border border-blue-100">
+                正常にログアウトしました。
+            </div>
+            <div th:if="${successMessage}"
+                class="neu-pressed bg-green-50 p-4 rounded-2xl text-green-600 text-xs font-black text-center border border-green-100"
+                th:text="${successMessage}">
+                登録が完了しました。
+            </div>
+
+            <form th:action="@{/login}" method="post" class="space-y-8">
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <label for="username"
+                            class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">ユーザー名</label>
+                        <input type="text" id="username" name="username" required
+                            class="neu-recessed w-full py-5 px-6 rounded-2xl focus:ring-4 focus:ring-primary/10 border-none transition-all outline-none text-slate-700 font-bold bg-slate-50"
+                            placeholder="Username" />
+                    </div>
+                    <div class="space-y-2">
+                        <label for="password"
+                            class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">パスワード</label>
+                        <input type="password" id="password" name="password" required
+                            class="neu-recessed w-full py-5 px-6 rounded-2xl focus:ring-4 focus:ring-primary/10 border-none transition-all outline-none text-slate-700 font-bold bg-slate-50"
+                            placeholder="Password" />
+                    </div>
+                </div>
+
+                <button type="submit"
+                    class="neu-button-primary w-full py-6 rounded-2xl text-white font-black text-lg tracking-widest uppercase active:scale-[0.98] transition-all shadow-xl shadow-primary/20">
+                    ログイン
+                </button>
+            </form>
+
+            <div class="text-center">
+                <p class="text-xs text-slate-400 font-bold">アカウントをお持ちでないですか？</p>
+                <a th:href="@{/register}"
+                    class="inline-block mt-4 text-primary font-black text-sm hover:underline tracking-tight">
+                    新規アカウントを作成
+                </a>
+            </div>
+        </div>
     </div>
 
-    <form th:action="@{/login}" method="post">
-        <div>
-            <label for="username">ユーザー名:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-        <div>
-            <label for="password">パスワード:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <div>
-            <button type="submit">ログイン</button>
-        </div>
-    </form>
-    <a href="/register">新規登録はこちら</a>
 </body>
+
 </html>

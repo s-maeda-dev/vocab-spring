@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:fragment="common_head">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/neumorphism.css}" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a49279",
+                        "background-light": "#f5f4f2",
+                        "background-dark": "#1b1917",
+                    },
+                    fontFamily: {
+                        "display": ["'Noto Sans JP'", "Inter", "sans-serif"],
+                        "sans": ["'Noto Sans JP'", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        .max-w-pc {
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header th:fragment="header" class="p-6 flex items-center justify-between max-w-pc w-full">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full neu-raised p-1 shrink-0">
+                <div class="w-full h-full rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined">person</span>
+                </div>
+            </div>
+            <div>
+                <p class="text-[10px] text-primary font-bold uppercase tracking-[0.2em]">おかえりなさい</p>
+                <h1 class="text-lg font-black tracking-tight" sec:authorize="isAuthenticated()"
+                    sec:authentication="name">ユーザー</h1>
+                <h1 class="text-lg font-black tracking-tight" sec:authorize="!isAuthenticated()">ゲスト</h1>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button class="w-10 h-10 rounded-xl neu-raised flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+                <button type="submit"
+                    class="w-10 h-10 rounded-xl neu-raised flex items-center justify-center text-slate-400">
+                    <span class="material-symbols-outlined">logout</span>
+                </button>
+            </form>
+        </div>
+    </header>
+
+    <!-- Bottom Navigation -->
+    <nav th:fragment="bottom_nav(activePage)"
+        class="fixed bottom-0 left-0 right-0 bg-background-light/80 backdrop-blur-md p-4 border-t border-slate-200/50 z-50">
+        <div class="max-w-pc flex items-center justify-around md:justify-center md:gap-12">
+            <a class="flex flex-col items-center gap-1 group transition-all active:scale-90" th:href="@{/}">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all"
+                    th:classappend="${activePage == 'home' ? 'neu-pressed text-primary bg-slate-50' : 'text-slate-400'}">
+                    <span class="material-symbols-outlined"
+                        th:classappend="${activePage == 'home' ? 'fill-1' : ''}">home_app_logo</span>
+                </div>
+                <span class="text-[10px] font-bold"
+                    th:classappend="${activePage == 'home' ? 'text-primary' : 'text-slate-400'}">ホーム</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 group transition-all active:scale-90" th:href="@{/words}">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all"
+                    th:classappend="${activePage == 'library' ? 'neu-pressed text-primary bg-slate-50' : 'text-slate-400'}">
+                    <span class="material-symbols-outlined">style</span>
+                </div>
+                <span class="text-[10px] font-bold"
+                    th:classappend="${activePage == 'library' ? 'text-primary' : 'text-slate-400'}">単語一覧</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 group transition-all active:scale-90" th:href="@{/words/new}">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all"
+                    th:classappend="${activePage == 'add' ? 'neu-pressed text-primary bg-slate-50' : 'text-slate-400'}">
+                    <span class="material-symbols-outlined">add_circle</span>
+                </div>
+                <span class="text-[10px] font-bold"
+                    th:classappend="${activePage == 'add' ? 'text-primary' : 'text-slate-400'}">単語追加</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 group transition-all active:scale-90" th:href="@{/stats}">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all"
+                    th:classappend="${activePage == 'stats' ? 'neu-pressed text-primary bg-slate-50' : 'text-slate-400'}">
+                    <span class="material-symbols-outlined">monitoring</span>
+                </div>
+                <span class="text-[10px] font-bold"
+                    th:classappend="${activePage == 'stats' ? 'text-primary' : 'text-slate-400'}">統計状況</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 group transition-all active:scale-90" th:href="@{/categories}">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all"
+                    th:classappend="${activePage == 'tags' ? 'neu-pressed text-primary bg-slate-50' : 'text-slate-400'}">
+                    <span class="material-symbols-outlined">loyalty</span>
+                </div>
+                <span class="text-[10px] font-bold"
+                    th:classappend="${activePage == 'tags' ? 'text-primary' : 'text-slate-400'}">カテゴリ</span>
+            </a>
+        </div>
+    </nav>
+</body>
+
+</html>
