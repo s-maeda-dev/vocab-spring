@@ -5,14 +5,14 @@ import com.vocabulary.vocab_spring.entity.User;
 import com.vocabulary.vocab_spring.entity.Word;
 import com.vocabulary.vocab_spring.repository.UserRepository;
 import com.vocabulary.vocab_spring.repository.WordRepository;
-import com.vocabulary.vocab_spring.repository.QuizHistoryRepository;
+
 import com.vocabulary.vocab_spring.service.CategoryService;
 import com.vocabulary.vocab_spring.service.GeminiService;
 import com.vocabulary.vocab_spring.service.QuizService;
 import com.vocabulary.vocab_spring.service.QuoteService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -30,20 +30,19 @@ public class QuizController {
     private final CategoryService categoryService;
     private final UserRepository userRepository;
     private final WordRepository wordRepository;
-    private final QuizHistoryRepository quizHistoryRepository;
+
     private final GeminiService geminiService;
     private final QuoteService quoteService;
 
     @Autowired
     public QuizController(QuizService quizService, CategoryService categoryService,
             UserRepository userRepository, WordRepository wordRepository,
-            QuizHistoryRepository quizHistoryRepository, GeminiService geminiService,
+            GeminiService geminiService,
             QuoteService quoteService) {
         this.quizService = quizService;
         this.categoryService = categoryService;
         this.userRepository = userRepository;
         this.wordRepository = wordRepository;
-        this.quizHistoryRepository = quizHistoryRepository;
         this.geminiService = geminiService;
         this.quoteService = quoteService;
     }
@@ -286,16 +285,16 @@ public class QuizController {
             return "redirect:/quiz/settings";
         }
 
-        User user = getCurrentUser();
-
-        // Pageableを使って最近の苦手単語を最大10件取得
-        java.util.List<String> recentMistakes = quizHistoryRepository
-                .findRecentMistakesByUserId(user.getId(), PageRequest.of(0, 10));
+        // 今回のクイズセッションで間違えた単語のみを抽出
+        java.util.List<String> currentMistakes = quizSession.getResults().stream()
+                .filter(r -> !r.isCorrect())
+                .map(QuizSessionDto.QuizResultDto::getTerm)
+                .toList();
 
         String aiFeedback = geminiService.getFeedback(
                 quizSession.getCorrectAnswers(),
                 quizSession.getResults().size(),
-                recentMistakes);
+                currentMistakes);
 
         // QuoteService から名言を取得（ランダム）
         String randomQuote = quoteService.getRandomQuote();
