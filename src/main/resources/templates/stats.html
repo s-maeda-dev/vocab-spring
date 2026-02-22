@@ -1,309 +1,228 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>学習統計 - VocabSpring</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VocabularySpring - 学習統計状況</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a69383", // Muted dusty beige-brown
+                        "primary-dark": "#5d4037",
+                        "accent": "#9d8475",
+                        "background-light": "#e8e4df", // Creamy dusty base
+                        "text-main": "#4a403a",
+                        "text-sub": "#8c817b"
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
+                        "body": ["Noto Sans JP", "sans-serif"]
+                    },
+                    boxShadow: {
+                        'neu': '8px 8px 16px #c2beb9, -8px -8px 16px #ffffff',
+                        'neu-pressed': 'inset 6px 6px 12px #c2beb9, inset -6px -6px 12px #ffffff',
+                        'neu-sm': '4px 4px 8px #c2beb9, -4px -4px 8px #ffffff',
+                        'neu-float': '12px 12px 24px #c2beb9, -12px -12px 24px #ffffff',
+                    }
+                },
+            },
+        }
+    </script>
     <style>
+        .neu-text-shadow {
+            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.6);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f9fafb;
-            color: #1f2937;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-        }
-
-        nav {
-            margin-bottom: 24px;
-        }
-
-        nav a {
-            margin-right: 12px;
-            color: #4f46e5;
-            text-decoration: none;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-        /* ─── 累計サマリーカード（上部） ─── */
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-bottom: 32px;
-        }
-
-        .summary-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            transition: transform 0.15s;
-        }
-
-        .summary-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .summary-card .s-icon {
-            font-size: 1.6rem;
-            margin-bottom: 6px;
-        }
-
-        .summary-card .s-value {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #4f46e5;
-        }
-
-        .summary-card .s-label {
-            font-size: 0.8rem;
-            color: #6b7280;
-            margin-top: 4px;
-        }
-
-        /* ─── カテゴリセクション ─── */
-        .category-section {
-            background: white;
-            border-radius: 12px;
-            padding: 20px 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        }
-
-        .category-section h2 {
-            font-size: 1.2rem;
-            margin: 0 0 16px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f3f4f6;
-        }
-
-        /* ─── カテゴリ内の4枚カード ─── */
-        .cat-stats-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .cat-stat-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 12px;
-            text-align: center;
-            transition: background 0.15s;
-        }
-
-        .cat-stat-card:hover {
-            background: #f9fafb;
-        }
-
-        .cat-stat-card .c-icon {
-            font-size: 1.4rem;
-            margin-bottom: 4px;
-        }
-
-        .cat-stat-card .c-value {
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .cat-stat-card .c-label {
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-top: 2px;
-        }
-
-        /* 正答率の色分け */
-        .rate-green {
-            color: #22c55e;
-        }
-
-        .rate-yellow {
-            color: #f59e0b;
-        }
-
-        .rate-red {
-            color: #ef4444;
-        }
-
-        /* プログレスバー */
-        .progress-bar-bg {
-            background-color: #f3f4f6;
-            border-radius: 99px;
-            height: 8px;
-            overflow: hidden;
-            margin: 8px 0 4px 0;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            border-radius: 99px;
-            transition: width 0.6s ease;
-        }
-
-        .progress-label {
-            font-size: 0.75rem;
-            color: #6b7280;
-            text-align: right;
-        }
-
-        /* ─── 折れ線グラフ ─── */
-        .chart-area {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #f3f4f6;
-        }
-
-        .chart-area h3 {
-            font-size: 0.95rem;
-            color: #374151;
-            margin: 0 0 10px 0;
+            min-height: max(884px, 100dvh);
         }
 
         .chart-wrapper {
-            position: relative;
             width: 100%;
-            max-height: 220px;
-        }
-
-        /* ─── 空メッセージ ─── */
-        .empty-message {
-            text-align: center;
-            color: #9ca3af;
-            padding: 48px 20px;
-        }
-
-        .empty-message .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 12px;
+            height: 200px;
+            padding: 10px 0;
         }
     </style>
 </head>
 
-<body>
-    <h1>📊 学習統計</h1>
+<body
+    class="bg-background-light text-text-main font-body min-h-screen flex flex-col items-center justify-start antialiased selection:bg-primary/20">
+    <div
+        class="relative w-full max-w-md h-full min-h-[100dvh] flex flex-col bg-background-light shadow-2xl overflow-hidden pb-40">
 
-    <nav>
-        <a href="/">ホームへ戻る</a>
-        <a href="/quiz/settings">クイズを開始する</a>
-    </nav>
-
-    <!-- ── データあり ── -->
-    <div th:if="${totalStats.totalAnswered > 0}">
-
-        <!-- 全体サマリーカード -->
-        <div class="summary-cards">
-            <div class="summary-card">
-                <div class="s-icon">📝</div>
-                <div class="s-value" th:text="${totalStats.totalAnswered}">0</div>
-                <div class="s-label">累計解答数（全体）</div>
+        <header
+            class="pt-12 pb-2 px-6 flex justify-between items-center sticky top-0 z-20 bg-background-light/95 backdrop-blur-sm shadow-[0_4px_10px_rgba(0,0,0,0.02)]">
+            <div>
+                <h1 class="text-[22px] font-bold text-text-main neu-text-shadow tracking-tight">学習統計状況詳細</h1>
+                <p class="text-[11px] text-text-sub font-medium mt-1 ml-1"
+                    th:text="'総解答数 ' + ${totalStats.totalAnswered} + ' 回'">カテゴリ別分析データ</p>
             </div>
-            <div class="summary-card">
-                <div class="s-icon">🎯</div>
-                <div class="s-value" th:text="${#numbers.formatDecimal(totalStats.correctRate, 1, 1)} + '%'">0%</div>
-                <div class="s-label">総合正答率</div>
+            <div
+                class="size-11 rounded-2xl bg-background-light shadow-neu flex items-center justify-center text-primary-dark">
+                <span class="material-symbols-outlined text-xl">analytics</span>
             </div>
-            <div class="summary-card">
-                <div class="s-icon">📚</div>
-                <div class="s-value" th:text="${totalStats.totalWords}">0</div>
-                <div class="s-label">登録単語数（全体）</div>
-            </div>
-            <div class="summary-card">
-                <div class="s-icon">💪</div>
-                <div class="s-value" th:text="${totalStats.weakWordCount}">0</div>
-                <div class="s-label">苦手単語数（全体）</div>
-            </div>
-        </div>
+        </header>
 
-        <!-- カテゴリ別セクション -->
-        <div th:each="cat, iterStat : ${categoryDetailStats}" class="category-section">
+        <main class="flex-1 overflow-y-auto px-6 mt-6 pb-12 w-full space-y-10" th:if="${totalStats.totalAnswered > 0}">
 
-            <!-- カテゴリ名ヘッダー -->
-            <h2>
-                <span>🏷️</span>
-                <span th:text="${cat.categoryName}">カテゴリ名</span>
-            </h2>
-
-            <!-- カテゴリ内の4枚統計カード -->
-            <div class="cat-stats-cards">
-                <!-- 解答数 -->
-                <div class="cat-stat-card">
-                    <div class="c-icon">📝</div>
-                    <div class="c-value" style="color: #4f46e5;" th:text="${cat.totalAnswered}">0</div>
-                    <div class="c-label">累計解答数</div>
+            <!-- 全体サマリー概要 -->
+            <div class="grid grid-cols-2 gap-4">
+                <div
+                    class="rounded-3xl bg-background-light shadow-neu p-4 flex flex-col items-center justify-center text-center">
+                    <span class="material-symbols-outlined text-primary mb-1">target</span>
+                    <span class="text-2xl font-bold font-display"
+                        th:text="${#numbers.formatDecimal(totalStats.correctRate, 0, 1)} + '%'">80%</span>
+                    <span class="text-[10px] text-text-sub font-medium">全体正答率</span>
                 </div>
 
-                <!-- 正答率 -->
-                <div class="cat-stat-card">
-                    <div class="c-icon">🎯</div>
-                    <div class="c-value"
-                        th:classappend="${cat.correctRate >= 80} ? 'rate-green' : (${cat.correctRate >= 50} ? 'rate-yellow' : 'rate-red')"
-                        th:text="${#numbers.formatDecimal(cat.correctRate, 1, 1)} + '%'">0%</div>
-                    <div class="c-label">正答率</div>
-                    <!-- プログレスバー -->
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill"
-                            th:style="'width:' + ${cat.correctRate} + '%; background-color:' +
-                                       (${cat.correctRate >= 80} ? '#22c55e' : (${cat.correctRate >= 50} ? '#f59e0b' : '#ef4444'))">
+                <div
+                    class="rounded-3xl bg-background-light shadow-neu p-4 flex flex-col items-center justify-center text-center">
+                    <span class="material-symbols-outlined text-rose-500/80 mb-1">warning</span>
+                    <span class="text-2xl font-bold font-display text-rose-500/80"
+                        th:text="${totalStats.weakWordCount}">0</span>
+                    <span class="text-[10px] text-text-sub font-medium">全体苦手単語</span>
+                </div>
+            </div>
+
+            <div class="w-full h-px bg-[#c2beb9]/20 my-4"></div>
+
+            <!-- カテゴリごとの統計ループ -->
+            <section class="space-y-6" th:each="cat, iterStat : ${categoryDetailStats}">
+
+                <div class="flex items-center gap-3 px-1">
+                    <div
+                        class="size-10 rounded-xl bg-background-light shadow-neu flex items-center justify-center text-primary-dark">
+                        <span class="material-symbols-outlined text-[20px]">category</span>
+                    </div>
+                    <h2 class="text-lg font-bold text-text-main" th:text="${cat.categoryName}">カテゴリ名</h2>
+                </div>
+
+                <div class="rounded-3xl bg-background-light shadow-neu p-5 relative overflow-hidden">
+                    <div class="flex flex-col gap-6">
+                        <!-- Circle and Grid -->
+                        <div class="flex items-center gap-6">
+                            <div
+                                class="shrink-0 relative size-28 rounded-full shadow-neu-pressed flex items-center justify-center bg-background-light mx-2">
+                                <svg class="size-full -rotate-90 p-1.5" viewBox="0 0 36 36">
+                                    <path class="text-transparent"
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="currentColor" stroke-width="3"></path>
+                                    <path class="text-[#8d6e63] drop-shadow-sm transition-all duration-1000 ease-out"
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="currentColor"
+                                        th:stroke-dasharray="${cat.correctRate} + ', 100'" stroke-linecap="round"
+                                        stroke-width="3"></path>
+                                </svg>
+                                <div class="absolute flex flex-col items-center">
+                                    <span class="text-2xl font-display font-bold text-text-main"
+                                        th:text="${#numbers.formatDecimal(cat.correctRate, 0, 0)} + '%'">85%</span>
+                                </div>
+                            </div>
+
+                            <div class="flex-1 grid grid-cols-2 gap-3">
+                                <div
+                                    class="flex flex-col justify-center p-3 rounded-2xl bg-background-light shadow-neu-sm text-center">
+                                    <span class="text-[9px] text-text-sub font-medium mb-1">解答</span>
+                                    <span class="text-sm font-bold text-text-main"
+                                        th:text="${cat.totalAnswered}">142</span>
+                                </div>
+                                <div
+                                    class="flex flex-col justify-center p-3 rounded-2xl bg-background-light shadow-neu-sm text-center">
+                                    <span class="text-[9px] text-text-sub font-medium mb-1">登録</span>
+                                    <span class="text-sm font-bold text-text-main" th:text="${cat.wordCount}">35</span>
+                                </div>
+                                <div
+                                    class="col-span-2 flex items-center justify-between p-3 rounded-2xl bg-background-light shadow-neu-sm group">
+                                    <div class="flex flex-col">
+                                        <span class="text-[9px] text-text-sub font-medium mb-1">苦手</span>
+                                        <span class="text-sm font-bold text-rose-800/80"
+                                            th:text="${cat.weakWordCount} + ' Words'">12 Words</span>
+                                    </div>
+                                    <span class="material-symbols-outlined text-rose-800/40 text-[18px]">warning</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart Line (If data exists) -->
+                        <div class="w-full pt-4 border-t border-[#c2beb9]/20" th:if="${!cat.dailyStats.isEmpty()}">
+                            <span class="text-[10px] text-text-sub font-bold px-2 block mb-2">直近14日間の推移</span>
+                            <div class="chart-wrapper">
+                                <canvas th:id="'chart-' + ${iterStat.index}"></canvas>
+                            </div>
                         </div>
                     </div>
-                    <div class="progress-label" th:text="${cat.totalCorrect} + '/' + ${cat.totalAnswered} + '問'">0/0問
+                </div>
+                <div class="w-full h-px bg-[#c2beb9]/20 my-6"></div>
+            </section>
+
+        </main>
+
+        <!-- Empty State -->
+        <main class="flex-1 overflow-y-auto px-6 mt-6 pb-12 w-full flex flex-col items-center justify-center pt-24"
+            th:if="${totalStats.totalAnswered == 0}">
+            <div
+                class="size-20 rounded-full bg-background-light shadow-neu-pressed flex items-center justify-center text-text-sub/50 mb-6">
+                <span class="material-symbols-outlined text-4xl">psychology</span>
+            </div>
+            <p class="text-sm font-bold text-text-main mb-2">データがありません</p>
+            <p class="text-xs text-text-sub mb-8">クイズに挑戦して、学習を記録しましょう。</p>
+            <a href="/quiz/settings"
+                class="px-8 py-3 rounded-full bg-primary text-white font-bold shadow-neu-btn active:scale-95 transition-all text-sm">クイズに挑戦する</a>
+        </main>
+
+        <!-- Floating NavBar -->
+        <div class="fixed bottom-6 w-full max-w-md left-1/2 -translate-x-1/2 z-40 px-6">
+            <nav
+                class="w-full h-16 rounded-3xl bg-background-light/95 backdrop-blur-xl shadow-neu-float px-2 flex justify-around items-center border border-white/20">
+                <a href="/"
+                    class="flex flex-col items-center justify-center gap-1 w-12 h-full text-text-sub hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">home</span>
+                </a>
+                <a href="/words"
+                    class="flex flex-col items-center justify-center gap-1 w-12 h-full text-text-sub hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">menu_book</span>
+                </a>
+                <!-- Central big icon -->
+                <a href="/stats" class="flex flex-col items-center justify-center relative -mt-8">
+                    <div
+                        class="size-14 rounded-full bg-background-light shadow-neu-pressed flex items-center justify-center border-[4px] border-background-light text-primary">
+                        <span class="material-symbols-outlined text-[26px]">analytics</span>
                     </div>
-                </div>
-
-                <!-- 登録単語数 -->
-                <div class="cat-stat-card">
-                    <div class="c-icon">📚</div>
-                    <div class="c-value" style="color: #4f46e5;" th:text="${cat.wordCount}">0</div>
-                    <div class="c-label">登録単語数</div>
-                </div>
-
-                <!-- 苦手単語数 -->
-                <div class="cat-stat-card">
-                    <div class="c-icon">💪</div>
-                    <div class="c-value" th:style="${cat.weakWordCount > 0} ? 'color:#ef4444' : 'color:#22c55e'"
-                        th:text="${cat.weakWordCount}">0</div>
-                    <div class="c-label">苦手単語数</div>
-                </div>
-            </div>
-
-            <!-- 学習推移グラフ（データがある場合のみ） -->
-            <div class="chart-area" th:if="${!cat.dailyStats.isEmpty()}">
-                <h3>📈 直近14日間の学習推移</h3>
-                <div class="chart-wrapper">
-                    <canvas th:id="'chart-' + ${iterStat.index}"></canvas>
-                </div>
-            </div>
-
+                </a>
+                <a href="/quiz/settings"
+                    class="flex flex-col items-center justify-center gap-1 w-12 h-full text-text-sub hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">school</span>
+                </a>
+                <a href="/words/new"
+                    class="flex flex-col items-center justify-center gap-1 w-12 h-full text-text-sub hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">add_circle</span>
+                </a>
+            </nav>
         </div>
-        <!-- /category-section -->
-
-    </div>
-    <!-- /データあり -->
-
-    <!-- ── データなし ── -->
-    <div th:if="${totalStats.totalAnswered == 0}" class="empty-message">
-        <div class="empty-icon">🌱</div>
-        <p>まだ学習データがありません。</p>
-        <p><a href="/quiz/settings" style="color: #4f46e5;">クイズに挑戦して</a>統計を記録しましょう！</p>
     </div>
 
-    <!-- Chart.js スクリプト：カテゴリごとの折れ線グラフを描画 -->
     <script th:inline="javascript">
         /*<![CDATA[*/
         // サーバーからカテゴリ別詳細統計を受け取る
@@ -321,27 +240,27 @@
             new Chart(canvas, {
                 type: 'line',
                 data: {
-                    labels: dailyData.map(d => d.date),
+                    labels: dailyData.map(d => d.date.substring(5)), // MM-DD
                     datasets: [
                         {
-                            label: '正答数',
+                            label: '正解',
                             data: dailyData.map(d => d.correctCount),
-                            borderColor: '#22c55e',
-                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            borderColor: '#a69383', // primary
+                            backgroundColor: 'rgba(166, 147, 131, 0.2)',
                             fill: true,
-                            tension: 0.3,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
+                            tension: 0.4,
+                            pointRadius: 2,
+                            borderWidth: 2
                         },
                         {
-                            label: '不正解数',
+                            label: '不正解',
                             data: dailyData.map(d => d.incorrectCount),
                             borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            fill: true,
-                            tension: 0.3,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            borderWidth: 2
                         }
                     ]
                 },
@@ -349,13 +268,16 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'top' }
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index', intersect: false,
+                            backgroundColor: 'rgba(74, 64, 58, 0.9)',
+                            titleFont: { size: 10 }, bodyFont: { size: 10 }
+                        }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { stepSize: 1 }
-                        }
+                        x: { display: true, grid: { display: false }, ticks: { font: { size: 9 }, color: '#8c817b' } },
+                        y: { display: false, beginAtZero: true }
                     }
                 }
             });

@@ -1,114 +1,185 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>クイズ設定 - VocabSpring</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VocabularySpring - クイズ設定</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#A5907E",
+                        "primary-dark": "#8C7A6B",
+                        "background-light": "#F5F4F0",
+                        "surface-light": "#F5F4F0",
+                        "text-main": "#4a3b32",
+                        "text-light": "#9CA3AF",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
+                        "jp": ["Noto Sans JP", "sans-serif"]
+                    },
+                    boxShadow: {
+                        'neu-flat': '8px 8px 16px #D1D1CE, -8px -8px 16px #FFFFFF',
+                        'neu-pressed': 'inset 6px 6px 12px #D1D1CE, inset -6px -6px 12px #FFFFFF',
+                    }
+                },
+            },
+        }
+    </script>
     <style>
-        .mode-selector {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
         }
 
-        .mode-card {
-            flex: 1;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            padding: 14px 16px;
-            cursor: pointer;
-            transition: border-color 0.2s, background-color 0.2s;
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
-        .mode-card:has(input:checked) {
-            border-color: #4f46e5;
-            background-color: #eef2ff;
+        body {
+            min-height: max(884px, 100dvh);
         }
 
-        .mode-card input[type="radio"] {
-            margin-right: 8px;
+        .category-scroll::-webkit-scrollbar {
+            display: none;
         }
 
-        .mode-title {
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        .mode-desc {
-            font-size: 0.82rem;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        #categorySection {
-            transition: opacity 0.2s;
+        .category-scroll {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
 
-<body>
-    <h1>クイズ設定</h1>
+<body
+    class="bg-background-light font-display min-h-screen flex flex-col items-center justify-center text-text-main antialiased selection:bg-primary/30">
+    <div class="relative flex h-full min-h-screen w-full max-w-md flex-col bg-background-light shadow-2xl">
 
-    <div th:if="${error}" style="color: red; margin-bottom: 12px;" th:text="${error}"></div>
+        <header class="flex items-center justify-between px-6 py-6 pt-14 z-10">
+            <a href="/"
+                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-light text-text-light shadow-neu-flat active:shadow-neu-pressed transition-all duration-200">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <h1 class="text-lg font-bold text-text-main tracking-wider font-jp">クイズ設定</h1>
+            <div class="w-12"></div>
+        </header>
 
-    <form th:action="@{/quiz/start}" method="post">
-
-        <!-- ── 出題モード選択 ── -->
-        <fieldset style="border: none; padding: 0; margin-bottom: 16px;">
-            <legend style="font-weight: bold; margin-bottom: 8px;">出題モードを選択:</legend>
-            <div class="mode-selector">
-                <label class="mode-card">
-                    <input type="radio" id="modeAll" name="quizMode" value="all" checked
-                        onchange="onModeChange(this.value)">
-                    <span class="mode-title">📚 全単語から出題</span>
-                    <div class="mode-desc">登録されているすべての単語の中から出題します</div>
-                </label>
-                <label class="mode-card">
-                    <input type="radio" id="modeWeak" name="quizMode" value="weak" onchange="onModeChange(this.value)">
-                    <span class="mode-title">🎯 苦手な単語から出題</span>
-                    <div class="mode-desc">過去に間違えた単語を優先的に出題します</div>
-                </label>
-            </div>
-        </fieldset>
-
-        <!-- ── カテゴリ選択（両モードで選択可能） ── -->
-        <div id="categorySection">
-            <label id="categoryLabel" for="categoryId">カテゴリを選択:</label>
-            <select id="categoryId" name="categoryId">
-                <option value="">全カテゴリから出題</option>
-                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">
-                </option>
-            </select>
-            <br><br>
+        <div th:if="${error}" class="px-6 text-red-500 font-bold font-jp text-sm text-center mb-4" th:text="${error}">
         </div>
 
-        <!-- ── 出題数選択 ── -->
-        <label for="totalQuestions">出題数を選択:</label>
-        <select id="totalQuestions" name="totalQuestions">
-            <option value="5">5問</option>
-            <option value="10">10問</option>
-        </select>
-        <br><br>
+        <form class="flex-1 flex flex-col overflow-y-auto px-6 pb-32 pt-2 scrollbar-hide" th:action="@{/quiz/start}"
+            method="post">
 
-        <button type="submit">クイズを開始する</button>
-    </form>
+            <!-- Category Selection -->
+            <section class="mb-10">
+                <h2 class="mb-5 text-base font-bold text-text-main font-jp pl-1">カテゴリー</h2>
+                <div class="flex gap-3 overflow-x-auto category-scroll pb-4 -mx-6 px-6">
+                    <!-- Select All -->
+                    <label class="cursor-pointer flex-shrink-0 relative">
+                        <input class="peer sr-only" name="categoryId" type="radio" value="" checked />
+                        <div
+                            class="px-5 py-2.5 rounded-full bg-surface-light shadow-neu-flat text-sm font-bold text-text-light peer-checked:text-primary peer-checked:shadow-neu-pressed transition-all duration-200 border border-transparent peer-checked:border-primary/20">
+                            すべてのカテゴリ
+                        </div>
+                    </label>
+                    <!-- Dynamic Categories -->
+                    <label class="cursor-pointer flex-shrink-0 relative" th:each="cat : ${categories}">
+                        <input class="peer sr-only" name="categoryId" type="radio" th:value="${cat.id}" />
+                        <div class="px-5 py-2.5 rounded-full bg-surface-light shadow-neu-flat text-sm font-bold text-text-light peer-checked:text-primary peer-checked:shadow-neu-pressed transition-all duration-200 border border-transparent peer-checked:border-primary/20"
+                            th:text="${cat.name}">
+                            Category
+                        </div>
+                    </label>
+                </div>
+            </section>
 
-    <br>
-    <a href="/">ホームへ戻る</a>
+            <!-- Quiz Mode Selection -->
+            <section class="mb-12">
+                <h2 class="mb-5 text-base font-bold text-text-main font-jp pl-1">出題範囲</h2>
+                <div class="relative flex h-16 w-full rounded-full bg-surface-light p-1.5 shadow-neu-pressed">
+                    <div class="absolute left-1.5 top-1.5 h-[calc(100%-12px)] w-[calc(50%-6px)] rounded-full bg-surface-light shadow-neu-flat transition-transform duration-300 ease-out"
+                        id="toggle-bg"></div>
 
-    <script>
-        /**
-         * 出題モードが変わったときに説明文の表示を切り替える（カテゴリはどちらのモードでも選択可能）。
-         */
-        function onModeChange(mode) {
-            const categoryLabel = document.getElementById('categoryLabel');
-            if (mode === 'weak') {
-                categoryLabel.textContent = 'カテゴリを絞り込む（任意）:';
-            } else {
-                categoryLabel.textContent = 'カテゴリを選択:';
-            }
-        }
-    </script>
+                    <label
+                        class="relative z-10 flex flex-1 cursor-pointer items-center justify-center text-sm font-bold transition-colors"
+                        onclick="document.getElementById('toggle-bg').style.transform = 'translateX(0)'">
+                        <input checked class="peer sr-only" name="quizMode" type="radio" value="all" />
+                        <span
+                            class="text-text-light peer-checked:text-primary transition-colors flex items-center gap-2 font-jp">
+                            <span class="material-symbols-outlined text-[20px]">library_books</span>
+                            すべての単語
+                        </span>
+                    </label>
+
+                    <label
+                        class="relative z-10 flex flex-1 cursor-pointer items-center justify-center text-sm font-bold transition-colors"
+                        onclick="document.getElementById('toggle-bg').style.transform = 'translateX(100%)'">
+                        <input class="peer sr-only" name="quizMode" type="radio" value="weak" />
+                        <span
+                            class="text-text-light peer-checked:text-primary transition-colors flex items-center gap-2 font-jp">
+                            <span class="material-symbols-outlined text-[20px]">warning</span>
+                            苦手な単語
+                        </span>
+                    </label>
+                </div>
+                <p class="mt-4 text-[11px] text-text-light/90 px-2 font-jp leading-relaxed text-center">
+                    「すべての単語」は全範囲から出題されます。「苦手な単語」は過去に間違えた単語を重点的に学習します。
+                </p>
+            </section>
+
+            <!-- Total Questions -->
+            <section class="mb-12">
+                <h2 class="mb-5 text-base font-bold text-text-main font-jp pl-1">問題数</h2>
+                <div class="flex gap-4">
+                    <label class="flex-1 cursor-pointer group">
+                        <input checked class="peer sr-only" name="totalQuestions" type="radio" value="5" />
+                        <div
+                            class="flex flex-col items-center justify-center py-6 rounded-2xl bg-surface-light shadow-neu-flat peer-checked:shadow-neu-pressed transition-all duration-200 border border-transparent peer-checked:border-primary/20">
+                            <span
+                                class="text-2xl font-bold text-text-light peer-checked:text-primary font-display mb-1 transition-colors">5</span>
+                            <span
+                                class="text-[10px] font-bold text-text-light/70 peer-checked:text-primary/70 font-jp transition-colors">問</span>
+                        </div>
+                    </label>
+                    <label class="flex-1 cursor-pointer group">
+                        <input class="peer sr-only" name="totalQuestions" type="radio" value="10" />
+                        <div
+                            class="flex flex-col items-center justify-center py-6 rounded-2xl bg-surface-light shadow-neu-flat peer-checked:shadow-neu-pressed transition-all duration-200 border border-transparent peer-checked:border-primary/20">
+                            <span
+                                class="text-2xl font-bold text-text-light peer-checked:text-primary font-display mb-1 transition-colors">10</span>
+                            <span
+                                class="text-[10px] font-bold text-text-light/70 peer-checked:text-primary/70 font-jp transition-colors">問</span>
+                        </div>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Submit Button -->
+            <div
+                class="absolute bottom-0 left-0 w-full pointer-events-none z-20 bg-gradient-to-t from-background-light via-background-light/95 to-transparent h-40">
+                <div class="relative px-8 pt-12 pb-14 pointer-events-auto flex justify-center w-full h-full items-end">
+                    <button type="submit"
+                        class="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-8 py-4 text-white font-bold shadow-lg shadow-primary/30 active:scale-[0.98] transition-all duration-150 border-none">
+                        <span class="material-symbols-outlined text-[24px]">play_circle</span>
+                        <span class="text-base tracking-widest font-jp">クイズを開始</span>
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
 </body>
 
 </html>
