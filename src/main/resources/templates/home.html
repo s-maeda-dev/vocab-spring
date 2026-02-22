@@ -182,51 +182,7 @@
             </form>
         </main>
 
-        <!-- Bottom Navigation -->
-        <nav
-            class="fixed bottom-0 left-0 right-0 z-50 bg-background-light/90 backdrop-blur-md pb-8 pt-4 border-t border-white/50 w-full max-w-md mx-auto">
-            <div class="flex items-center justify-around px-4">
-                <a href="/" class="flex flex-col items-center gap-1 w-16">
-                    <div
-                        class="h-12 w-12 flex items-center justify-center rounded-2xl bg-background-light shadow-neu-pressed text-primary transition-all duration-300">
-                        <span class="material-symbols-outlined">home</span>
-                    </div>
-                    <span class="text-[10px] font-bold text-text-main mt-1">ホーム</span>
-                </a>
-                <a href="/words" class="flex flex-col items-center gap-1 w-16 group">
-                    <div
-                        class="h-12 w-12 flex items-center justify-center rounded-2xl text-text-muted hover:text-primary transition-all duration-300 hover:shadow-neu-flat">
-                        <span class="material-symbols-outlined">menu_book</span>
-                    </div>
-                    <span
-                        class="text-[10px] font-bold text-text-muted group-hover:text-primary transition-colors mt-1">単語帳</span>
-                </a>
-                <a href="/words/new" class="flex flex-col items-center gap-1 w-16 group">
-                    <div
-                        class="h-12 w-12 flex items-center justify-center rounded-2xl text-text-muted hover:text-primary transition-all duration-300 hover:shadow-neu-flat">
-                        <span class="material-symbols-outlined">add_circle</span>
-                    </div>
-                    <span
-                        class="text-[10px] font-bold text-text-muted group-hover:text-primary transition-colors mt-1">追加</span>
-                </a>
-                <a href="/quiz/settings" class="flex flex-col items-center gap-1 w-16 group">
-                    <div
-                        class="h-12 w-12 flex items-center justify-center rounded-2xl text-text-muted hover:text-primary transition-all duration-300 hover:shadow-neu-flat">
-                        <span class="material-symbols-outlined">school</span>
-                    </div>
-                    <span
-                        class="text-[10px] font-bold text-text-muted group-hover:text-primary transition-colors mt-1">クイズ</span>
-                </a>
-                <a href="/stats" class="flex flex-col items-center gap-1 w-16 group">
-                    <div
-                        class="h-12 w-12 flex items-center justify-center rounded-2xl text-text-muted hover:text-primary transition-all duration-300 hover:shadow-neu-flat">
-                        <span class="material-symbols-outlined">analytics</span>
-                    </div>
-                    <span
-                        class="text-[10px] font-bold text-text-muted group-hover:text-primary transition-colors mt-1">統計</span>
-                </a>
-            </div>
-        </nav>
+        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
     </div>
 
 </body>

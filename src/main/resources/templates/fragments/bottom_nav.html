@@ -1,0 +1,55 @@
+<nav th:fragment="bottomNav"
+    class="fixed bottom-0 left-0 right-0 z-50 bg-[#F5F4F0]/90 backdrop-blur-md pb-8 pt-4 border-t border-white/50 w-full max-w-md mx-auto">
+    <div class="flex items-center justify-around px-4">
+        <a href="/" class="flex flex-col items-center gap-1 w-16 group"
+            th:classappend="${#httpServletRequest.requestURI == '/'} ? 'text-[#a1887f]' : 'text-[#9CA3AF]'">
+            <div class="h-12 w-12 flex items-center justify-center rounded-2xl group-hover:text-[#a1887f] transition-all duration-300"
+                th:classappend="${#httpServletRequest.requestURI == '/'} ? 'shadow-[inset_4px_4px_8px_#D1D1CE,inset_-4px_-4px_8px_#FFFFFF] bg-[#F5F4F0]' : 'hover:shadow-[4px_4px_8px_#D1D1CE,-4px_-4px_8px_#FFFFFF]'">
+                <span class="material-symbols-outlined"
+                    th:classappend="${#httpServletRequest.requestURI == '/'} ? 'filled' : ''">home</span>
+            </div>
+            <span class="text-[10px] font-bold group-hover:text-[#a1887f] transition-colors mt-1"
+                th:classappend="${#httpServletRequest.requestURI == '/'} ? 'text-[#a1887f]' : 'text-[#9CA3AF]'">ホーム</span>
+        </a>
+        <a href="/words" class="flex flex-col items-center gap-1 w-16 group"
+            th:classappend="${#httpServletRequest.requestURI == '/words'} ? 'text-[#a1887f]' : 'text-[#9CA3AF]'">
+            <div class="h-12 w-12 flex items-center justify-center rounded-2xl group-hover:text-[#a1887f] transition-all duration-300"
+                th:classappend="${#httpServletRequest.requestURI == '/words'} ? 'shadow-[inset_4px_4px_8px_#D1D1CE,inset_-4px_-4px_8px_#FFFFFF] bg-[#F5F4F0]' : 'hover:shadow-[4px_4px_8px_#D1D1CE,-4px_-4px_8px_#FFFFFF]'">
+                <span class="material-symbols-outlined"
+                    th:classappend="${#httpServletRequest.requestURI == '/words'} ? 'filled' : ''">menu_book</span>
+            </div>
+            <span class="text-[10px] font-bold group-hover:text-[#a1887f] transition-colors mt-1"
+                th:classappend="${#httpServletRequest.requestURI == '/words'} ? 'text-[#a1887f]' : 'text-[#9CA3AF]'">単語帳</span>
+        </a>
+        <a href="/words/new" class="flex flex-col items-center gap-1 w-16 group"
+            th:classappend="${#httpServletRequest.requestURI == '/words/new'} ? 'text-[#a1887f]' : 'text-[#9CA3AF]'">
+            <div class="h-12 w-12 flex items-center justify-center rounded-2xl group-hover:text-[#a1887f] transition-all duration-300"
+                th:classappend="${#httpServletRequest.requestURI == '/words/new'} ? 'shadow-[inset_4px_4px_8px_#D1D1CE,inset_-4px_-4px_8px_#FFFFFF] bg-[#F5F4F0]' : 'hover:shadow-[4px_4px_8px_#D1D1CE,-4px_-4px_8px_#FFFFFF]'">
+                <span class="material-symbols-outlined"
+                    th:classappend="${#httpServletRequest.requestURI == '/words/new'} ? 'filled' : ''">add_circle</span>
+            </div>
+            <span class="text-[10px] font-bold group-hover:text-[#a1887f] transition-colors mt-1"
+                th:classappend="${#httpServletRequest.requestURI == '/words/new'} ? 'text-[#a1887f]' : 'text-[#9CA3AF]'">追加</span>
+        </a>
+        <a href="/quiz/settings" class="flex flex-col items-center gap-1 w-16 group"
+            th:classappend="${#httpServletRequest.requestURI == '/quiz/settings'} ? 'text-[#a1887f]' : 'text-[#9CA3AF]'">
+            <div class="h-12 w-12 flex items-center justify-center rounded-2xl group-hover:text-[#a1887f] transition-all duration-300"
+                th:classappend="${#httpServletRequest.requestURI == '/quiz/settings'} ? 'shadow-[inset_4px_4px_8px_#D1D1CE,inset_-4px_-4px_8px_#FFFFFF] bg-[#F5F4F0]' : 'hover:shadow-[4px_4px_8px_#D1D1CE,-4px_-4px_8px_#FFFFFF]'">
+                <span class="material-symbols-outlined"
+                    th:classappend="${#httpServletRequest.requestURI == '/quiz/settings'} ? 'filled' : ''">school</span>
+            </div>
+            <span class="text-[10px] font-bold group-hover:text-[#a1887f] transition-colors mt-1"
+                th:classappend="${#httpServletRequest.requestURI == '/quiz/settings'} ? 'text-[#a1887f]' : 'text-[#9CA3AF]'">クイズ</span>
+        </a>
+        <a href="/stats" class="flex flex-col items-center gap-1 w-16 group"
+            th:classappend="${#httpServletRequest.requestURI == '/stats'} ? 'text-[#a1887f]' : 'text-[#9CA3AF]'">
+            <div class="h-12 w-12 flex items-center justify-center rounded-2xl group-hover:text-[#a1887f] transition-all duration-300"
+                th:classappend="${#httpServletRequest.requestURI == '/stats'} ? 'shadow-[inset_4px_4px_8px_#D1D1CE,inset_-4px_-4px_8px_#FFFFFF] bg-[#F5F4F0]' : 'hover:shadow-[4px_4px_8px_#D1D1CE,-4px_-4px_8px_#FFFFFF]'">
+                <span class="material-symbols-outlined"
+                    th:classappend="${#httpServletRequest.requestURI == '/stats'} ? 'filled' : ''">analytics</span>
+            </div>
+            <span class="text-[10px] font-bold group-hover:text-[#a1887f] transition-colors mt-1"
+                th:classappend="${#httpServletRequest.requestURI == '/stats'} ? 'text-[#a1887f]' : 'text-[#9CA3AF]'">統計</span>
+        </a>
+    </div>
+</nav>

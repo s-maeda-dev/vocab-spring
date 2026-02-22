@@ -192,35 +192,7 @@
                 class="px-8 py-3 rounded-full bg-primary text-white font-bold shadow-neu-btn active:scale-95 transition-all text-sm">クイズに挑戦する</a>
         </main>
 
-        <!-- Floating NavBar -->
-        <div class="fixed bottom-6 w-full max-w-md left-1/2 -translate-x-1/2 z-40 px-6">
-            <nav
-                class="w-full h-16 rounded-3xl bg-background-light/95 backdrop-blur-xl shadow-neu-float px-2 flex justify-around items-center border border-white/20">
-                <a href="/"
-                    class="flex flex-col items-center justify-center gap-1 w-12 h-full text-text-sub hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined text-[24px]">home</span>
-                </a>
-                <a href="/words"
-                    class="flex flex-col items-center justify-center gap-1 w-12 h-full text-text-sub hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined text-[24px]">menu_book</span>
-                </a>
-                <!-- Central big icon -->
-                <a href="/stats" class="flex flex-col items-center justify-center relative -mt-8">
-                    <div
-                        class="size-14 rounded-full bg-background-light shadow-neu-pressed flex items-center justify-center border-[4px] border-background-light text-primary">
-                        <span class="material-symbols-outlined text-[26px]">analytics</span>
-                    </div>
-                </a>
-                <a href="/quiz/settings"
-                    class="flex flex-col items-center justify-center gap-1 w-12 h-full text-text-sub hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined text-[24px]">school</span>
-                </a>
-                <a href="/words/new"
-                    class="flex flex-col items-center justify-center gap-1 w-12 h-full text-text-sub hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined text-[24px]">add_circle</span>
-                </a>
-            </nav>
-        </div>
+        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
     </div>
 
     <script th:inline="javascript">

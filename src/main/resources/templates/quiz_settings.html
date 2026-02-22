@@ -168,8 +168,8 @@
 
             <!-- Submit Button -->
             <div
-                class="absolute bottom-0 left-0 w-full pointer-events-none z-20 bg-gradient-to-t from-background-light via-background-light/95 to-transparent h-40">
-                <div class="relative px-8 pt-12 pb-14 pointer-events-auto flex justify-center w-full h-full items-end">
+                class="absolute bottom-24 left-0 w-full pointer-events-none z-20 bg-gradient-to-t from-background-light via-background-light/95 to-transparent h-40">
+                <div class="relative px-8 pt-16 pb-4 pointer-events-auto flex justify-center w-full h-full items-end">
                     <button type="submit"
                         class="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-8 py-4 text-white font-bold shadow-lg shadow-primary/30 active:scale-[0.98] transition-all duration-150 border-none">
                         <span class="material-symbols-outlined text-[24px]">play_circle</span>
@@ -179,6 +179,8 @@
             </div>
 
         </form>
+
+        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
     </div>
 </body>
 

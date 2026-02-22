@@ -1,31 +1,118 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>クイズ開始の確認 - VocabSpring</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>クイズ開始の確認 - VocabularySpring</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#A5907E",
+                        "primary-dark": "#8C7A6B",
+                        "background-light": "#F5F4F0",
+                        "surface-light": "#F5F4F0",
+                        "text-main": "#4a3b32",
+                        "text-light": "#9CA3AF",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
+                        "jp": ["Noto Sans JP", "sans-serif"]
+                    },
+                    boxShadow: {
+                        'neu-flat': '8px 8px 16px #D1D1CE, -8px -8px 16px #FFFFFF',
+                        'neu-pressed': 'inset 6px 6px 12px #D1D1CE, inset -6px -6px 12px #FFFFFF',
+                        'neu-btn': '6px 6px 12px #D1D1CE, -6px -6px 12px #FFFFFF',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+            background-color: #F5F4F0;
+        }
+    </style>
 </head>
 
-<body>
-    <h1>クイズ開始の確認</h1>
+<body
+    class="bg-background-light font-jp min-h-screen flex flex-col items-center justify-center text-text-main antialiased selection:bg-primary/30">
+    <div class="relative flex h-full min-h-screen w-full max-w-md flex-col bg-background-light shadow-2xl pb-32">
 
-    <div style="color: red; margin-bottom: 20px;">
-        <p>登録されている単語数が、選択した出題数より少ないです。</p>
-        <p>（登録単語数: <span th:text="${wordCount}"></span>個 / 出題数: <span th:text="${totalQuestions}"></span>問）</p>
-        <p>同じ問題が繰り返し出題されますが、クイズを開始しますか？<br>（連続して同じ問題が出題されることはありません）</p>
+        <header class="flex items-center justify-between px-6 py-6 pt-14 z-10">
+            <a href="/quiz/settings"
+                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-light text-text-light shadow-neu-flat active:shadow-neu-pressed transition-all duration-200">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <h1 class="text-lg font-bold text-text-main tracking-wider">クイズ開始の確認</h1>
+            <div class="w-12"></div>
+        </header>
+
+        <main class="flex-1 flex flex-col px-6 pt-10">
+            <div class="rounded-3xl bg-surface-light shadow-neu-flat p-8 flex flex-col items-center text-center gap-6">
+                <div
+                    class="h-20 w-20 rounded-full bg-surface-light shadow-neu-pressed flex items-center justify-center text-rose-500">
+                    <span class="material-symbols-outlined text-4xl">warning</span>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-lg font-bold text-text-main">問題数が不足しています</h2>
+                    <p class="text-sm text-text-light/90 leading-relaxed font-medium">
+                        登録されている単語数が、選択した出題数より少ないため、<br>
+                        <span class="text-primary font-bold">同じ問題が繰り返し出題されます</span>。<br>
+                        （連続して同じ問題が出ることはありません）
+                    </p>
+                </div>
+
+                <div class="w-full flex justify-between bg-background-light shadow-neu-pressed rounded-2xl p-5 mt-2">
+                    <div class="flex flex-col items-center flex-1 border-r border-text-light/10">
+                        <span class="text-[10px] font-bold text-text-light mb-1">登録単語数</span>
+                        <span class="text-2xl font-bold text-text-main font-display" th:text="${wordCount}">0</span>
+                    </div>
+                    <div class="flex flex-col items-center flex-1">
+                        <span class="text-[10px] font-bold text-text-light mb-1">出題設定</span>
+                        <span class="text-2xl font-bold text-primary font-display"
+                            th:text="${totalQuestions} + '問'">0問</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4 mt-12 w-full">
+                <form th:action="@{/quiz/start}" method="post" class="w-full">
+                    <input type="hidden" name="categoryId" th:value="${categoryId}" />
+                    <input type="hidden" name="totalQuestions" th:value="${totalQuestions}" />
+                    <input type="hidden" name="quizMode" th:value="${quizMode}" />
+                    <input type="hidden" name="forceStart" value="true" />
+                    <button type="submit"
+                        class="w-full rounded-full bg-primary py-4 text-white font-bold shadow-neu-btn active:scale-95 transition-transform duration-200">
+                        はい、開始します
+                    </button>
+                </form>
+
+                <form th:action="@{/quiz/settings}" method="get" class="w-full">
+                    <button type="submit"
+                        class="w-full rounded-full bg-surface-light py-4 text-text-main font-bold shadow-neu-flat active:shadow-neu-pressed transition-all duration-200 border border-white/50">
+                        いいえ、設定に戻ります
+                    </button>
+                </form>
+            </div>
+        </main>
+
+        <!-- Fragment location for bottom nav, to be replaced by regex later or manually included -->
+        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
     </div>
-
-    <form th:action="@{/quiz/start}" method="post" style="display: inline-block;">
-        <input type="hidden" name="categoryId" th:value="${categoryId}" />
-        <input type="hidden" name="totalQuestions" th:value="${totalQuestions}" />
-        <input type="hidden" name="quizMode" th:value="${quizMode}" />
-        <input type="hidden" name="forceStart" value="true" />
-        <button type="submit">はい、開始します</button>
-    </form>
-
-    <form th:action="@{/quiz/settings}" method="get" style="display: inline-block; margin-left: 10px;">
-        <button type="submit">いいえ、設定に戻ります</button>
-    </form>
 </body>
 
 </html>

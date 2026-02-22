@@ -96,48 +96,44 @@
             </div>
         </div>
 
-        <form class="flex-1 flex flex-col px-6 pb-6 gap-6 overflow-y-auto w-full" th:action="@{/quiz/answer}"
-            method="post">
+        <form class="flex-1 flex flex-col px-6 gap-2 w-full justify-center" th:action="@{/quiz/answer}" method="post">
             <div
-                class="w-full relative rounded-3xl bg-surface shadow-neumorphic-deep p-8 flex flex-col items-center text-center gap-2 mt-8 mb-2 neu-transition border border-white/40">
+                class="w-full relative rounded-3xl bg-surface shadow-neumorphic-deep p-6 pb-2 flex flex-col items-center text-center gap-1 mt-6 mb-2 neu-transition border border-white/40">
                 <div
-                    class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-surface shadow-neumorphic-flat flex items-center justify-center z-10 border-4 border-background-light">
-                    <span class="material-symbols-outlined text-4xl text-primary drop-shadow-sm">school</span>
+                    class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-surface shadow-neumorphic-flat flex items-center justify-center z-10 border-4 border-background-light">
+                    <span class="material-symbols-outlined text-3xl text-primary drop-shadow-sm">school</span>
                 </div>
 
-                <div class="pt-8 w-full flex flex-col items-center">
-                    <p class="text-text-sub text-xs font-medium tracking-widest mb-3 opacity-80">意味</p>
-                    <h1 class="text-[1.8rem] md:text-[2rem] font-bold text-text-main mb-6 tracking-tight drop-shadow-sm leading-snug"
+                <div class="pt-6 w-full flex flex-col items-center">
+                    <p class="text-text-sub text-[10px] font-bold tracking-widest mb-1 opacity-80">意味</p>
+                    <h1 class="text-[1.5rem] md:text-[1.8rem] font-bold text-text-main mb-2 tracking-tight drop-shadow-sm leading-snug"
                         th:text="${word.definition}">意味</h1>
-                    <div class="w-full border-t border-text-sub/10 my-2"></div>
-                    <p th:if="${word.exampleSentence != null and word.exampleSentence != ''}"
-                        class="mt-4 text-text-sub text-sm font-light leading-relaxed max-w-[90%] opacity-90"
-                        th:text="${word.exampleSentence}"></p>
-                    <p th:if="${word.exampleSentence == null or word.exampleSentence == ''}"
-                        class="mt-4 text-text-sub/50 text-sm font-light italic">例文は登録されていません</p>
+                    <div class="w-full border-t border-text-sub/10 my-1"></div>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-4 mt-2 w-full">
-                <label class="text-sm font-semibold text-text-sub ml-2 block mb-1">回答を入力 (英語)</label>
+            <div class="flex flex-col gap-2 mt-2 w-full">
+                <label class="text-xs font-bold text-text-sub ml-2 block mb-0.5">回答を入力</label>
                 <div class="relative w-full">
                     <input
-                        class="w-full p-5 rounded-2xl neu-input text-lg text-text-main placeholder-text-sub/50 font-medium tracking-wide focus:ring-0 font-display"
-                        placeholder="Type your answer here..." type="text" id="answer" name="answer" required autofocus
+                        class="w-full p-4 rounded-2xl neu-input text-lg text-text-main placeholder-text-sub/50 font-medium tracking-wide focus:ring-0 font-display"
+                        placeholder="答えを入力してください..." type="text" id="answer" name="answer" required autofocus
                         autocomplete="off" />
                     <span
                         class="absolute right-5 top-1/2 -translate-y-1/2 material-symbols-outlined text-text-sub/40">edit</span>
                 </div>
             </div>
 
-            <div class="mt-auto w-full pt-8 pb-4">
+            <div class="w-full pt-4">
                 <button type="submit"
-                    class="w-full py-4 rounded-2xl bg-primary text-white font-bold text-lg tracking-wide shadow-float active:shadow-neumorphic-pressed active:translate-y-[1px] neu-transition flex items-center justify-center gap-2 hover:bg-primary-dark">
+                    class="w-full py-4 rounded-2xl bg-primary text-white font-bold text-base tracking-wide shadow-float active:shadow-neumorphic-pressed active:translate-y-[1px] neu-transition flex items-center justify-center gap-2 hover:bg-primary-dark">
                     <span>回答を確認</span>
-                    <span class="material-symbols-outlined text-[24px]">check_circle</span>
+                    <span class="material-symbols-outlined text-[20px]">check_circle</span>
                 </button>
             </div>
         </form>
+
+        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
     </div>
 </body>
 

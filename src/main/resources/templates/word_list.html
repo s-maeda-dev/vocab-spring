@@ -157,37 +157,7 @@
 
         </div>
 
-        <!-- Bottom Navigation -->
-        <nav
-            class="absolute bottom-0 left-0 w-full bg-background-light/90 backdrop-blur-md px-4 pb-8 pt-4 z-20 shadow-[0_-4px_16px_rgba(0,0,0,0.05)] border-t border-white/50">
-            <div class="flex justify-between items-center w-full px-6">
-                <a href="/"
-                    class="flex flex-col items-center gap-1 group w-12 h-12 justify-center rounded-xl transition-all text-text-muted hover:text-primary">
-                    <span class="material-symbols-outlined text-[26px]">home</span>
-                    <span class="text-[9px] font-bold mt-0.5">ホーム</span>
-                </a>
-                <a href="/words"
-                    class="flex flex-col items-center gap-1 group w-12 h-12 justify-center rounded-xl bg-surface-light shadow-neu-pressed relative text-primary">
-                    <span class="material-symbols-outlined text-[26px] fill-current">menu_book</span>
-                    <span class="text-[9px] font-bold mt-0.5">単語帳</span>
-                </a>
-                <a href="/words/new"
-                    class="flex flex-col items-center gap-1 group w-12 h-12 justify-center rounded-xl transition-all text-text-muted hover:text-primary">
-                    <span class="material-symbols-outlined text-[26px]">add_circle</span>
-                    <span class="text-[9px] font-bold mt-0.5">追加</span>
-                </a>
-                <a href="/quiz/settings"
-                    class="flex flex-col items-center gap-1 group w-12 h-12 justify-center rounded-xl transition-all text-text-muted hover:text-primary">
-                    <span class="material-symbols-outlined text-[26px]">school</span>
-                    <span class="text-[9px] font-bold mt-0.5">クイズ</span>
-                </a>
-                <a href="/stats"
-                    class="flex flex-col items-center gap-1 group w-12 h-12 justify-center rounded-xl transition-all text-text-muted hover:text-primary">
-                    <span class="material-symbols-outlined text-[26px]">analytics</span>
-                    <span class="text-[9px] font-bold mt-0.5">統計</span>
-                </a>
-            </div>
-        </nav>
+        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
     </div>
 
 </body>

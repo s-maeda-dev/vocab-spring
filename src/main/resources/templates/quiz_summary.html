@@ -206,7 +206,7 @@
 
         <!-- Bottom Actions -->
         <div
-            class="fixed bottom-0 left-0 right-0 max-w-md mx-auto z-30 flex items-center justify-center p-6 bg-gradient-to-t from-[#f5f4f0] via-[#f5f4f0] to-transparent pt-12">
+            class="fixed bottom-24 left-0 right-0 max-w-md mx-auto z-30 flex items-center justify-center p-6 pb-2 bg-gradient-to-t from-[#f5f4f0] via-[#f5f4f0] to-transparent pt-12">
             <div class="flex w-full gap-4">
                 <a href="/quiz/settings"
                     class="neu-btn-round flex-1 py-4 text-sm font-bold text-text-main/70 hover:text-text-main active:scale-[0.98]">
@@ -220,6 +220,7 @@
                 </a>
             </div>
         </div>
+        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
     </div>
 </body>
 
