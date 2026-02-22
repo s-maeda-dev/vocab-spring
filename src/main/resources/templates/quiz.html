@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>クイズ回答 - VocabSpring</title>
+</head>
+
+<body>
+    <h1>クイズ</h1>
+
+    <p>問題 <span th:text="${quizSession.currentQuestionNumber}"></span> / <span
+            th:text="${quizSession.totalQuestions}"></span></p>
+
+    <h2>問題：<span th:text="${word.definition}">意味</span></h2>
+
+    <form th:action="@{/quiz/answer}" method="post">
+        <label for="answer">解答:</label>
+        <input type="text" id="answer" name="answer" required autofocus />
+        <button type="submit">回答する</button>
+    </form>
+
+    <br>
+    <a href="/quiz/settings">クイズをやめる</a>
+</body>
+
+</html>

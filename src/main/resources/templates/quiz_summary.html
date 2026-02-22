@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>クイズ完了 - VocabSpring</title>
+</head>
+
+<body>
+    <h1>クイズ完了！お疲れ様でした！</h1>
+
+    <p>今回の成績: <span th:text="${quizSession.totalQuestions}"></span> 問中 <span
+            th:text="${quizSession.correctAnswers}"></span> 問正解でした。</p>
+
+    <!-- Phase 5 AI Comment Placeholder -->
+    <div style="border: 1px solid #ccc; padding: 10px; margin: 20px 0; background-color: #f9f9f9;">
+        <h3>AI先生からのコメント (Phase 5 で実装予定)</h3>
+        <p>「よく頑張りましたね！次回はもっと正解数が増えるように復習しましょう！」</p>
+    </div>
+
+    <a href="/quiz/settings">
+        <button>もう一度クイズをする</button>
+    </a>
+    <br><br>
+    <a href="/">
+        <button>ホームへ戻る</button>
+    </a>
+
+</body>
+
+</html>

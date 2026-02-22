@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>クイズ開始の確認 - VocabSpring</title>
+</head>
+
+<body>
+    <h1>クイズ開始の確認</h1>
+
+    <div style="color: red; margin-bottom: 20px;">
+        <p>登録されている単語数が、選択した出題数より少ないです。</p>
+        <p>（登録単語数: <span th:text="${wordCount}"></span>個 / 出題数: <span th:text="${totalQuestions}"></span>問）</p>
+        <p>同じ問題が繰り返し出題されますが、クイズを開始しますか？<br>（連続して同じ問題が出題されることはありません）</p>
+    </div>
+
+    <form th:action="@{/quiz/start}" method="post" style="display: inline-block;">
+        <input type="hidden" name="categoryId" th:value="${categoryId}" />
+        <input type="hidden" name="totalQuestions" th:value="${totalQuestions}" />
+        <input type="hidden" name="forceStart" value="true" />
+        <button type="submit">はい、開始します</button>
+    </form>
+
+    <form th:action="@{/quiz/settings}" method="get" style="display: inline-block; margin-left: 10px;">
+        <button type="submit">いいえ、設定に戻ります</button>
+    </form>
+</body>
+
+</html>

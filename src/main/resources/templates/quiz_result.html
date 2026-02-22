@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>クイズ結果 - VocabSpring</title>
+</head>
+
+<body>
+    <h1>クイズ結果</h1>
+
+    <h2 th:if="${isCorrect}" style="color: green;">正解！🎉</h2>
+    <h2 th:unless="${isCorrect}" style="color: red;">不正解…😢</h2>
+
+    <p>あなたの解答: <span th:text="${userAnswer}"></span></p>
+    <p>正解 (単語): <span th:text="${correctWord.term}"></span> (<span th:text="${correctWord.definition}"></span>)</p>
+
+    <!-- 例文表示 -->
+    <p th:if="${correctWord.exampleSentence != null and !#strings.isEmpty(correctWord.exampleSentence)}">
+        例文: <span th:text="${correctWord.exampleSentence}"></span>
+    </p>
+
+    <!-- The currentQuestionNumber has been incremented in the controller -->
+    <div th:if="${quizSession.currentQuestionNumber <= quizSession.totalQuestions}">
+        <a th:href="@{/quiz}">
+            <button>次の問題へ</button>
+        </a>
+    </div>
+
+    <div th:unless="${quizSession.currentQuestionNumber <= quizSession.totalQuestions}">
+        <a th:href="@{/quiz/summary}">
+            <button>クイズ結果のまとめへ</button>
+        </a>
+    </div>
+
+</body>
+
+</html>

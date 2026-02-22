@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>クイズ設定 - VocabSpring</title>
+</head>
+
+<body>
+    <h1>クイズ設定</h1>
+
+    <div th:if="${error}" style="color: red;" th:text="${error}"></div>
+
+    <form th:action="@{/quiz/start}" method="post">
+        <label for="categoryId">カテゴリを選択:</label>
+        <select id="categoryId" name="categoryId">
+            <option value="">全カテゴリから出題</option>
+            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+        </select>
+        <br><br>
+
+        <label for="totalQuestions">出題数を選択:</label>
+        <select id="totalQuestions" name="totalQuestions">
+            <option value="5">5問</option>
+            <option value="10">10問</option>
+        </select>
+        <br><br>
+
+        <button type="submit">クイズを開始する</button>
+    </form>
+
+    <br>
+    <a href="/">ホームへ戻る</a>
+</body>
+
+</html>
