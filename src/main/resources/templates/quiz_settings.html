@@ -1,113 +1,128 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <title>クイズ設定 - VocabSpring</title>
-    <style>
-        .mode-selector {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
+<head th:replace="~{fragments/layout :: head('クイズ設定')}"></head>
 
-        .mode-card {
-            flex: 1;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            padding: 14px 16px;
-            cursor: pointer;
-            transition: border-color 0.2s, background-color 0.2s;
-        }
+<body th:replace="~{fragments/layout :: layout(~{::mainContent})}">
+    <div th:fragment="mainContent"
+        class="relative flex h-full min-h-screen w-full max-w-md flex-col overflow-hidden bg-bg-base mx-auto shadow-2xl">
+        <!-- Header -->
+        <header class="flex items-center justify-between px-6 py-6 pt-14 z-10">
+            <a th:href="@{/}"
+                class="flex h-12 w-12 items-center justify-center rounded-2xl neu-raised text-text-sub group">
+                <span class="material-symbols-outlined group-active:scale-95 transition-transform">arrow_back</span>
+            </a>
+            <h1 class="text-lg font-bold text-text-main tracking-wider font-japanese">クイズ設定</h1>
+            <div class="w-12"></div>
+        </header>
 
-        .mode-card:has(input:checked) {
-            border-color: #4f46e5;
-            background-color: #eef2ff;
-        }
+        <main class="flex-1 overflow-y-auto px-6 pb-40 pt-6 hide-scrollbar">
+            <div th:if="${error}" class="neu-pressed rounded-xl p-4 mb-6 text-red-500 text-sm font-bold text-center"
+                th:text="${error}"></div>
 
-        .mode-card input[type="radio"] {
-            margin-right: 8px;
-        }
+            <form th:action="@{/quiz/start}" method="post">
+                <!-- Category Section -->
+                <section class="mb-10">
+                    <h2 class="mb-5 text-base font-bold text-text-main font-japanese pl-1">カテゴリー</h2>
+                    <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-4 -mx-6 px-6">
+                        <label class="cursor-pointer flex-shrink-0">
+                            <input checked="" class="peer sr-only" name="categoryId" type="radio" value="" />
+                            <div
+                                class="px-5 py-2.5 rounded-full neu-raised text-sm font-bold text-text-sub peer-checked:text-primary peer-checked:neu-pressed transition-all duration-200 border-2 border-transparent peer-checked:border-primary/5">
+                                すべて
+                            </div>
+                        </label>
+                        <label th:each="category : ${categories}" class="cursor-pointer flex-shrink-0">
+                            <input class="peer sr-only" name="categoryId" type="radio" th:value="${category.id}" />
+                            <div
+                                class="px-5 py-2.5 rounded-full neu-raised text-sm font-bold text-text-sub peer-checked:text-primary peer-checked:neu-pressed transition-all duration-200 border-2 border-transparent peer-checked:border-primary/5">
+                                <span th:text="${category.name}">カテゴリー</span>
+                            </div>
+                        </label>
+                    </div>
+                </section>
 
-        .mode-title {
-            font-weight: bold;
-            font-size: 1rem;
-        }
+                <!-- Study Range Section (Quiz Mode) -->
+                <section class="mb-12">
+                    <h2 class="mb-5 text-base font-bold text-text-main font-japanese pl-1">出題範囲</h2>
+                    <div class="relative flex h-16 w-full rounded-full neu-pressed p-1.5 overflow-hidden">
+                        <!-- Animation background for toggle -->
+                        <div id="toggle-bg"
+                            class="absolute left-1.5 top-1.5 h-[calc(100%-12px)] w-[calc(50%-6px)] rounded-full neu-raised transition-transform duration-300 ease-out">
+                        </div>
 
-        .mode-desc {
-            font-size: 0.82rem;
-            color: #666;
-            margin-top: 4px;
-        }
+                        <label
+                            class="relative z-10 flex flex-1 cursor-pointer items-center justify-center text-sm font-bold"
+                            onclick="document.getElementById('toggle-bg').style.transform = 'translateX(0)'">
+                            <input checked="" class="peer sr-only" name="quizMode" type="radio" value="all" />
+                            <span
+                                class="text-text-sub peer-checked:text-primary transition-colors flex items-center gap-2 font-japanese">
+                                <span class="material-symbols-outlined text-[20px]">library_books</span>
+                                すべての単語
+                            </span>
+                        </label>
+                        <label
+                            class="relative z-10 flex flex-1 cursor-pointer items-center justify-center text-sm font-bold"
+                            onclick="document.getElementById('toggle-bg').style.transform = 'translateX(100%)'">
+                            <input class="peer sr-only" name="quizMode" type="radio" value="weak" />
+                            <span
+                                class="text-text-sub peer-checked:text-primary transition-colors flex items-center gap-2 font-japanese">
+                                <span class="material-symbols-outlined text-[20px]">warning</span>
+                                苦手な単語
+                            </span>
+                        </label>
+                    </div>
+                    <p class="mt-4 text-[11px] text-text-sub/90 px-2 font-japanese leading-relaxed text-center">
+                        「すべての単語」は全範囲から出題されます。「苦手な単語」は過去に間違えた単語を優先して学習します。
+                    </p>
+                </section>
 
-        #categorySection {
-            transition: opacity 0.2s;
-        }
-    </style>
-</head>
+                <!-- Question Count Section -->
+                <section class="mb-12">
+                    <h2 class="mb-5 text-base font-bold text-text-main font-japanese pl-1">問題数</h2>
+                    <div class="flex gap-4">
+                        <label class="flex-1 cursor-pointer group">
+                            <input checked="" class="peer sr-only" name="totalQuestions" type="radio" value="5" />
+                            <div
+                                class="flex flex-col items-center justify-center py-6 rounded-2xl neu-raised peer-checked:neu-pressed transition-all duration-200 border-2 border-transparent peer-checked:border-primary/10">
+                                <span
+                                    class="text-2xl font-bold text-text-sub peer-checked:text-primary font-display mb-1 transition-colors">5</span>
+                                <span
+                                    class="text-[10px] font-bold text-text-sub/70 peer-checked:text-primary/70 font-japanese transition-colors">問</span>
+                            </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer group">
+                            <input class="peer sr-only" name="totalQuestions" type="radio" value="10" />
+                            <div
+                                class="flex flex-col items-center justify-center py-6 rounded-2xl neu-raised peer-checked:neu-pressed transition-all duration-200 border-2 border-transparent peer-checked:border-primary/10">
+                                <span
+                                    class="text-2xl font-bold text-text-sub peer-checked:text-primary font-display mb-1 transition-colors">10</span>
+                                <span
+                                    class="text-[10px] font-bold text-text-sub/70 peer-checked:text-primary/70 font-japanese transition-colors">問</span>
+                            </div>
+                        </label>
+                    </div>
+                </section>
 
-<body>
-    <h1>クイズ設定</h1>
+                <!-- Start Button Area -->
+                <div class="fixed bottom-0 left-0 right-0 w-full pointer-events-none z-20 max-w-md mx-auto">
+                    <div class="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/95 to-transparent h-full">
+                    </div>
+                    <div class="relative px-8 pb-32 pt-12 pointer-events-auto flex justify-center">
+                        <button type="submit"
+                            class="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-8 py-4 text-white font-bold shadow-lg shadow-primary/30 active:scale-[0.98] transition-all duration-150">
+                            <span class="material-symbols-outlined text-[24px]">play_circle</span>
+                            <span class="text-base tracking-widest font-japanese">クイズを開始</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
 
-    <div th:if="${error}" style="color: red; margin-bottom: 12px;" th:text="${error}"></div>
-
-    <form th:action="@{/quiz/start}" method="post">
-
-        <!-- ── 出題モード選択 ── -->
-        <fieldset style="border: none; padding: 0; margin-bottom: 16px;">
-            <legend style="font-weight: bold; margin-bottom: 8px;">出題モードを選択:</legend>
-            <div class="mode-selector">
-                <label class="mode-card">
-                    <input type="radio" id="modeAll" name="quizMode" value="all" checked
-                        onchange="onModeChange(this.value)">
-                    <span class="mode-title">📚 全単語から出題</span>
-                    <div class="mode-desc">登録されているすべての単語の中から出題します</div>
-                </label>
-                <label class="mode-card">
-                    <input type="radio" id="modeWeak" name="quizMode" value="weak" onchange="onModeChange(this.value)">
-                    <span class="mode-title">🎯 苦手な単語から出題</span>
-                    <div class="mode-desc">過去に間違えた単語を優先的に出題します</div>
-                </label>
-            </div>
-        </fieldset>
-
-        <!-- ── カテゴリ選択（両モードで選択可能） ── -->
-        <div id="categorySection">
-            <label id="categoryLabel" for="categoryId">カテゴリを選択:</label>
-            <select id="categoryId" name="categoryId">
-                <option value="">全カテゴリから出題</option>
-                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">
-                </option>
-            </select>
-            <br><br>
-        </div>
-
-        <!-- ── 出題数選択 ── -->
-        <label for="totalQuestions">出題数を選択:</label>
-        <select id="totalQuestions" name="totalQuestions">
-            <option value="5">5問</option>
-            <option value="10">10問</option>
-        </select>
-        <br><br>
-
-        <button type="submit">クイズを開始する</button>
-    </form>
-
-    <br>
-    <a href="/">ホームへ戻る</a>
-
-    <script>
-        /**
-         * 出題モードが変わったときに説明文の表示を切り替える（カテゴリはどちらのモードでも選択可能）。
-         */
-        function onModeChange(mode) {
-            const categoryLabel = document.getElementById('categoryLabel');
-            if (mode === 'weak') {
-                categoryLabel.textContent = 'カテゴリを絞り込む（任意）:';
-            } else {
-                categoryLabel.textContent = 'カテゴリを選択:';
-            }
-        }
+    <script th:inline="javascript">
+        const activePage = 'quiz';
+        const showNav = true;
     </script>
 </body>
 

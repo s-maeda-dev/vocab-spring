@@ -1,37 +1,99 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head>
-    <meta charset="UTF-8">
-    <title>ホーム - VocabSpring</title>
-</head>
+<head th:replace="~{fragments/layout :: head('ホーム')}"></head>
 
-<body>
-    <h1>ダッシュボード</h1>
+<body th:replace="~{fragments/layout :: layout(~{::mainContent})}">
+    <div th:fragment="mainContent"
+        class="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-bg-base max-w-md mx-auto shadow-2xl">
+        <!-- Header -->
+        <header class="flex items-center justify-between px-6 pt-12 pb-6">
+            <div class="flex items-center gap-4">
+                <div class="flex h-14 w-14 items-center justify-center rounded-full neu-flat text-primary">
+                    <span class="material-symbols-outlined text-[28px]">spa</span>
+                </div>
+                <div>
+                    <p class="text-[11px] font-bold tracking-wider text-text-sub uppercase mb-1">WELCOME,</p>
+                    <h1 class="text-2xl font-bold tracking-tight text-text-main font-display">
+                        <span sec:authentication="name">User</span>さん
+                    </h1>
+                </div>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button aria-label="ログアウト" type="submit"
+                    class="neu-icon-btn h-12 w-12 text-text-sub hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined text-[22px]">logout</span>
+                </button>
+            </form>
+        </header>
 
-    <div sec:authorize="isAuthenticated()">
-        <p>ようこそ、<span sec:authentication="name">ユーザー名</span>さん！</p>
+        <main class="flex flex-1 flex-col px-6 pb-32">
+            <!-- Categories Section -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-4 px-1">
+                    <h2 class="text-lg font-bold text-text-main font-japanese">カテゴリー</h2>
+                    <a th:href="@{/categories}"
+                        class="text-[11px] font-bold text-primary hover:text-primary-dark transition-colors uppercase tracking-widest">編集</a>
+                </div>
+                <!-- Category Grid -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div th:each="cat : ${categories}"
+                        class="neu-flat rounded-[1.5rem] p-5 flex flex-col items-center justify-center gap-3 transition-transform active:scale-95 group hover:shadow-neu-floating cursor-pointer">
+                        <div
+                            class="h-12 w-12 rounded-full neu-pressed flex items-center justify-center text-primary mb-1">
+                            <span class="material-symbols-outlined text-2xl"
+                                th:text="${cat.name == 'Business' ? 'work' : (cat.name == 'IT' ? 'computer' : (cat.name == 'Qualification' ? 'verified' : (cat.name == 'Daily' ? 'restaurant' : 'folder')))}">folder</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm font-bold text-text-main font-japanese" th:text="${cat.name}">Category
+                            </div>
+                            <div class="text-xs font-bold text-text-sub mt-1" th:text="${cat.count} + ' 語'">0 語</div>
+                        </div>
+                    </div>
+                    <!-- Empty State -->
+                    <div th:if="${#lists.isEmpty(categories)}"
+                        class="col-span-2 neu-pressed rounded-3xl p-8 text-center">
+                        <p class="text-text-sub text-sm font-japanese">カテゴリーがまだありません</p>
+                    </div>
+                </div>
+            </div>
 
-        <nav>
-            <ul>
-                <li><a href="/categories">カテゴリ一覧</a></li>
-                <li><a href="/words">単語一覧</a></li>
-                <li><a href="/words/new">新しい単語を登録</a></li>
-                <li><b><a href="/quiz/settings" style="color: blue;">クイズを開始する</a></b></li>
-                <li><a href="/stats">📊 学習統計</a></li>
-            </ul>
-        </nav>
+            <!-- Stats Quick Link -->
+            <div class="mb-8">
+                <a class="block neu-flat rounded-[2rem] p-6 group transition-all hover:bg-white/40 active:scale-[0.98]"
+                    th:href="@{/stats}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="h-14 w-14 rounded-2xl neu-pressed flex items-center justify-center text-primary bg-primary/5">
+                                <span class="material-symbols-outlined text-3xl">analytics</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-lg font-bold text-text-main font-japanese">学習統計</span>
+                                <span class="text-xs text-text-sub font-medium mt-1 font-japanese">進捗状況を確認する</span>
+                            </div>
+                        </div>
+                        <div
+                            class="h-10 w-10 rounded-full neu-flat flex items-center justify-center text-primary group-hover:text-primary-dark transition-colors">
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
-        <!-- Logout Form -->
-        <form th:action="@{/logout}" method="post">
-            <button type="submit">ログアウト</button>
-        </form>
+            <!-- Study Button -->
+            <a th:href="@{/quiz/settings}"
+                class="group flex w-full items-center justify-center gap-3 rounded-full py-4 transition-all active:scale-[0.98] bg-primary hover:bg-primary-dark shadow-neu-btn text-white mt-auto">
+                <span class="material-symbols-outlined text-xl fill-1">play_circle</span>
+                <span class="font-bold tracking-wide text-lg font-japanese">本日の学習を開始</span>
+            </a>
+        </main>
     </div>
 
-    <div sec:authorize="!isAuthenticated()">
-        <p>ログインしてください。</p>
-        <a href="/login">ログイン</a>
-    </div>
+    <script th:inline="javascript">
+        const activePage = 'home';
+        const showNav = true;
+    </script>
 </body>
 
 </html>

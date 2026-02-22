@@ -1,35 +1,86 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>ログイン - VocabSpring</title>
-</head>
-<body>
-    <h1>ログイン</h1>
 
-    <div th:if="${param.error}">
-        <p style="color: red;">ユーザー名またはパスワードが間違っています。</p>
-    </div>
-    <div th:if="${param.logout}">
-        <p style="color: green;">ログアウトしました。</p>
-    </div>
-    <div th:if="${param.registered}">
-        <p style="color: green;">登録が完了しました。ログインしてください。</p>
-    </div>
+<head th:replace="~{fragments/layout :: head('ログイン')}"></head>
 
-    <form th:action="@{/login}" method="post">
-        <div>
-            <label for="username">ユーザー名:</label>
-            <input type="text" id="username" name="username" required>
+<body
+    class="antialiased min-h-screen flex flex-col items-center justify-center selection:bg-primary selection:text-white">
+    <div class="w-full max-w-md px-8 py-10 flex flex-col h-full justify-center">
+        <!-- Logo and Header -->
+        <div class="flex flex-col items-center mb-10">
+            <div class="w-20 h-20 rounded-full neu-raised flex items-center justify-center mb-6 text-primary">
+                <span class="material-symbols-outlined text-4xl">local_florist</span>
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight text-text-main mb-2 text-center font-display">VocabularySpring
+            </h1>
+            <p class="text-text-sub text-center text-sm font-medium tracking-wide">言葉を育て、世界を広げる</p>
         </div>
-        <div>
-            <label for="password">パスワード:</label>
-            <input type="password" id="password" name="password" required>
+
+        <!-- Toggle (Login/Register) -->
+        <div class="p-1.5 rounded-xl neu-pressed flex mb-10 relative">
+            <button class="flex-1 py-3 rounded-lg text-sm font-bold neu-toggle-active z-10">ログイン</button>
+            <a th:href="@{/register}"
+                class="flex-1 py-3 rounded-lg text-sm font-medium text-text-sub hover:text-text-main transition-colors z-10 text-center">新規登録</a>
         </div>
-        <div>
-            <button type="submit">ログイン</button>
+
+        <!-- Form -->
+        <form class="flex flex-col gap-6 w-full" th:action="@{/login}" method="post">
+            <!-- Messages -->
+            <div th:if="${param.error}" class="text-red-500 text-sm text-center mb-4 font-bold">
+                ユーザー名またはパスワードが正しくありません。
+            </div>
+            <div th:if="${param.logout}" class="text-primary text-sm text-center mb-4 font-bold">
+                ログアウトしました。
+            </div>
+            <div th:if="${param.registered}" class="text-green-600 text-sm text-center mb-4 font-bold">
+                登録が完了しました。ログインしてください。
+            </div>
+
+            <!-- Email (Username) Input -->
+            <div class="space-y-2 group">
+                <label class="block text-xs font-bold text-[#6D5C50] ml-3 uppercase tracking-wider"
+                    for="username">ユーザー名（メールアドレス）</label>
+                <div class="neu-pressed rounded-2xl flex items-center px-5 h-14 transition-all">
+                    <span class="material-symbols-outlined text-primary mr-3 text-xl">mail</span>
+                    <input
+                        class="bg-transparent border-none w-full text-text-main placeholder-custom focus:ring-0 focus:outline-none h-full text-base font-medium"
+                        id="username" name="username" placeholder="name@example.com" type="text" required />
+                </div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="space-y-2 group">
+                <label class="block text-xs font-bold text-[#6D5C50] ml-3 uppercase tracking-wider"
+                    for="password">パスワード</label>
+                <div class="neu-pressed rounded-2xl flex items-center px-5 h-14 transition-all">
+                    <span class="material-symbols-outlined text-primary mr-3 text-xl">lock</span>
+                    <input
+                        class="bg-transparent border-none w-full text-text-main placeholder-custom focus:ring-0 focus:outline-none h-full text-base font-medium"
+                        id="password" name="password" placeholder="••••••••" type="password" required />
+                </div>
+                <!-- Forgot Password (Optional) -->
+                <div class="flex justify-end pr-2 pt-1">
+                    <a class="text-xs font-bold text-primary hover:text-primary-dark transition-colors"
+                        href="#">パスワードをお忘れですか？</a>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit"
+                class="w-full h-14 rounded-2xl neu-action-btn mt-6 font-bold text-lg tracking-wide flex items-center justify-center gap-2 group">
+                <span>ログイン</span>
+                <span
+                    class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="mt-12 text-center">
+            <p class="text-text-sub text-sm font-medium">アカウントをお持ちでないですか？
+                <a class="text-primary font-bold hover:underline" th:href="@{/register}">新規登録</a>
+            </p>
         </div>
-    </form>
-    <a href="/register">新規登録はこちら</a>
+    </div>
 </body>
+
 </html>

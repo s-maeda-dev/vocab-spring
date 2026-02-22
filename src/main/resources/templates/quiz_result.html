@@ -1,38 +1,77 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <title>クイズ結果 - VocabSpring</title>
-</head>
+<head th:replace="~{fragments/layout :: head('クイズ結果')}"></head>
 
-<body>
-    <h1>クイズ結果</h1>
+<body th:replace="~{fragments/layout :: layout(~{::mainContent})}">
+    <div th:fragment="mainContent"
+        class="relative flex h-full min-h-screen w-full max-w-md flex-col overflow-hidden bg-bg-base mx-auto shadow-2xl">
+        <!-- Result Header -->
+        <div class="flex-1 flex flex-col items-center justify-center px-8 text-center pt-20 pb-8">
+            <!-- Icon Anim -->
+            <div th:if="${isCorrect}"
+                class="w-32 h-32 rounded-full neu-raised flex items-center justify-center mb-8 text-green-500 bg-green-50/30">
+                <span class="material-symbols-outlined text-[64px] font-bold">check_circle</span>
+            </div>
+            <div th:unless="${isCorrect}"
+                class="w-32 h-32 rounded-full neu-raised flex items-center justify-center mb-8 text-red-400 bg-red-50/30">
+                <span class="material-symbols-outlined text-[64px] font-bold">cancel</span>
+            </div>
 
-    <h2 th:if="${isCorrect}" style="color: green;">正解！🎉</h2>
-    <h2 th:unless="${isCorrect}" style="color: red;">不正解…😢</h2>
+            <h2 class="text-3xl font-bold text-text-main mb-2 font-japanese"
+                th:text="${isCorrect ? '正解です！' : '残念、不正解です'}">結果</h2>
+            <p class="text-text-sub text-sm font-medium mb-12 font-japanese"
+                th:text="${isCorrect ? 'その調子で頑張りましょう' : '次は正解を目指しましょう'}"></p>
 
-    <p>あなたの解答: <span th:text="${userAnswer}"></span></p>
-    <p>正解 (単語): <span th:text="${correctWord.term}"></span> (<span th:text="${correctWord.definition}"></span>)</p>
+            <!-- Details Card -->
+            <div class="w-full neu-raised rounded-3xl p-8 flex flex-col gap-6 text-left border border-white/60">
+                <div class="space-y-1">
+                    <p class="text-[10px] font-bold text-text-sub uppercase tracking-widest pl-1">あなたの回答</p>
+                    <p class="text-lg font-bold text-text-main pl-1" th:text="${userAnswer}">User Answer</p>
+                </div>
+                <div class="h-px bg-text-sub/10 w-full"></div>
+                <div class="space-y-1">
+                    <p class="text-[10px] font-bold text-text-sub uppercase tracking-widest pl-1">正解</p>
+                    <p class="text-2xl font-bold text-primary pl-1 font-display" th:text="${correctWord.term}">Correct
+                        Term</p>
+                    <p class="text-sm text-text-main pl-1 font-japanese" th:text="${correctWord.definition}">Definition
+                    </p>
+                </div>
 
-    <!-- 例文表示 -->
-    <p th:if="${correctWord.exampleSentence != null and !#strings.isEmpty(correctWord.exampleSentence)}">
-        例文: <span th:text="${correctWord.exampleSentence}"></span>
-    </p>
+                <div th:if="${correctWord.exampleSentence != null and !#strings.isEmpty(correctWord.exampleSentence)}"
+                    class="space-y-1 mt-2">
+                    <p class="text-[10px] font-bold text-text-sub uppercase tracking-widest pl-1">例文</p>
+                    <p class="text-[13px] text-text-main pl-1 italic leading-relaxed border-l-2 border-primary/20 bg-primary/5 p-3 rounded-r-lg"
+                        th:text="${correctWord.exampleSentence}">Example sentence...</p>
+                </div>
+            </div>
+        </div>
 
-    <!-- The currentQuestionNumber has been incremented in the controller -->
-    <div th:if="${quizSession.currentQuestionNumber <= quizSession.totalQuestions}">
-        <a th:href="@{/quiz}">
-            <button>次の問題へ</button>
-        </a>
+        <!-- Action Button -->
+        <div class="p-8 pb-12">
+            <div th:if="${quizSession.currentQuestionNumber <= quizSession.totalQuestions}">
+                <a th:href="@{/quiz}"
+                    class="w-full h-14 rounded-2xl neu-action-btn flex items-center justify-center gap-4 group">
+                    <span>次の問題へ</span>
+                    <span
+                        class="material-symbols-outlined text-[24px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </a>
+            </div>
+            <div th:unless="${quizSession.currentQuestionNumber <= quizSession.totalQuestions}">
+                <a th:href="@{/quiz/summary}"
+                    class="w-full h-14 rounded-2xl neu-action-btn flex items-center justify-center gap-4 group bg-primary-dark">
+                    <span>結果を確認する</span>
+                    <span
+                        class="material-symbols-outlined text-[24px] group-hover:scale-110 transition-transform">analytics</span>
+                </a>
+            </div>
+        </div>
     </div>
 
-    <div th:unless="${quizSession.currentQuestionNumber <= quizSession.totalQuestions}">
-        <a th:href="@{/quiz/summary}">
-            <button>クイズ結果のまとめへ</button>
-        </a>
-    </div>
-
+    <script th:inline="javascript">
+        const activePage = 'quiz';
+        const showNav = false;
+    </script>
 </body>
 
 </html>

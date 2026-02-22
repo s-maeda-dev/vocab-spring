@@ -59,6 +59,7 @@ public class WordController {
                                 .forEach(e -> sorted.put(e.getKey(), e.getValue()));
 
                 model.addAttribute("wordsByCategory", sorted);
+                model.addAttribute("totalWords", words.size());
                 return "word_list";
         }
 

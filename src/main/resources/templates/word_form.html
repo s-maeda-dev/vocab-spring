@@ -1,43 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${word.id == null ? '単語登録' : '単語編集'} + ' - VocabSpring'"></title>
-</head>
+<head th:replace="~{fragments/layout :: head(${word.id == null ? '単語登録' : '単語編集'})}"></head>
 
-<body>
-    <h1 th:text="${word.id == null ? '新しい単語を登録' : '単語を編集'}"></h1>
+<body th:replace="~{fragments/layout :: layout(~{::mainContent})}">
+    <div th:fragment="mainContent"
+        class="relative flex h-full min-h-screen w-full max-w-[480px] flex-col overflow-hidden bg-bg-base mx-auto shadow-2xl">
+        <!-- Header -->
+        <header
+            class="sticky top-0 z-10 flex items-center justify-between px-6 pt-12 pb-6 bg-bg-base/90 backdrop-blur-sm">
+            <a th:href="@{/words}" class="neu-icon-btn w-12 h-12 rounded-full text-text-sub hover:text-text-main group">
+                <span
+                    class="material-symbols-outlined text-[24px] group-active:scale-95 transition-transform">arrow_back</span>
+            </a>
+            <h1 class="text-[18px] font-bold tracking-tight text-text-main"
+                th:text="${word.id == null ? '単語の新規登録' : '単語の編集'}">単語の新規登録</h1>
+            <div class="w-12"></div>
+        </header>
 
-    <nav>
-        <a href="/words">一覧へ戻る</a>
-    </nav>
+        <!-- Form -->
+        <main class="flex-1 overflow-y-auto px-8 pb-32 hide-scrollbar">
+            <form th:action="${word.id == null ? '/words' : '/words/update/' + word.id}" th:object="${word}"
+                method="post" class="mt-2 flex flex-col gap-8">
+                <!-- Term Input -->
+                <div class="group">
+                    <label class="block text-sm font-bold text-text-sub mb-3 ml-2 tracking-wide" for="term">
+                        用語名 <small class="font-normal opacity-70">（複数可）</small>
+                    </label>
+                    <div
+                        class="neu-pressed rounded-3xl overflow-hidden transition-all focus-within:ring-1 focus-within:ring-primary/30">
+                        <input
+                            class="w-full h-16 bg-transparent border-none px-6 text-xl font-bold text-text-main placeholder:text-text-sub/40 focus:ring-0 font-display"
+                            th:field="*{term}" id="term" placeholder="例: Serendipity" type="text" required />
+                    </div>
+                </div>
 
-    <form th:action="${word.id == null ? '/words' : '/words/update/' + word.id}" th:object="${word}" method="post">
-        <div>
-            <label for="term">単語 (Words): <small>※複数ある場合はカンマ(,)で区切ってください（最大5つまで）</small></label>
-            <input type="text" id="term" th:field="*{term}" placeholder="例: Dependency Injection, 依存性の注入" required>
-        </div>
-        <div>
-            <label for="definition">意味 (Meaning/Definition):</label>
-            <input type="text" id="definition" th:field="*{definition}" placeholder="例: ソフトウェア等の依存関係を外部から注入するデザインパターン"
-                required>
-        </div>
-        <div>
-            <label for="exampleSentence">例文:</label>
-            <textarea id="exampleSentence" th:field="*{exampleSentence}"></textarea>
-        </div>
-        <div>
-            <label for="category">カテゴリ:</label>
-            <select id="category" th:field="*{category}">
-                <option value="">カテゴリなし</option>
-                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
-            </select>
-        </div>
-        <div>
-            <button type="submit" th:text="${word.id == null ? '登録' : '更新'}"></button>
-        </div>
-    </form>
+                <!-- Meaning Input -->
+                <div>
+                    <label class="block text-sm font-bold text-text-sub mb-3 ml-2" for="definition">意味</label>
+                    <div
+                        class="neu-pressed rounded-3xl overflow-hidden transition-all focus-within:ring-1 focus-within:ring-primary/30">
+                        <textarea
+                            class="w-full min-h-[140px] bg-transparent border-none p-6 text-base text-text-main placeholder:text-text-sub/40 focus:ring-0 resize-none leading-relaxed"
+                            th:field="*{definition}" id="definition" placeholder="この言葉の意味を入力してください" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Category Select -->
+                <div>
+                    <label class="block text-sm font-bold text-text-sub mb-3 ml-2" for="category">カテゴリー</label>
+                    <div class="relative group">
+                        <select
+                            class="appearance-none w-full h-14 rounded-full neu-raised px-6 text-base text-text-main focus:outline-none focus:ring-1 focus:ring-primary/30 active:neu-pressed transition-all cursor-pointer border-none"
+                            th:field="*{category}" id="category">
+                            <option value="">カテゴリーを選択...</option>
+                            <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}">Category
+                                Name</option>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-4 flex items-center px-2 text-text-sub group-hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined">expand_more</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Example Sentence / Notes -->
+                <div>
+                    <label class="block text-sm font-bold text-text-sub mb-3 ml-2" for="exampleSentence">例文・メモ</label>
+                    <div
+                        class="neu-pressed rounded-3xl overflow-hidden transition-all focus-within:ring-1 focus-within:ring-primary/30">
+                        <textarea
+                            class="w-full min-h-[100px] bg-transparent border-none p-6 text-base text-text-main placeholder:text-text-sub/40 focus:ring-0 resize-none leading-relaxed"
+                            th:field="*{exampleSentence}" id="exampleSentence"
+                            placeholder="覚え書き、例文、個人的なメモなど..."></textarea>
+                    </div>
+                </div>
+
+                <div class="h-6"></div>
+
+                <!-- Fixed Submit Button at bottom -->
+                <div
+                    class="fixed bottom-0 left-0 right-0 p-6 pt-0 bg-gradient-to-t from-bg-base via-bg-base/95 to-transparent z-20 pb-10 max-w-[480px] mx-auto">
+                    <button type="submit"
+                        class="w-full h-14 rounded-full neu-action-btn flex items-center justify-center gap-2 group">
+                        <span class="material-symbols-outlined text-[20px]">save</span>
+                        <span th:text="${word.id == null ? '保存する' : '更新する'}">保存する</span>
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script th:inline="javascript">
+        const activePage = 'new_word';
+        const showNav = false; // Hide nav on form pages
+    </script>
 </body>
 
 </html>

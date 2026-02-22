@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head(title)">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title th:text="${title} + ' - VocabularySpring'">VocabularySpring</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script th:inline="javascript">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a18d7f",
+                        "primary-dark": "#8a7566",
+                        "primary-light": "#d7ccc8",
+                        "bg-base": "#f5f2f0",
+                        "text-main": "#4a403a",
+                        "text-sub": "#9d948e",
+                        "shadow-light": "#ffffff",
+                        "shadow-dark": "#dcd9d6",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
+                        "sans": ["Noto Sans JP", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "3xl": "2.5rem", "full": "9999px"
+                    },
+                    boxShadow: {
+                        'neu-flat': '8px 8px 16px #dcd9d6, -8px -8px 16px #ffffff',
+                        'neu-pressed': 'inset 4px 4px 8px #dcd9d6, inset -4px -4px 8px #ffffff',
+                        'neu-floating': '12px 12px 24px #d1ccc9, -12px -12px 24px #ffffff',
+                        'neu-btn': '6px 6px 12px #dcd9d6, -6px -6px 12px #ffffff',
+                        'neu-sm': '4px 4px 8px #dcd9d6, -4px -4px 8px #ffffff',
+                        'nav-shadow': '0 -4px 20px rgba(0,0,0,0.03)',
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .neu-flat, .neu-raised {
+                @apply bg-bg-base shadow-neu-flat border border-white/60;
+            }
+            .neu-pressed {
+                @apply bg-bg-base shadow-neu-pressed border-none;
+            }
+            .neu-icon-btn {
+                @apply bg-bg-base shadow-neu-flat border border-white/60 flex items-center justify-center rounded-full transition-all duration-300 active:shadow-neu-pressed active:scale-95;
+            }
+            .neu-action-btn {
+                @apply bg-primary text-white shadow-neu-btn transition-all duration-200 active:bg-primary-dark active:shadow-neu-pressed active:translate-y-[1px] border-none font-bold;
+            }
+            .neu-toggle-active {
+                @apply bg-bg-base shadow-neu-sm text-primary transition-all;
+            }
+            .hide-scrollbar::-webkit-scrollbar { display: none; }
+            .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+            .fill-1 { font-variation-settings: 'FILL' 1; }
+        }
+    </style>
+
+    <style>
+        body {
+            background-color: #f5f2f0;
+            font-family: 'Noto Sans JP', sans-serif;
+            color: #4a403a;
+            min-height: max(884px, 100dvh);
+        }
+
+        .placeholder-custom::placeholder {
+            color: #A99B91;
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main Layout Fragment -->
+    <div th:fragment="layout(bodyContent)"
+        class="antialiased min-h-screen flex flex-col items-center selection:bg-primary selection:text-white">
+        <th:block th:replace="${bodyContent}"></th:block>
+
+        <!-- Bottom Nav -->
+        <nav th:if="${showNav}" th:replace="~{fragments/layout :: nav(${activePage})}"></nav>
+    </div>
+
+    <!-- Navigation Fragment -->
+    <nav th:fragment="nav(activePage)"
+        class="fixed bottom-0 left-0 right-0 z-50 bg-bg-base/90 backdrop-blur-md pb-8 pt-4 border-t border-white/50">
+        <div class="flex items-center justify-around px-4 max-w-md mx-auto">
+            <a th:href="@{/}" class="flex flex-col items-center gap-1 w-16 group">
+                <div class="h-12 w-12 flex items-center justify-center rounded-2xl transition-all duration-300"
+                    th:classappend="${activePage == 'home' ? 'neu-pressed text-primary' : 'text-text-sub hover:text-primary hover:neu-flat'}">
+                    <span class="material-symbols-outlined"
+                        th:classappend="${activePage == 'home' ? 'fill-1' : ''}">home</span>
+                </div>
+                <span class="text-[10px] font-bold mt-1"
+                    th:classappend="${activePage == 'home' ? 'text-text-main' : 'text-text-sub group-hover:text-primary transition-colors'}">ホーム</span>
+            </a>
+            <a th:href="@{/words}" class="flex flex-col items-center gap-1 w-16 group">
+                <div class="h-12 w-12 flex items-center justify-center rounded-2xl transition-all duration-300"
+                    th:classappend="${activePage == 'words' ? 'neu-pressed text-primary' : 'text-text-sub hover:text-primary hover:neu-flat'}">
+                    <span class="material-symbols-outlined"
+                        th:classappend="${activePage == 'words' ? 'fill-1' : ''}">menu_book</span>
+                </div>
+                <span class="text-[10px] font-bold mt-1"
+                    th:classappend="${activePage == 'words' ? 'text-text-main' : 'text-text-sub group-hover:text-primary transition-colors'}">単語帳</span>
+            </a>
+            <a th:href="@{/words/new}" class="flex flex-col items-center gap-1 w-16 group">
+                <div class="h-12 w-12 flex items-center justify-center rounded-2xl transition-all duration-300"
+                    th:classappend="${activePage == 'new_word' ? 'neu-pressed text-primary' : 'text-text-sub hover:text-primary hover:neu-flat'}">
+                    <span class="material-symbols-outlined">add_circle</span>
+                </div>
+                <span class="text-[10px] font-bold mt-1"
+                    th:classappend="${activePage == 'new_word' ? 'text-text-main' : 'text-text-sub group-hover:text-primary transition-colors'}">単語追加</span>
+            </a>
+            <a th:href="@{/quiz/settings}" class="flex flex-col items-center gap-1 w-16 group">
+                <div class="h-12 w-12 flex items-center justify-center rounded-2xl transition-all duration-300"
+                    th:classappend="${activePage == 'quiz' ? 'neu-pressed text-primary' : 'text-text-sub hover:text-primary hover:neu-flat'}">
+                    <span class="material-symbols-outlined">help</span>
+                </div>
+                <span class="text-[10px] font-bold mt-1"
+                    th:classappend="${activePage == 'quiz' ? 'text-text-main' : 'text-text-sub group-hover:text-primary transition-colors'}">クイズ</span>
+            </a>
+            <a th:href="@{/stats}" class="flex flex-col items-center gap-1 w-16 group">
+                <div class="h-12 w-12 flex items-center justify-center rounded-2xl transition-all duration-300"
+                    th:classappend="${activePage == 'stats' ? 'neu-pressed text-primary' : 'text-text-sub hover:text-primary hover:neu-flat'}">
+                    <span class="material-symbols-outlined"
+                        th:classappend="${activePage == 'stats' ? 'fill-1' : ''}">bar_chart</span>
+                </div>
+                <span class="text-[10px] font-bold mt-1"
+                    th:classappend="${activePage == 'stats' ? 'text-text-main' : 'text-text-sub group-hover:text-primary transition-colors'}">統計状況</span>
+            </a>
+        </div>
+    </nav>
+</body>
+
+</html>

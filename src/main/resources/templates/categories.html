@@ -1,45 +1,70 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <title>カテゴリ管理 - VocabSpring</title>
-</head>
+<head th:replace="~{fragments/layout :: head('カテゴリー管理')}"></head>
 
-<body>
-    <h1>カテゴリ管理</h1>
+<body th:replace="~{fragments/layout :: layout(~{::mainContent})}">
+    <div th:fragment="mainContent"
+        class="relative flex h-full min-h-screen w-full max-w-md flex-col overflow-hidden bg-bg-base mx-auto shadow-2xl">
+        <!-- Header -->
+        <header
+            class="sticky top-0 z-10 flex items-center justify-between px-6 pt-12 pb-6 bg-bg-base/90 backdrop-blur-sm">
+            <a th:href="@{/}" class="neu-icon-btn w-12 h-12 rounded-full text-text-sub hover:text-text-main group">
+                <span
+                    class="material-symbols-outlined text-[24px] group-active:scale-95 transition-transform">arrow_back</span>
+            </a>
+            <h1 class="text-[18px] font-bold tracking-tight text-text-main font-japanese">カテゴリー管理</h1>
+            <div class="w-12"></div>
+        </header>
 
-    <nav>
-        <a href="/">ホームへ戻る</a>
-    </nav>
+        <main class="flex-1 overflow-y-auto px-6 pb-32 hide-scrollbar">
+            <!-- Add Category Section -->
+            <section class="mb-10 mt-4">
+                <h2 class="text-sm font-bold text-text-sub mb-4 ml-2 tracking-wide font-japanese">新しいカテゴリーを追加</h2>
+                <form th:action="@{/categories/add}" method="post" class="flex gap-4">
+                    <div
+                        class="flex-1 neu-pressed rounded-2xl overflow-hidden transition-all focus-within:ring-1 focus-within:ring-primary/30">
+                        <input
+                            class="w-full h-14 bg-transparent border-none px-6 text-base text-text-main placeholder:text-text-sub/40 focus:ring-0 font-japanese"
+                            name="name" placeholder="カテゴリー名を入力..." type="text" required />
+                    </div>
+                    <button type="submit" class="w-14 h-14 rounded-2xl neu-action-btn flex items-center justify-center">
+                        <span class="material-symbols-outlined font-bold text-[22px]">add</span>
+                    </button>
+                </form>
+            </section>
 
-    <h2>新しいカテゴリを追加</h2>
-    <form th:action="@{/categories/add}" method="post">
-        <div>
-            <label for="name">カテゴリ名:</label>
-            <input type="text" id="name" name="name" required>
-            <button type="submit">追加</button>
-        </div>
-    </form>
+            <!-- Category List -->
+            <section>
+                <h2 class="text-sm font-bold text-text-sub mb-4 ml-2 tracking-wide font-japanese">カテゴリー一覧</h2>
+                <div class="space-y-4">
+                    <!-- Empty Message -->
+                    <div th:if="${#lists.isEmpty(categories)}" class="neu-pressed rounded-2xl p-8 text-center">
+                        <p class="text-text-sub text-sm font-japanese">カテゴリーがまだありません</p>
+                    </div>
 
-    <h2>カテゴリ一覧</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>カテゴリ名</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="category : ${categories}">
-                <td th:text="${category.id}">1</td>
-                <td th:text="${category.name}">日常</td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(categories)}">
-                <td colspan="2">カテゴリが登録されていません。</td>
-            </tr>
-        </tbody>
-    </table>
+                    <!-- Category Items -->
+                    <div th:each="category : ${categories}"
+                        class="neu-raised rounded-2xl p-5 flex items-center justify-between group active:neu-pressed transition-all">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 rounded-full neu-pressed flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined text-[20px]">folder</span>
+                            </div>
+                            <span class="font-bold text-text-main font-japanese"
+                                th:text="${category.name}">カテゴリー名</span>
+                        </div>
+                        <!-- Delete/Edit buttons could be added if supported by backend -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script th:inline="javascript">
+        const activePage = 'home';
+        const showNav = true;
+    </script>
 </body>
 
 </html>

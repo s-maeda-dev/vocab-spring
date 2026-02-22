@@ -1,154 +1,132 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <title>クイズ結果まとめ - VocabSpring</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-        }
+<head th:replace="~{fragments/layout :: head('クイズ結果まとめ')}"></head>
 
-        .ai-feedback {
-            background: linear-gradient(to right, #f6f8fb, #f1f5f9);
-            border-left: 4px solid #3b82f6;
-        }
-    </style>
-</head>
+<body th:replace="~{fragments/layout :: layout(~{::mainContent})}">
+    <div th:fragment="mainContent"
+        class="relative flex h-full min-h-screen w-full max-w-md flex-col overflow-hidden bg-bg-base mx-auto shadow-2xl">
+        <!-- Header -->
+        <header
+            class="sticky top-0 z-20 flex items-center justify-between px-6 py-6 pt-14 bg-bg-base/90 backdrop-blur-sm">
+            <h1 class="text-xl font-bold tracking-tight text-text-main font-japanese">クイズ結果</h1>
+            <a th:href="@{/}" class="neu-icon-btn h-10 w-10 text-text-sub">
+                <span class="material-symbols-outlined text-[20px]">home</span>
+            </a>
+        </header>
 
-<body class="bg-gray-100 min-h-screen font-sans antialiased text-gray-800">
-
-    <!-- シンプルなナビゲーションバー -->
-    <nav style="background:#1e40af; padding:12px 24px; display:flex; gap:16px; align-items:center;">
-        <a href="/" style="color:white; font-weight:bold; text-decoration:none;">🏠 ホーム</a>
-        <a href="/words" style="color:#bfdbfe; text-decoration:none;">単語帳</a>
-        <a href="/quiz/settings" style="color:#bfdbfe; text-decoration:none;">クイズ</a>
-        <form th:action="@{/logout}" method="post" style="margin-left:auto;">
-            <button type="submit"
-                style="background:transparent; border:1px solid #bfdbfe; color:#bfdbfe; padding:4px 12px; border-radius:6px; cursor:pointer;">ログアウト</button>
-        </form>
-    </nav>
-
-    <main class="container mx-auto px-4 py-8 max-w-4xl">
-        <div class="glass-panel rounded-2xl p-8">
-
-            <div class="text-center mb-10">
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">クイズ結果</h1>
-                <p class="text-gray-500">お疲れさまでした！今回の学習結果です。</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <!-- スコア -->
-                <div class="bg-white rounded-xl shadow-sm p-6 text-center border border-gray-100">
-                    <p class="text-gray-500 text-sm font-medium mb-1">正解メニュー</p>
-                    <div class="text-4xl font-bold text-blue-600">
-                        <span th:text="${quizSession.correctAnswers}">0</span>
-                        <span class="text-2xl text-gray-400">/</span>
-                        <span class="text-2xl text-gray-400" th:text="${quizSession.results.size()}">0</span>
+        <main class="flex-1 overflow-y-auto px-6 pb-40 hide-scrollbar pt-4">
+            <!-- Score Card (Chart replacement) -->
+            <div class="mb-10 flex flex-col items-center">
+                <div class="relative w-48 h-48 rounded-full neu-raised flex items-center justify-center mb-6">
+                    <div class="absolute inset-4 rounded-full neu-pressed flex flex-col items-center justify-center">
+                        <span class="text-4xl font-black text-primary font-display"
+                            th:text="${(quizSession.correctAnswers * 100) / quizSession.results.size()} + '%'">0%</span>
+                        <span
+                            class="text-[10px] font-bold text-text-sub mt-1 tracking-widest font-japanese">SCORES</span>
                     </div>
                 </div>
+                <div class="flex gap-4">
+                    <div class="neu-raised px-6 py-3 rounded-2xl text-center min-w-[100px]">
+                        <p class="text-[10px] font-bold text-text-sub uppercase mb-1">正解率</p>
+                        <p class="text-lg font-bold text-text-main font-display">
+                            <span th:text="${quizSession.correctAnswers}">0</span>
+                            <span class="text-xs text-text-sub font-normal mx-0.5">/</span>
+                            <span th:text="${quizSession.results.size()}">0</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-                <!-- 名言 -->
-                <div
-                    class="md:col-span-2 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl shadow-sm p-6 flex flex-col justify-center border border-blue-100">
-                    <i class="fas fa-quote-left text-blue-300 text-2xl mb-2"></i>
-                    <p class="text-gray-700 italic font-medium leading-relaxed" th:text="${quote}">
-                        名言がここに入ります。
+            <!-- AI Feedback Section -->
+            <section class="mb-10">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="material-symbols-outlined text-primary text-[20px]">psychology</span>
+                    <h2 class="text-sm font-bold text-text-main font-japanese">AI学習アドバイス</h2>
+                </div>
+                <div class="neu-raised rounded-3xl p-6 relative overflow-hidden group">
+                    <div
+                        class="absolute -right-2 -top-2 opacity-5 scale-150 rotate-12 group-hover:scale-[1.6] transition-transform duration-700">
+                        <span class="material-symbols-outlined text-[100px]">auto_awesome</span>
+                    </div>
+                    <p class="text-[13px] text-text-main leading-relaxed font-japanese whitespace-pre-wrap relative z-10"
+                        th:text="${aiFeedback != null and !#strings.isEmpty(aiFeedback) ? aiFeedback : 'アドバイスを生成できませんでした。'}">
+                        AIフィードバック読み込み中...
                     </p>
                 </div>
-            </div>
+            </section>
 
-
-
-            <!-- 解答一覧 -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                    <h3 class="font-bold text-gray-800"><i class="fas fa-list-check text-gray-400 mr-2"></i>今回の問題と解答
-                    </h3>
+            <!-- Inspirational Quote -->
+            <section class="mb-10">
+                <div class="neu-pressed rounded-3xl p-6 flex flex-col gap-4">
+                    <span class="material-symbols-outlined text-primary opacity-30">format_quote</span>
+                    <p class="text-sm italic font-medium text-text-sub text-center leading-relaxed" th:text="${quote}">
+                        Learning is the only thing the mind never exhausts...
+                    </p>
+                    <div class="h-px w-8 bg-primary/20 self-center"></div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-50 text-gray-500 text-sm border-b border-gray-100">
-                                <th class="py-3 px-6 font-medium">結果</th>
-                                <th class="py-3 px-6 font-medium">単語</th>
-                                <th class="py-3 px-6 font-medium">意味・例文</th>
-                                <th class="py-3 px-6 font-medium">あなたの解答</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 text-sm md:text-base">
-                            <tr th:each="result : ${quizSession.results}" class="hover:bg-gray-50 transition-colors">
-                                <td class="py-3 px-6 whitespace-nowrap">
+            </section>
+
+            <!-- Answer List -->
+            <section class="mb-10">
+                <h2 class="mb-5 text-sm font-bold text-text-main font-japanese flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">list_alt</span>
+                    解答の詳細
+                </h2>
+                <div class="space-y-4">
+                    <div th:each="result : ${quizSession.results}"
+                        class="neu-raised rounded-2xl p-5 flex flex-col gap-3 group border border-transparent transition-all">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h3 class="font-bold text-lg text-text-main font-display" th:text="${result.term}">
+                                        Apple</h3>
                                     <span th:if="${result.correct}"
-                                        class="inline-flex items-center text-green-700 bg-green-100 px-3 py-1 rounded-full text-sm font-semibold">
-                                        <i class="fas fa-check mr-1.5"></i> 正解
-                                    </span>
+                                        class="px-2 py-0.5 rounded-full bg-green-100 text-green-600 text-[9px] font-bold uppercase tracking-tight">Correct</span>
                                     <span th:unless="${result.correct}"
-                                        class="inline-flex items-center text-red-700 bg-red-100 px-3 py-1 rounded-full text-sm font-semibold">
-                                        <i class="fas fa-times mr-1.5"></i> 不正解
-                                    </span>
-                                </td>
-                                <td class="py-3 px-6 font-bold text-gray-900" th:text="${result.term}">Apple</td>
-                                <td class="py-3 px-6 text-gray-600">
-                                    <span th:text="${result.meaning}">りんご</span>
-                                    <span
-                                        th:if="${result.exampleSentence != null and !#strings.isEmpty(result.exampleSentence)}"
-                                        class="block text-xs text-indigo-500 mt-1 italic"
-                                        th:text="'例文: ' + ${result.exampleSentence}"></span>
-                                </td>
-                                <td class="py-3 px-6 text-gray-600">
-                                    <span th:if="${#strings.isEmpty(result.userAnswer)}"
-                                        class="text-gray-400 italic">無回答</span>
-                                    <span th:unless="${#strings.isEmpty(result.userAnswer)}"
-                                        th:text="${result.userAnswer}">あっぷる</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- AIフィードバック（解答一覧の下） -->
-            <div class="ai-feedback rounded-xl p-6 mb-8 shadow-sm relative overflow-hidden">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                            <i class="fas fa-robot text-blue-600 text-xl"></i>
+                                        class="px-2 py-0.5 rounded-full bg-red-100 text-red-500 text-[9px] font-bold uppercase tracking-tight">Missed</span>
+                                </div>
+                                <p class="text-xs text-text-sub font-medium" th:text="${result.meaning}">りんご</p>
+                            </div>
+                            <div th:classappend="${result.correct == true ? 'text-green-500' : 'text-red-400'}"
+                                class="mt-1">
+                                <span class="material-symbols-outlined text-[24px]"
+                                    th:text="${result.correct ? 'check_circle' : 'cancel'}">check_circle</span>
+                            </div>
                         </div>
-                        <h2 class="text-xl font-bold text-gray-800">AIからの応援メッセージ</h2>
+                        <div class="neu-pressed rounded-xl px-4 py-2.5 flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-text-sub uppercase tracking-widest">あなたの回答</span>
+                            <span class="text-xs font-bold"
+                                th:classappend="${result.correct ? 'text-text-main' : 'text-red-400'}"
+                                th:text="${#strings.isEmpty(result.userAnswer) ? '（無回答）' : result.userAnswer}">あっぷる</span>
+                        </div>
                     </div>
-                    <i class="fas fa-star text-yellow-400 text-2xl absolute top-4 right-4 opacity-70"></i>
                 </div>
-                <p class="text-gray-700 whitespace-pre-wrap leading-relaxed text-base" th:text="${aiFeedback}"
-                    th:if="${aiFeedback != null and !#strings.isEmpty(aiFeedback)}">
-                    AIからのフィードバック読み込み中...
-                </p>
-                <p th:unless="${aiFeedback != null and !#strings.isEmpty(aiFeedback)}"
-                    class="text-gray-400 italic text-sm">
-                    （AIからのコメントを取得できませんでした。.envファイルにGEMINI_API_KEYが設定されているか確認してください。）
-                </p>
-            </div>
+            </section>
+        </main>
 
-            <div class="text-center flex justify-center space-x-4">
-                <a href="/quiz/settings"
-                    class="inline-flex items-center justify-center px-6 py-3 bg-white border border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full md:w-auto">
-                    <i class="fas fa-undo mr-2"></i> もう一度クイズをする
+        <!-- Bottom Actions -->
+        <div class="fixed bottom-0 left-0 right-0 w-full pointer-events-none z-30 max-w-md mx-auto">
+            <div class="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/90 to-transparent h-full"></div>
+            <div class="relative px-8 pb-12 pt-12 pointer-events-auto flex gap-4">
+                <a th:href="@{/quiz/settings}"
+                    class="flex-1 h-14 rounded-2xl neu-raised flex items-center justify-center gap-2 text-text-main font-bold hover:bg-white/40 active:neu-pressed transition-all">
+                    <span class="material-symbols-outlined text-[20px]">refresh</span>
+                    <span class="text-sm font-japanese">再挑戦</span>
                 </a>
-                <a href="/"
-                    class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 border border-transparent text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full md:w-auto">
-                    <i class="fas fa-home mr-2"></i> ホームへ戻る
+                <a th:href="@{/}"
+                    class="flex-[1.5] h-14 rounded-2xl neu-action-btn flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[20px]">home</span>
+                    <span class="text-sm font-japanese">ホームへ戻る</span>
                 </a>
             </div>
-
         </div>
-    </main>
+    </div>
 
+    <script th:inline="javascript">
+        const activePage = 'quiz';
+        const showNav = false;
+    </script>
 </body>
 
 </html>

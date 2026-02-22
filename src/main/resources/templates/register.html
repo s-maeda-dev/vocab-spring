@@ -1,36 +1,86 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <title>ユーザー登録 - VocabSpring</title>
-</head>
+<head th:replace="~{fragments/layout :: head('新規登録')}"></head>
 
-<body>
-    <h1>ユーザー登録</h1>
+<body
+    class="antialiased min-h-screen flex flex-col items-center justify-center selection:bg-primary selection:text-white">
+    <div class="w-full max-w-md px-8 py-10 flex flex-col h-full justify-center">
+        <!-- Logo and Header -->
+        <div class="flex flex-col items-center mb-10">
+            <div class="w-20 h-20 rounded-full neu-raised flex items-center justify-center mb-6 text-primary">
+                <span class="material-symbols-outlined text-4xl">local_florist</span>
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight text-text-main mb-2 text-center font-display">VocabularySpring
+            </h1>
+            <p class="text-text-sub text-center text-sm font-medium tracking-wide">言葉を育て、世界を広げる</p>
+        </div>
 
-    <div th:if="${error}" style="color: red;">
-        <p th:text="${error}"></p>
+        <!-- Toggle (Login/Register) -->
+        <div class="p-1.5 rounded-xl neu-pressed flex mb-10 relative">
+            <a th:href="@{/login}"
+                class="flex-1 py-3 rounded-lg text-sm font-medium text-text-sub hover:text-text-main transition-colors z-10 text-center">ログイン</a>
+            <button class="flex-1 py-3 rounded-lg text-sm font-bold neu-toggle-active z-10">新規登録</button>
+        </div>
+
+        <!-- Form -->
+        <form class="flex flex-col gap-6 w-full" th:action="@{/register}" method="post">
+            <!-- Messages -->
+            <div th:if="${error}" class="text-red-500 text-sm text-center mb-4 font-bold">
+                <p th:text="${error}"></p>
+            </div>
+
+            <!-- Username Input -->
+            <div class="space-y-2 group">
+                <label class="block text-xs font-bold text-[#6D5C50] ml-3 uppercase tracking-wider"
+                    for="username">ユーザー名（メールアドレス）</label>
+                <div class="neu-pressed rounded-2xl flex items-center px-5 h-14 transition-all">
+                    <span class="material-symbols-outlined text-primary mr-3 text-xl">person</span>
+                    <input
+                        class="bg-transparent border-none w-full text-text-main placeholder-custom focus:ring-0 focus:outline-none h-full text-base font-medium"
+                        id="username" name="username" placeholder="name@example.com" type="text" required />
+                </div>
+            </div>
+
+            <!-- Email Input (Optional) -->
+            <div class="space-y-2 group">
+                <label class="block text-xs font-bold text-[#6D5C50] ml-3 uppercase tracking-wider"
+                    for="email">メールアドレス</label>
+                <div class="neu-pressed rounded-2xl flex items-center px-5 h-14 transition-all">
+                    <span class="material-symbols-outlined text-primary mr-3 text-xl">mail</span>
+                    <input
+                        class="bg-transparent border-none w-full text-text-main placeholder-custom focus:ring-0 focus:outline-none h-full text-base font-medium"
+                        id="email" name="email" placeholder="name@example.com" type="email" />
+                </div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="space-y-2 group">
+                <label class="block text-xs font-bold text-[#6D5C50] ml-3 uppercase tracking-wider"
+                    for="password">パスワード</label>
+                <div class="neu-pressed rounded-2xl flex items-center px-5 h-14 transition-all">
+                    <span class="material-symbols-outlined text-primary mr-3 text-xl">lock</span>
+                    <input
+                        class="bg-transparent border-none w-full text-text-main placeholder-custom focus:ring-0 focus:outline-none h-full text-base font-medium"
+                        id="password" name="password" placeholder="••••••••" type="password" required />
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit"
+                class="w-full h-14 rounded-2xl neu-action-btn mt-6 font-bold text-lg tracking-wide flex items-center justify-center gap-2 group">
+                <span>登録する</span>
+                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">person_add</span>
+            </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="mt-12 text-center">
+            <p class="text-text-sub text-sm font-medium">すでにアカウントをお持ちですか？
+                <a class="text-primary font-bold hover:underline" th:href="@{/login}">ログイン</a>
+            </p>
+        </div>
     </div>
-
-    <form th:action="@{/register}" method="post">
-        <div>
-            <label for="username">ユーザー名:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-        <div>
-            <label for="password">パスワード:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <div>
-            <label for="email">メールアドレス (任意):</label>
-            <input type="email" id="email" name="email">
-        </div>
-        <div>
-            <button type="submit">登録</button>
-        </div>
-    </form>
-    <a href="/login">ログインはこちら</a>
 </body>
 
 </html>

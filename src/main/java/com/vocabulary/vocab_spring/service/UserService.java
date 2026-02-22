@@ -33,4 +33,9 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    @Transactional(readOnly = true)
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
 }

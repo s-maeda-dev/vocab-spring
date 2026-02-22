@@ -47,4 +47,8 @@ public class WordService {
             }
         });
     }
+
+    public List<Object[]> getWordCountPerCategory(User user) {
+        return wordRepository.findWordCountPerCategoryByUserId(user.getId());
+    }
 }
