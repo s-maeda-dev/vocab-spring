@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VocabularySpring - ログイン</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#A68B77", // Muted brown accent
+                        "bg-base": "#F4F2EE", // Very light warm off-white
+                        "text-main": "#4A3B32", // Dark brown for main text
+                        "text-sub": "#8C7A6D", // Muted text
+                        "shadow-light": "#FFFFFF", 
+                        "shadow-dark": "#D1CDC7", 
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
+                        "sans": ["Noto Sans JP", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #F4F2EE;
+            font-family: 'Noto Sans JP', sans-serif;
+            color: #4A3B32;
+        }.neu-raised {
+            background: #F4F2EE;
+            box-shadow: 9px 9px 18px #D1CDC7, 
+                        -9px -9px 18px #FFFFFF;
+            border: 1px solid rgba(255,255,255, 0.4);
+        }.neu-pressed {
+            background: #F4F2EE;
+            box-shadow: inset 5px 5px 10px #D6D2CC, 
+                        inset -5px -5px 10px #FFFFFF;
+            border: none;
+        }.neu-icon-btn {
+            background: #F4F2EE;
+            box-shadow: 6px 6px 12px #D1CDC7, 
+                        -6px -6px 12px #FFFFFF;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: #4A3B32;
+            border: 1px solid rgba(255,255,255, 0.6);
+        }
+        .neu-icon-btn:active {
+            box-shadow: inset 4px 4px 8px #D1CDC7, 
+                        inset -4px -4px 8px #FFFFFF;
+            transform: scale(0.96);
+        }.neu-action-btn {
+            background: #A68B77;color: #FFFFFF;
+            box-shadow: 6px 6px 14px #D1CDC7, 
+                        -6px -6px 14px #FFFFFF;
+            transition: all 0.2s ease;
+            border: none;
+        }
+        .neu-action-btn:active {
+            background: #967d6b;
+            box-shadow: inset 3px 3px 6px #7a6556, 
+                        inset -3px -3px 6px #b29580;
+            transform: translateY(1px);
+        }.neu-toggle-active {
+            background: #F4F2EE;
+            box-shadow:  4px 4px 8px #D1CDC7, 
+                         -4px -4px 8px #FFFFFF;
+            color: #A68B77;}.neu-pressed:focus-within {
+            box-shadow: inset 6px 6px 12px #D1CDC7, 
+                        inset -6px -6px 12px #FFFFFF,
+                        0 0 0 1px rgba(166, 139, 119, 0.3); 
+        }
+        .placeholder-custom::placeholder {
+            color: #A99B91;
+            opacity: 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(800px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col items-center justify-center selection:bg-[#A68B77] selection:text-white">
+<div class="w-full max-w-md px-8 py-10 flex flex-col h-full justify-center">
+<div class="flex flex-col items-center mb-10">
+<div class="w-20 h-20 rounded-full neu-raised flex items-center justify-center mb-6 text-[#A68B77]">
+<span class="material-symbols-outlined text-4xl">local_florist</span>
+</div>
+<h1 class="text-3xl font-bold tracking-tight text-[#4A3B32] mb-2 text-center font-display">VocabularySpring</h1>
+<p class="text-[#8C7A6D] text-center text-sm font-medium tracking-wide">言葉を育て、世界を広げる</p>
+</div>
+<div class="p-1.5 rounded-xl neu-pressed flex mb-10 relative">
+<button class="flex-1 py-3 rounded-lg text-sm font-bold neu-toggle-active z-10 transition-all">ログイン</button>
+<button class="flex-1 py-3 rounded-lg text-sm font-medium text-[#8C7A6D] hover:text-[#4A3B32] transition-colors z-10">新規登録</button>
+</div>
+<form class="flex flex-col gap-6 w-full" onsubmit="event.preventDefault()">
+<div class="space-y-2 group">
+<label class="block text-xs font-bold text-[#6D5C50] ml-3 uppercase tracking-wider" for="email">メールアドレス</label>
+<div class="neu-pressed rounded-2xl flex items-center px-5 h-14 transition-all bg-[#F4F2EE]">
+<span class="material-symbols-outlined text-[#A68B77] mr-3 text-xl">mail</span>
+<input class="bg-transparent border-none w-full text-[#4A3B32] placeholder-custom focus:ring-0 focus:outline-none h-full text-base font-medium" id="email" placeholder="name@example.com" type="email"/>
+</div>
+</div>
+<div class="space-y-2 group">
+<label class="block text-xs font-bold text-[#6D5C50] ml-3 uppercase tracking-wider" for="password">パスワード</label>
+<div class="neu-pressed rounded-2xl flex items-center px-5 h-14 transition-all bg-[#F4F2EE]">
+<span class="material-symbols-outlined text-[#A68B77] mr-3 text-xl">lock</span>
+<input class="bg-transparent border-none w-full text-[#4A3B32] placeholder-custom focus:ring-0 focus:outline-none h-full text-base font-medium" id="password" placeholder="••••••••" type="password"/>
+<button class="text-[#A68B77] hover:text-[#8a7363] transition-colors focus:outline-none flex items-center p-1" type="button">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+<div class="flex justify-end pr-2 pt-1">
+<a class="text-xs font-bold text-[#A68B77] hover:text-[#8a7363] transition-colors" href="#">パスワードをお忘れですか？</a>
+</div>
+</div>
+<button class="w-full h-14 rounded-2xl neu-action-btn mt-6 font-bold text-lg tracking-wide flex items-center justify-center gap-2 group">
+<span>ログイン</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</form>
+<div class="mt-12 text-center">
+<p class="text-[#8C7A6D] text-sm font-medium">アカウントをお持ちでないですか？ <a class="text-[#A68B77] font-bold hover:underline" href="#">新規登録</a></p>
+</div>
+</div>
+</body></html>
