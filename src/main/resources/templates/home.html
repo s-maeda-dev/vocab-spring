@@ -1,37 +1,234 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <meta charset="UTF-8">
-    <title>ホーム - VocabSpring</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ホームダッシュボード - VocabularySpring</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a18d7f", // Muted dusty brown
+                        "primary-dark": "#8a7566",
+                        "primary-light": "#d7ccc8",
+                        "background-light": "#f5f2f0", // Warm grey/beige
+                        "surface": "#f5f2f0",
+                        "text-main": "#4a403a", // Softer dark brown
+                        "text-muted": "#9d948e",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
+                        "sans": ["Noto Sans JP", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "3xl": "2.5rem", "full": "9999px"
+                    },
+                    boxShadow: {
+                        'neu-flat': '8px 8px 16px #dcd9d6, -8px -8px 16px #ffffff',
+                        'neu-pressed': 'inset 4px 4px 8px #dcd9d6, inset -4px -4px 8px #ffffff',
+                        'neu-floating': '12px 12px 24px #d1ccc9, -12px -12px 24px #ffffff',
+                        'neu-btn': '6px 6px 12px #dcd9d6, -6px -6px 12px #ffffff',
+                        'nav-shadow': '0 -4px 20px rgba(0,0,0,0.03)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .neu-flat { @apply bg-background-light shadow-neu-flat border border-white/60; }
+            .neu-pressed { @apply bg-background-light shadow-neu-pressed border-none; }
+            .neu-icon-btn { @apply flex items-center justify-center rounded-full transition-all duration-300 active:shadow-neu-pressed active:scale-95 bg-background-light shadow-neu-flat border border-white/60; }
+            .nav-item-active { @apply shadow-neu-pressed text-primary; }
+            .no-scrollbar::-webkit-scrollbar { display: none; }
+            .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        }
+        body { background-color: #f5f2f0; min-height: max(884px, 100dvh); }
+    </style>
 </head>
 
-<body>
-    <h1>ダッシュボード</h1>
+<body class="font-sans text-text-main antialiased selection:bg-primary selection:text-white">
 
-    <div sec:authorize="isAuthenticated()">
-        <p>ようこそ、<span sec:authentication="name">ユーザー名</span>さん！</p>
+    <!-- 未ログイン状態の表示 -->
+    <div sec:authorize="!isAuthenticated()"
+        class="relative flex min-h-screen w-full flex-col overflow-x-hidden items-center justify-center bg-background-light">
+        <div class="mb-6 rounded-full neu-flat p-6 text-primary">
+            <span class="material-symbols-outlined text-5xl">lock</span>
+        </div>
+        <h1 class="text-2xl font-bold text-text-main mb-4">VocabularySpringへようこそ</h1>
+        <p class="text-text-muted font-medium mb-8">ご利用にはログインが必要です。</p>
+        <a href="/login"
+            class="px-8 py-3 rounded-xl neu-flat text-primary font-bold hover:text-primary-dark transition-all">ログイン画面へ</a>
+    </div>
 
-        <nav>
-            <ul>
-                <li><a href="/categories">カテゴリ一覧</a></li>
-                <li><a href="/words">単語一覧</a></li>
-                <li><a href="/words/new">新しい単語を登録</a></li>
-                <li><b><a href="/quiz/settings" style="color: blue;">クイズを開始する</a></b></li>
-                <li><a href="/stats">📊 学習統計</a></li>
-            </ul>
+    <!-- ログイン済み状態の表示 (ダッシュボード) -->
+    <div sec:authorize="isAuthenticated()"
+        class="relative flex min-h-[100dvh] w-full max-w-md mx-auto flex-col overflow-x-hidden bg-background-light">
+
+        <header class="flex items-center justify-between px-6 pt-12 pb-6">
+            <div class="flex items-center gap-4">
+                <div class="flex h-14 w-14 items-center justify-center rounded-full neu-flat text-primary">
+                    <span class="material-symbols-outlined text-[28px]">spa</span>
+                </div>
+                <div>
+                    <p class="text-[11px] font-bold tracking-wider text-text-muted uppercase mb-1">WELCOME,</p>
+                    <h1 class="text-2xl font-bold tracking-tight text-text-main font-display"><span
+                            sec:authentication="name">ユーザー</span>さん</h1>
+                </div>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" aria-label="ログアウト"
+                    class="neu-icon-btn h-12 w-12 text-text-muted hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined text-[22px]">logout</span>
+                </button>
+            </form>
+        </header>
+
+        <main class="flex flex-1 flex-col px-6 pb-32">
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-4 px-1">
+                    <h2 class="text-lg font-bold text-text-main">メニュー</h2>
+                    <a href="/categories" class="text-xs font-bold text-primary hover:underline">全カテゴリを見る</a>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <a href="/words"
+                        class="neu-flat rounded-[1.5rem] p-5 flex flex-col items-center justify-center gap-3 transition-transform active:scale-95 group hover:shadow-neu-floating">
+                        <div
+                            class="h-12 w-12 rounded-full neu-pressed flex items-center justify-center text-primary mb-1">
+                            <span class="material-symbols-outlined text-2xl">menu_book</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm font-bold text-text-main">単語帳一覧</div>
+                            <div class="text-xs font-bold text-text-muted mt-1">Words List</div>
+                        </div>
+                    </a>
+                    <a href="/categories"
+                        class="neu-flat rounded-[1.5rem] p-5 flex flex-col items-center justify-center gap-3 transition-transform active:scale-95 group hover:shadow-neu-floating">
+                        <div
+                            class="h-12 w-12 rounded-full neu-pressed flex items-center justify-center text-primary mb-1">
+                            <span class="material-symbols-outlined text-2xl">category</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm font-bold text-text-main">カテゴリ管理</div>
+                            <div class="text-xs font-bold text-text-muted mt-1">Categories</div>
+                        </div>
+                    </a>
+                    <a href="/words/new"
+                        class="neu-flat rounded-[1.5rem] p-5 flex flex-col items-center justify-center gap-3 transition-transform active:scale-95 group hover:shadow-neu-floating">
+                        <div
+                            class="h-12 w-12 rounded-full neu-pressed flex items-center justify-center text-primary mb-1">
+                            <span class="material-symbols-outlined text-2xl">add_circle</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm font-bold text-text-main">単語を追加</div>
+                            <div class="text-xs font-bold text-text-muted mt-1">Add Word</div>
+                        </div>
+                    </a>
+                    <a href="/quiz/settings"
+                        class="neu-flat rounded-[1.5rem] p-5 flex flex-col items-center justify-center gap-3 transition-transform active:scale-95 group hover:shadow-neu-floating">
+                        <div
+                            class="h-12 w-12 rounded-full neu-pressed flex items-center justify-center text-primary mb-1">
+                            <span class="material-symbols-outlined text-2xl">school</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm font-bold text-text-main">クイズ</div>
+                            <div class="text-xs font-bold text-text-muted mt-1">Quiz</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mb-8 mt-4">
+                <a href="/stats"
+                    class="block neu-flat rounded-[2rem] p-6 group transition-all hover:bg-white/40 active:scale-[0.98]">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="h-14 w-14 rounded-2xl neu-pressed flex items-center justify-center text-primary bg-primary/5">
+                                <span class="material-symbols-outlined text-3xl">analytics</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-lg font-bold text-text-main">学習統計</span>
+                                <span class="text-xs text-text-muted font-medium mt-1">進捗状況を確認する</span>
+                            </div>
+                        </div>
+                        <div
+                            class="h-10 w-10 rounded-full flex items-center justify-center text-primary group-hover:text-primary-dark transition-colors">
+                            <span class="material-symbols-outlined">arrow_forward_ios</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <form action="/quiz/settings" method="get" class="w-full mt-auto">
+                <button type="submit"
+                    class="group flex w-full items-center justify-center gap-3 rounded-full py-4 transition-all active:scale-[0.98] bg-primary hover:bg-primary-dark shadow-neu-btn text-white">
+                    <span class="material-symbols-outlined text-xl filled">play_circle</span>
+                    <span class="font-bold tracking-wide text-lg">本日の学習を開始</span>
+                </button>
+            </form>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav
+            class="fixed bottom-0 left-0 right-0 z-50 bg-background-light/90 backdrop-blur-md pb-8 pt-4 border-t border-white/50 w-full max-w-md mx-auto">
+            <div class="flex items-center justify-around px-4">
+                <a href="/" class="flex flex-col items-center gap-1 w-16">
+                    <div
+                        class="h-12 w-12 flex items-center justify-center rounded-2xl bg-background-light shadow-neu-pressed text-primary transition-all duration-300">
+                        <span class="material-symbols-outlined">home</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-text-main mt-1">ホーム</span>
+                </a>
+                <a href="/words" class="flex flex-col items-center gap-1 w-16 group">
+                    <div
+                        class="h-12 w-12 flex items-center justify-center rounded-2xl text-text-muted hover:text-primary transition-all duration-300 hover:shadow-neu-flat">
+                        <span class="material-symbols-outlined">menu_book</span>
+                    </div>
+                    <span
+                        class="text-[10px] font-bold text-text-muted group-hover:text-primary transition-colors mt-1">単語帳</span>
+                </a>
+                <a href="/words/new" class="flex flex-col items-center gap-1 w-16 group">
+                    <div
+                        class="h-12 w-12 flex items-center justify-center rounded-2xl text-text-muted hover:text-primary transition-all duration-300 hover:shadow-neu-flat">
+                        <span class="material-symbols-outlined">add_circle</span>
+                    </div>
+                    <span
+                        class="text-[10px] font-bold text-text-muted group-hover:text-primary transition-colors mt-1">追加</span>
+                </a>
+                <a href="/quiz/settings" class="flex flex-col items-center gap-1 w-16 group">
+                    <div
+                        class="h-12 w-12 flex items-center justify-center rounded-2xl text-text-muted hover:text-primary transition-all duration-300 hover:shadow-neu-flat">
+                        <span class="material-symbols-outlined">school</span>
+                    </div>
+                    <span
+                        class="text-[10px] font-bold text-text-muted group-hover:text-primary transition-colors mt-1">クイズ</span>
+                </a>
+                <a href="/stats" class="flex flex-col items-center gap-1 w-16 group">
+                    <div
+                        class="h-12 w-12 flex items-center justify-center rounded-2xl text-text-muted hover:text-primary transition-all duration-300 hover:shadow-neu-flat">
+                        <span class="material-symbols-outlined">analytics</span>
+                    </div>
+                    <span
+                        class="text-[10px] font-bold text-text-muted group-hover:text-primary transition-colors mt-1">統計</span>
+                </a>
+            </div>
         </nav>
-
-        <!-- Logout Form -->
-        <form th:action="@{/logout}" method="post">
-            <button type="submit">ログアウト</button>
-        </form>
     </div>
 
-    <div sec:authorize="!isAuthenticated()">
-        <p>ログインしてください。</p>
-        <a href="/login">ログイン</a>
-    </div>
 </body>
 
 </html>

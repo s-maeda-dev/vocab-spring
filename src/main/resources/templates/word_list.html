@@ -1,172 +1,195 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>単語一覧 - VocabSpring</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VocabularySpring - 単語帳一覧</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#A68B77",
+                        "primary-dark": "#8a7362",
+                        "background-light": "#F5F3F0",
+                        "background-dark": "#2d2a26",
+                        "surface-light": "#F5F3F0",
+                        "surface-dark": "#2d2a26",
+                        "text-main": "#4A4A4A",
+                        "text-muted": "#9CA3AF",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
+                        "body": ["Noto Sans JP", "sans-serif"]
+                    },
+                    boxShadow: {
+                        'neu-flat': '5px 5px 10px #d1cfcc, -5px -5px 10px #ffffff',
+                        'neu-flat-soft': '4px 4px 8px #d6d4d1, -4px -4px 8px #ffffff',
+                        'neu-pressed': 'inset 3px 3px 6px #d1cfcc, inset -3px -3px 6px #ffffff',
+                        'neu-pressed-deep': 'inset 5px 5px 10px #d1cfcc, inset -5px -5px 10px #ffffff',
+                        'neu-btn': '4px 4px 8px #d1cfcc, -4px -4px 8px #ffffff',
+                    }
+                },
+            },
+        }
+    </script>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        nav {
-            margin-bottom: 20px;
-        }
-
-        nav a {
-            margin-right: 12px;
-            color: #4f46e5;
-            text-decoration: none;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-        .category-group {
-            margin-bottom: 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .category-group summary {
-            padding: 10px 16px;
-            background-color: #f3f4f6;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            list-style: none;
-        }
-
-        .category-group summary::-webkit-details-marker {
+        .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
 
-        .category-group summary::before {
-            content: '▶';
-            font-size: 0.75rem;
-            transition: transform 0.2s;
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
-        .category-group[open] summary::before {
-            transform: rotate(90deg);
+        body {
+            min-height: max(884px, 100dvh);
+            background-color: #F5F3F0;
         }
 
-        .badge {
-            background-color: #4f46e5;
-            color: white;
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: normal;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background-color: #f9fafb;
-            text-align: left;
-            padding: 8px 12px;
-            font-size: 0.85rem;
-            color: #6b7280;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        td {
-            padding: 8px 12px;
-            border-bottom: 1px solid #f3f4f6;
-            font-size: 0.9rem;
-        }
-
-        tr:hover td {
-            background-color: #f9fafb;
-        }
-
-        .actions a {
-            color: #4f46e5;
-            text-decoration: none;
-            margin-right: 8px;
-        }
-
-        .actions button {
-            background: none;
-            border: none;
-            color: #dc2626;
-            cursor: pointer;
-            font-size: 0.9rem;
-            padding: 0;
-        }
-
-        .actions button:hover {
-            text-decoration: underline;
-        }
-
-        .empty-message {
-            text-align: center;
-            color: #9ca3af;
-            padding: 40px;
-            font-size: 1rem;
+        /* Custom details marker hide */
+        details>summary::-webkit-details-marker {
+            display: none;
         }
     </style>
 </head>
 
-<body>
-    <h1>📖 単語一覧</h1>
+<body class="bg-background-light font-body text-text-main antialiased selection:bg-primary selection:text-white">
+    <div
+        class="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-background-light overflow-hidden shadow-2xl">
 
-    <nav>
-        <a href="/">ホームへ戻る</a>
-        <a href="/words/new">＋ 新しい単語を追加</a>
-    </nav>
+        <header class="flex items-start justify-between px-6 pt-12 pb-4 z-10 bg-background-light">
+            <div class="flex flex-col">
+                <h1 class="text-2xl font-bold tracking-tight text-text-main font-display">単語帳一覧</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/words/new"
+                    class="flex items-center justify-center w-10 h-10 rounded-full bg-surface-light shadow-neu-btn text-text-main active:shadow-neu-pressed transition-all duration-200 active:scale-95">
+                    <span class="material-symbols-outlined font-bold text-[20px]">add</span>
+                </a>
+            </div>
+        </header>
 
-    <!-- カテゴリ別グループ表示 -->
-    <div th:if="${!wordsByCategory.isEmpty()}">
-        <details class="category-group" th:each="entry : ${wordsByCategory}" open>
-            <summary>
-                <span th:text="${entry.key}">カテゴリ名</span>
-                <span class="badge" th:text="${#lists.size(entry.value)} + '語'">0語</span>
-            </summary>
-            <table>
-                <thead>
-                    <tr>
-                        <th>単語 (Words)</th>
-                        <th>意味 (Meaning)</th>
-                        <th>例文</th>
-                        <th style="width: 120px;">操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="word : ${entry.value}">
-                        <td th:text="${word.term}">Apple</td>
-                        <td th:text="${word.definition}">りんご</td>
-                        <td th:text="${word.exampleSentence}">I eat an apple.</td>
-                        <td class="actions">
-                            <a th:href="@{/words/edit/{id}(id=${word.id})}">編集</a>
+        <!-- Search / Filter (Visual only for now, as existing backend doesn't implement dynamic search easily) -->
+        <div class="px-6 py-2">
+            <div
+                class="flex items-center w-full h-12 rounded-xl bg-surface-light shadow-neu-pressed px-4 transition-all">
+                <span class="material-symbols-outlined text-text-muted mr-3 text-[20px]">search</span>
+                <input
+                    class="w-full bg-transparent border-none focus:ring-0 text-text-main placeholder-text-muted text-sm font-medium tracking-wide"
+                    placeholder="単語を検索..." type="text" />
+            </div>
+        </div>
+
+        <!-- Grouped lists -->
+        <div class="flex-1 overflow-y-auto px-6 pb-32 hide-scrollbar space-y-4 pt-4">
+
+            <div th:if="${!wordsByCategory.isEmpty()}">
+                <!-- Categories -->
+                <details class="group mb-8" th:each="entry : ${wordsByCategory}" open>
+                    <summary
+                        class="flex items-center justify-between p-2 cursor-pointer list-none outline-none select-none">
+                        <div class="flex items-center gap-3">
+                            <span class="text-lg font-bold text-text-main font-display"
+                                th:text="${entry.key}">Category</span>
+                            <span
+                                class="px-3 py-1 rounded-full bg-primary text-white text-[10px] font-bold shadow-neu-flat-soft tracking-wider"
+                                th:text="${#lists.size(entry.value)} + ' 語'">X語</span>
+                        </div>
+                        <span
+                            class="material-symbols-outlined text-text-muted transition-transform group-open:rotate-90">chevron_right</span>
+                    </summary>
+
+                    <div class="flex flex-col gap-4 mt-4 px-1">
+                        <div th:each="word : ${entry.value}"
+                            class="group/card flex items-center justify-between p-5 rounded-2xl bg-surface-light shadow-neu-flat-soft active:shadow-neu-pressed transition-all overflow-hidden relative">
+                            <!-- Clickable area for editing -->
+                            <a th:href="@{/words/edit/{id}(id=${word.id})}" class="flex-1 min-w-0 pr-4 outline-none"
+                                style="text-decoration:none;">
+                                <div class="flex flex-col w-full">
+                                    <div class="flex items-baseline gap-3 w-full mb-1">
+                                        <h3 class="text-text-main text-base font-bold font-display tracking-tight group-hover/card:text-primary transition-colors truncate"
+                                            th:text="${word.term}">Term</h3>
+                                        <span class="text-text-muted text-xs font-medium truncate"
+                                            th:text="${word.definition}">Definition</span>
+                                    </div>
+                                    <p class="text-[11px] text-text-muted/80 leading-snug w-full truncate"
+                                        th:text="${word.exampleSentence != null and word.exampleSentence != '' ? word.exampleSentence : '例文なし'}">
+                                        Example sentence</p>
+                                </div>
+                            </a>
+
+                            <!-- Delete Form -->
                             <form th:action="@{/words/delete/{id}(id=${word.id})}" method="post"
-                                style="display:inline;">
-                                <button type="submit" onclick="return confirm('本当に削除しますか？')">削除</button>
+                                class="flex-shrink-0 z-10" onsubmit="return confirm('本当に削除しますか？');">
+                                <button type="submit"
+                                    class="p-2 rounded-full text-text-muted hover:text-red-500 hover:bg-white transition-all hover:shadow-neu-flat-soft flex items-center justify-center -mr-2">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
                             </form>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </details>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- Empty state -->
+            <div th:if="${wordsByCategory.isEmpty()}" class="flex flex-col items-center justify-center pt-20 pb-10">
+                <div
+                    class="w-16 h-16 rounded-full bg-surface-light shadow-neu-pressed flex items-center justify-center text-text-muted mb-4">
+                    <span class="material-symbols-outlined text-3xl">sentiment_dissatisfied</span>
+                </div>
+                <p class="text-text-muted font-medium text-sm">単語がまだ登録されていません。</p>
+                <a href="/words/new"
+                    class="mt-6 px-6 py-3 rounded-xl bg-primary text-white font-bold shadow-neu-btn active:translate-y-[2px] active:shadow-none transition-all">
+                    最初の単語を追加
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav
+            class="absolute bottom-0 left-0 w-full bg-background-light/90 backdrop-blur-md px-4 pb-8 pt-4 z-20 shadow-[0_-4px_16px_rgba(0,0,0,0.05)] border-t border-white/50">
+            <div class="flex justify-between items-center w-full px-6">
+                <a href="/"
+                    class="flex flex-col items-center gap-1 group w-12 h-12 justify-center rounded-xl transition-all text-text-muted hover:text-primary">
+                    <span class="material-symbols-outlined text-[26px]">home</span>
+                    <span class="text-[9px] font-bold mt-0.5">ホーム</span>
+                </a>
+                <a href="/words"
+                    class="flex flex-col items-center gap-1 group w-12 h-12 justify-center rounded-xl bg-surface-light shadow-neu-pressed relative text-primary">
+                    <span class="material-symbols-outlined text-[26px] fill-current">menu_book</span>
+                    <span class="text-[9px] font-bold mt-0.5">単語帳</span>
+                </a>
+                <a href="/words/new"
+                    class="flex flex-col items-center gap-1 group w-12 h-12 justify-center rounded-xl transition-all text-text-muted hover:text-primary">
+                    <span class="material-symbols-outlined text-[26px]">add_circle</span>
+                    <span class="text-[9px] font-bold mt-0.5">追加</span>
+                </a>
+                <a href="/quiz/settings"
+                    class="flex flex-col items-center gap-1 group w-12 h-12 justify-center rounded-xl transition-all text-text-muted hover:text-primary">
+                    <span class="material-symbols-outlined text-[26px]">school</span>
+                    <span class="text-[9px] font-bold mt-0.5">クイズ</span>
+                </a>
+                <a href="/stats"
+                    class="flex flex-col items-center gap-1 group w-12 h-12 justify-center rounded-xl transition-all text-text-muted hover:text-primary">
+                    <span class="material-symbols-outlined text-[26px]">analytics</span>
+                    <span class="text-[9px] font-bold mt-0.5">統計</span>
+                </a>
+            </div>
+        </nav>
     </div>
 
-    <!-- 単語が1つも登録されていない場合 -->
-    <div th:if="${wordsByCategory.isEmpty()}" class="empty-message">
-        <p>単語がまだ登録されていません。</p>
-        <p><a href="/words/new">＋ 最初の単語を追加しましょう</a></p>
-    </div>
 </body>
 
 </html>
