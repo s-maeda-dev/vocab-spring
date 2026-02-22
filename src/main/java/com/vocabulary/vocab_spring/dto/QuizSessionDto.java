@@ -1,6 +1,9 @@
 package com.vocabulary.vocab_spring.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -11,13 +14,13 @@ public class QuizSessionDto implements Serializable {
     private int correctAnswers;
     private Long currentWordId; // currently displayed Word ID
 
-    /** 出題モード: "all"=全単語から出題, "weak"=苦手単語のみ出題 */
-    private String quizMode = "all";
+    /** 出題モード: ALL=全単語から出題, WEAK=苦手単語のみ出題 */
+    private QuizMode quizMode = QuizMode.ALL;
 
-    private java.util.List<Long> askedWordIds = new java.util.ArrayList<>();
+    private List<Long> askedWordIds = new ArrayList<>();
     private boolean isInsufficientWords = false; // true if total available words < totalQuestions
 
-    private java.util.List<QuizResultDto> results = new java.util.ArrayList<>();
+    private List<QuizResultDto> results = new ArrayList<>();
 
     @Data
     public static class QuizResultDto implements Serializable {

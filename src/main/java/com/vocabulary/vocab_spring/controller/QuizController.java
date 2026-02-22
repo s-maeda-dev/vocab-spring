@@ -1,20 +1,20 @@
 package com.vocabulary.vocab_spring.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.vocabulary.vocab_spring.dto.QuizMode;
 import com.vocabulary.vocab_spring.dto.QuizSessionDto;
 import com.vocabulary.vocab_spring.entity.User;
 import com.vocabulary.vocab_spring.entity.Word;
-import com.vocabulary.vocab_spring.repository.UserRepository;
 import com.vocabulary.vocab_spring.repository.WordRepository;
-
 import com.vocabulary.vocab_spring.service.CategoryService;
 import com.vocabulary.vocab_spring.service.GeminiService;
 import com.vocabulary.vocab_spring.service.QuizService;
 import com.vocabulary.vocab_spring.service.QuoteService;
+import com.vocabulary.vocab_spring.util.SecurityUtils;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,29 +28,39 @@ public class QuizController {
 
     private final QuizService quizService;
     private final CategoryService categoryService;
-    private final UserRepository userRepository;
     private final WordRepository wordRepository;
-
     private final GeminiService geminiService;
     private final QuoteService quoteService;
+    private final SecurityUtils securityUtils;
 
     @Autowired
     public QuizController(QuizService quizService, CategoryService categoryService,
-            UserRepository userRepository, WordRepository wordRepository,
+            WordRepository wordRepository,
             GeminiService geminiService,
-            QuoteService quoteService) {
+            QuoteService quoteService,
+            SecurityUtils securityUtils) {
         this.quizService = quizService;
         this.categoryService = categoryService;
-        this.userRepository = userRepository;
         this.wordRepository = wordRepository;
         this.geminiService = geminiService;
         this.quoteService = quoteService;
+        this.securityUtils = securityUtils;
     }
 
-    private User getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return userRepository.findByUsername(auth.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    /**
+     * 出題済みIDから除外リストを組み立てる共通メソッド。
+     * 単語数が不足している場合は、連続出題を防ぐため直前の1問のみを除外する。
+     */
+    private List<Long> buildExcludedIds(QuizSessionDto quizSession) {
+        if (quizSession.isInsufficientWords()) {
+            List<Long> excludedIds = new ArrayList<>();
+            if (!quizSession.getAskedWordIds().isEmpty()) {
+                excludedIds.add(quizSession.getAskedWordIds().get(
+                        quizSession.getAskedWordIds().size() - 1));
+            }
+            return excludedIds;
+        }
+        return quizSession.getAskedWordIds();
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -59,7 +69,7 @@ public class QuizController {
 
     @GetMapping("/settings")
     public String showSettings(Model model) {
-        model.addAttribute("categories", categoryService.getCategoriesByUser(getCurrentUser()));
+        model.addAttribute("categories", categoryService.getCategoriesByUser(securityUtils.getCurrentUser()));
         return "quiz_settings";
     }
 
@@ -75,11 +85,11 @@ public class QuizController {
             Model model,
             HttpSession session) {
 
-        User user = getCurrentUser();
+        User user = securityUtils.getCurrentUser();
+        QuizMode mode = QuizMode.fromString(quizMode);
 
         // ── 苦手単語モード ──
-        if ("weak".equals(quizMode)) {
-            // カテゴリ絞り込みの有無で対象件数を切り替え
+        if (mode == QuizMode.WEAK) {
             long weakWordCount = (categoryId != null)
                     ? quizService.countWeakWordsByCategory(user, categoryId)
                     : quizService.countWeakWords(user);
@@ -102,8 +112,8 @@ public class QuizController {
             }
 
             QuizSessionDto quizSession = new QuizSessionDto();
-            quizSession.setQuizMode("weak");
-            quizSession.setCategoryId(categoryId); // 苦手モードでもカテゴリを記憶
+            quizSession.setQuizMode(QuizMode.WEAK);
+            quizSession.setCategoryId(categoryId);
             quizSession.setTotalQuestions(totalQuestions);
             quizSession.setCurrentQuestionNumber(1);
             quizSession.setCorrectAnswers(0);
@@ -135,7 +145,7 @@ public class QuizController {
         }
 
         QuizSessionDto quizSession = new QuizSessionDto();
-        quizSession.setQuizMode("all");
+        quizSession.setQuizMode(QuizMode.ALL);
         quizSession.setCategoryId(categoryId);
         quizSession.setTotalQuestions(totalQuestions);
         quizSession.setCurrentQuestionNumber(1);
@@ -160,21 +170,12 @@ public class QuizController {
             return "redirect:/quiz/summary";
         }
 
-        User user = getCurrentUser();
+        User user = securityUtils.getCurrentUser();
         Word randomWord;
+        List<Long> excludedIds = buildExcludedIds(quizSession);
 
         // ── 苦手単語モードの出題 ──
-        if ("weak".equals(quizSession.getQuizMode())) {
-            java.util.List<Long> excludedIds;
-            if (quizSession.isInsufficientWords()) {
-                // 単語数が少ない場合は直前に出した単語だけ除外（連続出題を防ぐ）
-                excludedIds = new java.util.ArrayList<>();
-                if (!quizSession.getAskedWordIds().isEmpty()) {
-                    excludedIds.add(quizSession.getAskedWordIds().get(quizSession.getAskedWordIds().size() - 1));
-                }
-            } else {
-                excludedIds = quizSession.getAskedWordIds();
-            }
+        if (quizSession.getQuizMode() == QuizMode.WEAK) {
             randomWord = quizService.getRandomWeakWord(user, quizSession.getCategoryId(), excludedIds);
             if (randomWord == null) {
                 randomWord = quizService.getRandomWeakWord(user, quizSession.getCategoryId(), null);
@@ -182,16 +183,6 @@ public class QuizController {
 
             // ── 全単語モードの出題 ──
         } else {
-            java.util.List<Long> excludedIds;
-            if (quizSession.isInsufficientWords()) {
-                excludedIds = new java.util.ArrayList<>();
-                if (!quizSession.getAskedWordIds().isEmpty()) {
-                    excludedIds.add(quizSession.getAskedWordIds().get(quizSession.getAskedWordIds().size() - 1));
-                }
-            } else {
-                excludedIds = quizSession.getAskedWordIds();
-            }
-
             if (quizSession.getCategoryId() != null) {
                 randomWord = quizService.getRandomWordByCategory(user, quizSession.getCategoryId(), excludedIds);
             } else {
@@ -210,7 +201,7 @@ public class QuizController {
 
         if (randomWord == null) {
             model.addAttribute("error", "該当する単語が見つかりませんでした。");
-            model.addAttribute("categories", categoryService.getCategoriesByUser(getCurrentUser()));
+            model.addAttribute("categories", categoryService.getCategoriesByUser(securityUtils.getCurrentUser()));
             return "quiz_settings";
         }
 
@@ -251,7 +242,7 @@ public class QuizController {
         }
 
         // 学習履歴をDBに保存
-        quizService.saveQuizHistory(getCurrentUser(), currentWord, isCorrect);
+        quizService.saveQuizHistory(securityUtils.getCurrentUser(), currentWord, isCorrect);
 
         // セッションのリストにも追加（結果画面での表示用）
         QuizSessionDto.QuizResultDto resultDto = new QuizSessionDto.QuizResultDto();
@@ -286,7 +277,7 @@ public class QuizController {
         }
 
         // 今回のクイズセッションで間違えた単語のみを抽出
-        java.util.List<String> currentMistakes = quizSession.getResults().stream()
+        List<String> currentMistakes = quizSession.getResults().stream()
                 .filter(r -> !r.isCorrect())
                 .map(QuizSessionDto.QuizResultDto::getTerm)
                 .toList();

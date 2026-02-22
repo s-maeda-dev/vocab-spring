@@ -4,44 +4,169 @@
 <head>
     <meta charset="UTF-8">
     <title>単語一覧 - VocabSpring</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        nav {
+            margin-bottom: 20px;
+        }
+
+        nav a {
+            margin-right: 12px;
+            color: #4f46e5;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .category-group {
+            margin-bottom: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .category-group summary {
+            padding: 10px 16px;
+            background-color: #f3f4f6;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+        }
+
+        .category-group summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .category-group summary::before {
+            content: '▶';
+            font-size: 0.75rem;
+            transition: transform 0.2s;
+        }
+
+        .category-group[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .badge {
+            background-color: #4f46e5;
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: normal;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f9fafb;
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.9rem;
+        }
+
+        tr:hover td {
+            background-color: #f9fafb;
+        }
+
+        .actions a {
+            color: #4f46e5;
+            text-decoration: none;
+            margin-right: 8px;
+        }
+
+        .actions button {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0;
+        }
+
+        .actions button:hover {
+            text-decoration: underline;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #9ca3af;
+            padding: 40px;
+            font-size: 1rem;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>単語一覧</h1>
+    <h1>📖 単語一覧</h1>
 
     <nav>
-        <a href="/">ホームへ戻る</a> |
-        <a href="/words/new">新しい単語を追加</a>
+        <a href="/">ホームへ戻る</a>
+        <a href="/words/new">＋ 新しい単語を追加</a>
     </nav>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>単語 (Words)</th>
-                <th>意味 (Meaning)</th>
-                <th>例文</th>
-                <th>カテゴリ</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="word : ${words}">
-                <td th:text="${word.term}">Apple</td>
-                <td th:text="${word.definition}">りんご</td>
-                <td th:text="${word.exampleSentence}">I eat an apple.</td>
-                <td th:text="${word.category != null ? word.category.name : '未分類'}">日常</td>
-                <td>
-                    <a th:href="@{/words/edit/{id}(id=${word.id})}">編集</a>
-                    <form th:action="@{/words/delete/{id}(id=${word.id})}" method="post" style="display:inline;">
-                        <button type="submit" onclick="return confirm('本当に削除しますか？')">削除</button>
-                    </form>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(words)}">
-                <td colspan="5">単語が登録されていません。</td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- カテゴリ別グループ表示 -->
+    <div th:if="${!wordsByCategory.isEmpty()}">
+        <details class="category-group" th:each="entry : ${wordsByCategory}" open>
+            <summary>
+                <span th:text="${entry.key}">カテゴリ名</span>
+                <span class="badge" th:text="${#lists.size(entry.value)} + '語'">0語</span>
+            </summary>
+            <table>
+                <thead>
+                    <tr>
+                        <th>単語 (Words)</th>
+                        <th>意味 (Meaning)</th>
+                        <th>例文</th>
+                        <th style="width: 120px;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="word : ${entry.value}">
+                        <td th:text="${word.term}">Apple</td>
+                        <td th:text="${word.definition}">りんご</td>
+                        <td th:text="${word.exampleSentence}">I eat an apple.</td>
+                        <td class="actions">
+                            <a th:href="@{/words/edit/{id}(id=${word.id})}">編集</a>
+                            <form th:action="@{/words/delete/{id}(id=${word.id})}" method="post"
+                                style="display:inline;">
+                                <button type="submit" onclick="return confirm('本当に削除しますか？')">削除</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </details>
+    </div>
+
+    <!-- 単語が1つも登録されていない場合 -->
+    <div th:if="${wordsByCategory.isEmpty()}" class="empty-message">
+        <p>単語がまだ登録されていません。</p>
+        <p><a href="/words/new">＋ 最初の単語を追加しましょう</a></p>
+    </div>
 </body>
 
 </html>

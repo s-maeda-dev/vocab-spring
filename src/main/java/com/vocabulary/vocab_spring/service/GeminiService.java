@@ -84,7 +84,7 @@ public class GeminiService {
             }
             return "AIからの応援メッセージを取得できませんでした。";
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("[GeminiService] API呼び出し中にエラーが発生しました", e);
             return "（AIからの応援メッセージ取得中にエラーが発生しました）";
         }
     }
