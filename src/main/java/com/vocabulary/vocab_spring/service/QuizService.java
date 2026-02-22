@@ -1,5 +1,7 @@
 package com.vocabulary.vocab_spring.service;
 
+import com.vocabulary.vocab_spring.entity.QuizHistory;
+import com.vocabulary.vocab_spring.repository.QuizHistoryRepository;
 import com.vocabulary.vocab_spring.entity.User;
 import com.vocabulary.vocab_spring.entity.Word;
 import com.vocabulary.vocab_spring.repository.WordRepository;
@@ -10,10 +12,12 @@ import org.springframework.stereotype.Service;
 public class QuizService {
 
     private final WordRepository wordRepository;
+    private final QuizHistoryRepository quizHistoryRepository;
 
     @Autowired
-    public QuizService(WordRepository wordRepository) {
+    public QuizService(WordRepository wordRepository, QuizHistoryRepository quizHistoryRepository) {
         this.wordRepository = wordRepository;
+        this.quizHistoryRepository = quizHistoryRepository;
     }
 
     public Word getRandomWord(User user, java.util.Collection<Long> excludedIds) {
@@ -36,5 +40,13 @@ public class QuizService {
 
     public long getWordCountByCategory(User user, Long categoryId) {
         return wordRepository.countByUserIdAndCategoryId(user.getId(), categoryId);
+    }
+
+    public void saveQuizHistory(User user, Word word, boolean isCorrect) {
+        QuizHistory history = new QuizHistory();
+        history.setUser(user);
+        history.setWord(word);
+        history.setCorrect(isCorrect);
+        quizHistoryRepository.save(history);
     }
 }

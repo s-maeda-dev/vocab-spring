@@ -5,7 +5,9 @@ import com.vocabulary.vocab_spring.entity.User;
 import com.vocabulary.vocab_spring.entity.Word;
 import com.vocabulary.vocab_spring.repository.UserRepository;
 import com.vocabulary.vocab_spring.repository.WordRepository;
+import com.vocabulary.vocab_spring.repository.QuizHistoryRepository;
 import com.vocabulary.vocab_spring.service.CategoryService;
+import com.vocabulary.vocab_spring.service.GeminiService;
 import com.vocabulary.vocab_spring.service.QuizService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +28,19 @@ public class QuizController {
     private final CategoryService categoryService;
     private final UserRepository userRepository;
     private final WordRepository wordRepository;
+    private final QuizHistoryRepository quizHistoryRepository;
+    private final GeminiService geminiService;
 
     @Autowired
     public QuizController(QuizService quizService, CategoryService categoryService,
-            UserRepository userRepository, WordRepository wordRepository) {
+            UserRepository userRepository, WordRepository wordRepository,
+            QuizHistoryRepository quizHistoryRepository, GeminiService geminiService) {
         this.quizService = quizService;
         this.categoryService = categoryService;
         this.userRepository = userRepository;
         this.wordRepository = wordRepository;
+        this.quizHistoryRepository = quizHistoryRepository;
+        this.geminiService = geminiService;
     }
 
     private User getCurrentUser() {
@@ -161,6 +168,18 @@ public class QuizController {
             quizSession.setCorrectAnswers(quizSession.getCorrectAnswers() + 1);
         }
 
+        // 履歴をDBに保存
+        quizService.saveQuizHistory(getCurrentUser(), currentWord, isCorrect);
+
+        // セッションのリストにも追加（結果画面での表示用）
+        QuizSessionDto.QuizResultDto resultDto = new QuizSessionDto.QuizResultDto();
+        resultDto.setTerm(currentWord.getTerm());
+        resultDto.setMeaning(currentWord.getDefinition());
+        resultDto.setExampleSentence(currentWord.getExampleSentence());
+        resultDto.setUserAnswer(answer);
+        resultDto.setCorrect(isCorrect);
+        quizSession.getResults().add(resultDto);
+
         model.addAttribute("isCorrect", isCorrect);
         model.addAttribute("userAnswer", answer);
         model.addAttribute("correctWord", currentWord);
@@ -179,7 +198,27 @@ public class QuizController {
         if (quizSession == null) {
             return "redirect:/quiz/settings";
         }
+
+        User user = getCurrentUser();
+        java.util.List<String> recentMistakes = quizHistoryRepository.findRecentMistakesByUserId(user.getId());
+
+        String aiFeedback = geminiService.getFeedback(
+                quizSession.getCorrectAnswers(),
+                quizSession.getResults().size(),
+                recentMistakes);
+
+        String[] quotes = {
+                "「天才とは、1％のひらめきと99％の努力である。」 - トーマス・エジソン",
+                "「失敗したわけではない。それを誤りだと言ってはいけない。勉強したのだと言いたまえ。」 - トーマス・エジソン",
+                "「ステップ・バイ・ステップ。どんなことでも、何かを達成する場合にとるべき方法はただひとつ、一歩ずつ着実に立ち向かうことだ。」 - マイケル・ジョーダン",
+                "「人生最大の栄光は、決して倒れないことではない。倒れるたびに起き上がることである。」 - ネルソン・マンデラ"
+        };
+        String randomQuote = quotes[new java.util.Random().nextInt(quotes.length)];
+
         model.addAttribute("quizSession", quizSession);
+        model.addAttribute("aiFeedback", aiFeedback);
+        model.addAttribute("quote", randomQuote);
+
         // セッションをクリアする
         session.removeAttribute("quizSession");
         return "quiz_summary";

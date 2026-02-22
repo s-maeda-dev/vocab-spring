@@ -13,4 +13,15 @@ public class QuizSessionDto implements Serializable {
 
     private java.util.List<Long> askedWordIds = new java.util.ArrayList<>();
     private boolean isInsufficientWords = false; // true if total available words < totalQuestions
+
+    private java.util.List<QuizResultDto> results = new java.util.ArrayList<>();
+
+    @Data
+    public static class QuizResultDto implements Serializable {
+        private String term;
+        private String meaning;
+        private String exampleSentence; // 例文（あれば表示）
+        private String userAnswer;
+        private boolean isCorrect;
+    }
 }
