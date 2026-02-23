@@ -163,6 +163,16 @@ public interface QuizHistoryRepository extends JpaRepository<QuizHistory, Long> 
                         "GROUP BY c.name", nativeQuery = true)
         List<Object[]> findWeakWordCountPerCategoryByUserId(@Param("userId") Long userId);
 
+        @Query(value = "SELECT COALESCE(c.name, '未分類') AS category_name, " +
+                        "w.term AS term " +
+                        "FROM quiz_histories qh " +
+                        "JOIN words w ON qh.word_id = w.id " +
+                        "LEFT JOIN categories c ON w.category_id = c.id " +
+                        "WHERE qh.user_id = :userId AND qh.is_correct = false " +
+                        "GROUP BY c.name, w.id " +
+                        "ORDER BY c.name, MAX(qh.answered_at) DESC", nativeQuery = true)
+        List<Object[]> findWeakWordsListPerCategoryByUserId(@Param("userId") Long userId);
+
         /**
          * ユーザーの全カテゴリにおける日別正答数・不正解数を一括取得する（N+1問題対策）。
          * 戻り値は Object[][]: [カテゴリ名(String), 日付(String), 正答数(Long), 不正解数(Long)]

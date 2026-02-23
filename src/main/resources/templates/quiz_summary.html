@@ -1,47 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>クイズ結果サマリー - VocabularySpring</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#a1887f",
-                        "primary-dark": "#8d6e63",
-                        "accent": "#d7ccc8",
-                        "background-base": "#f5f4f0",
-                        "surface-light": "#fbfaf9",
-                        "text-main": "#4e342e",
-                        "text-sub": "#8d817b",
-                        "success": "#4caf50",
-                        "error": "#ef5350",
-                    },
-                    fontFamily: {
-                        "display": ["Lexend", "sans-serif"],
-                        "japanese": ["Zen Kaku Gothic New", "Noto Sans JP", "sans-serif"],
-                    },
-                    boxShadow: {
-                        'soft-neumorphic': '6px 6px 12px #dcdbd8, -6px -6px 12px #ffffff',
-                        'soft-pressed': 'inset 4px 4px 8px #dcdbd8, inset -4px -4px 8px #ffffff',
-                        'inner-card': 'inset 2px 2px 5px #dcdbd8, inset -2px -2px 5px #ffffff',
-                    }
-                },
-            },
-        }
-    </script>
+<head th:replace="~{fragments/head :: head('クイズ結果サマリー - VocabularySpring')}"></head>
+
+<body class="font-japanese text-text-main antialiased selection:bg-primary/20 flex flex-col items-center">
     <style>
         body {
             background-color: #f5f4f0;
@@ -83,9 +45,6 @@
             border-radius: 9999px;
         }
     </style>
-</head>
-
-<body class="font-japanese text-text-main antialiased selection:bg-primary/20 flex flex-col items-center">
     <div class="relative mx-auto flex h-full min-h-screen w-full max-w-md flex-col overflow-hidden pb-32">
 
         <header
@@ -113,11 +72,10 @@
                 </div>
                 <h2 class="text-2xl font-bold text-text-main mb-3 tracking-wide">お疲れ様でした！</h2>
                 <div class="flex flex-col items-center max-w-[90%] gap-1">
-                    <p class="text-sm font-medium italic text-text-sub/90 font-display leading-relaxed"
-                        th:text="${quote}">
+                    <p class="text-sm font-medium italic text-text-sub/90 font-display leading-relaxed text-center"
+                        th:utext="${quote != null ? #strings.replace(quote, ' - ', '<br>- ') : ''}">
                         "天才とは、1％のひらめきと99％の努力である"
                     </p>
-                    <!-- Remove static author name if the quote string already has it implicitly, but here we can't easily parse it out. Just leave the thymeleaf text update above. -->
                 </div>
             </div>
 
@@ -220,7 +178,7 @@
                 </a>
             </div>
         </div>
-        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
+        <div th:replace="~{fragments/bottom_nav :: bottomNav('quiz')}"></div>
     </div>
 </body>
 

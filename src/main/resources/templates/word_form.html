@@ -1,46 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title th:text="${word.id == null ? '単語の新規登録 - VocabularySpring' : '単語の編集 - VocabularySpring'}">VocabularySpring -
-        単語の新規登録</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#A18E78", // Dusty muted brown
-                        "primary-hover": "#8C7B68",
-                        "background-light": "#F5F2F0",
-                        "text-main": "#5D544F",
-                        "text-muted": "#9C948F",
-                    },
-                    fontFamily: {
-                        "display": ["Noto Sans JP", "sans-serif"],
-                        "english": ["Lexend", "sans-serif"]
-                    },
-                    boxShadow: {
-                        'neumorph': '8px 8px 16px #D6D1CC, -8px -8px 16px #FFFFFF',
-                        'neumorph-btn': '6px 6px 14px #D6D1CC, -6px -6px 14px #FFFFFF',
-                        'neumorph-inset': 'inset 4px 4px 8px #D6D1CC, inset -4px -4px 8px #FFFFFF',
-                        'neumorph-inset-deep': 'inset 6px 6px 12px #Ccc8c2, inset -6px -6px 12px #FFFFFF',
-                        'btn-solid': '6px 6px 12px rgba(161, 142, 120, 0.35), -6px -6px 12px rgba(255, 255, 255, 0.9)',
-                    }
-                },
-            },
-        }
-    </script>
+<head
+    th:replace="~{fragments/head :: head(${word.id == null ? '単語の新規登録 - VocabularySpring' : '単語の編集 - VocabularySpring'})}">
+</head>
+
+<body
+    class="bg-background-light font-display min-h-screen flex flex-col items-center justify-center text-text-main antialiased selection:bg-primary/20">
     <style>
         .no-scrollbar::-webkit-scrollbar {
             display: none;
@@ -59,16 +25,12 @@
             background-image: none !important;
         }
     </style>
-</head>
-
-<body
-    class="bg-background-light font-display min-h-screen flex flex-col items-center justify-center text-text-main antialiased selection:bg-primary/20">
     <div class="relative flex h-full min-h-screen w-full max-w-md flex-col bg-background-light shadow-2xl">
 
         <header
             class="sticky top-0 z-10 flex items-center justify-between px-6 pt-12 pb-6 bg-background-light/90 backdrop-blur-sm">
             <a href="/words"
-                class="flex items-center justify-center w-12 h-12 rounded-full text-text-muted hover:text-text-main shadow-neumorph-btn active:shadow-neumorph-inset transition-all duration-200 group">
+                class="flex items-center justify-center w-12 h-12 rounded-full text-text-muted hover:text-text-main shadow-neu-btn active:shadow-neu-pressed transition-all duration-200 group">
                 <span
                     class="material-symbols-outlined text-[24px] group-active:scale-95 transition-transform">arrow_back</span>
             </a>
@@ -81,10 +43,10 @@
             th:action="${word.id == null ? '/words' : '/words/update/' + word.id}" th:object="${word}" method="post">
 
             <div class="mt-2 mb-8 group">
-                <label class="block text-sm font-bold text-text-muted mb-3 ml-2 tracking-wide" for="term">単語名 <small
+                <label class="block text-sm font-bold text-text-muted mb-3 ml-2 tracking-wide" for="term">単語名（正解） <small
                         class="text-[10px] font-normal">※複数ある場合はカンマで区切ってください</small></label>
                 <div
-                    class="relative rounded-3xl shadow-neumorph-inset-deep bg-background-light overflow-hidden transition-all focus-within:shadow-neumorph-inset ring-1 ring-white/50">
+                    class="relative rounded-3xl shadow-neu-pressed bg-background-light overflow-hidden transition-all focus-within:shadow-neu-pressed ring-1 ring-white/50">
                     <input
                         class="w-full h-16 bg-transparent border-none px-6 text-xl font-bold text-text-main placeholder:text-text-muted/40 focus:ring-0 font-english"
                         id="term" th:field="*{term}" placeholder="例: Serendipity" type="text" required />
@@ -92,9 +54,9 @@
             </div>
 
             <div class="mb-8 group">
-                <label class="block text-sm font-bold text-text-muted mb-3 ml-2" for="definition">意味</label>
+                <label class="block text-sm font-bold text-text-muted mb-3 ml-2" for="definition">意味（問題）</label>
                 <div
-                    class="relative rounded-3xl shadow-neumorph-inset-deep bg-background-light overflow-hidden transition-all focus-within:shadow-neumorph-inset ring-1 ring-white/50">
+                    class="relative rounded-3xl shadow-neu-pressed bg-background-light overflow-hidden transition-all focus-within:shadow-neu-pressed ring-1 ring-white/50">
                     <textarea
                         class="w-full min-h-[140px] bg-transparent border-none p-6 text-base text-text-main placeholder:text-text-muted/40 focus:ring-0 resize-none leading-relaxed"
                         id="definition" th:field="*{definition}" placeholder="この言葉の意味を入力してください" required></textarea>
@@ -105,7 +67,7 @@
                 <label class="block text-sm font-bold text-text-muted mb-3 ml-2" for="category">カテゴリー</label>
                 <div class="relative group">
                     <select
-                        class="appearance-none w-full h-14 rounded-full shadow-neumorph bg-background-light px-6 text-base text-text-main focus:outline-none focus:ring-2 focus:ring-primary/10 active:shadow-neumorph-inset transition-all cursor-pointer border-none ring-1 ring-white/60"
+                        class="appearance-none w-full h-14 rounded-full shadow-neu-flat bg-background-light px-6 text-base text-text-main focus:outline-none focus:ring-2 focus:ring-primary/10 active:shadow-neu-pressed transition-all cursor-pointer border-none ring-1 ring-white/60"
                         id="category" th:field="*{category.id}">
                         <option class="text-text-muted" value="">カテゴリーを選択...</option>
                         <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
@@ -120,7 +82,7 @@
             <div class="mb-8 group">
                 <label class="block text-sm font-bold text-text-muted mb-3 ml-2" for="exampleSentence">例文・メモ</label>
                 <div
-                    class="relative rounded-3xl shadow-neumorph-inset-deep bg-background-light overflow-hidden transition-all focus-within:shadow-neumorph-inset ring-1 ring-white/50">
+                    class="relative rounded-3xl shadow-neu-pressed bg-background-light overflow-hidden transition-all focus-within:shadow-neu-pressed ring-1 ring-white/50">
                     <textarea
                         class="w-full min-h-[100px] bg-transparent border-none p-6 text-base text-text-main placeholder:text-text-muted/40 focus:ring-0 resize-none leading-relaxed"
                         id="exampleSentence" th:field="*{exampleSentence}" placeholder="覚え書き、例文、個人的なメモなど..."></textarea>
@@ -129,16 +91,16 @@
 
             <div class="h-6"></div>
 
-            <div class="absolute bottom-24 left-0 right-0 p-6 pt-0 z-20 pb-2">
+            <div class="mt-8 mb-6 pb-4 pt-0 z-20">
                 <button type="submit"
-                    class="w-full h-14 rounded-full bg-primary text-white shadow-btn-solid active:scale-[0.98] active:shadow-inner transition-all duration-200 font-bold text-base tracking-wide flex items-center justify-center gap-2 hover:bg-primary-hover ring-1 ring-white/20">
+                    class="w-full h-14 rounded-full bg-primary text-white shadow-[6px_6px_12px_rgba(161,142,120,0.35),-6px_-6px_12px_rgba(255,255,255,0.9)] active:scale-[0.98] active:shadow-inner transition-all duration-200 font-bold text-base tracking-wide flex items-center justify-center gap-2 hover:bg-[#8C7B68] ring-1 ring-white/20">
                     <span class="material-symbols-outlined text-[20px]">save</span>
                     <span th:text="${word.id == null ? '登録する' : '更新する'}">保存する</span>
                 </button>
             </div>
         </form>
 
-        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
+        <div th:replace="~{fragments/bottom_nav :: bottomNav('add')}"></div>
     </div>
 </body>
 

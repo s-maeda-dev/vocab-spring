@@ -1,43 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>VocabularySpring - クイズ設定</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#A5907E",
-                        "primary-dark": "#8C7A6B",
-                        "background-light": "#F5F4F0",
-                        "surface-light": "#F5F4F0",
-                        "text-main": "#4a3b32",
-                        "text-light": "#9CA3AF",
-                    },
-                    fontFamily: {
-                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
-                        "jp": ["Noto Sans JP", "sans-serif"]
-                    },
-                    boxShadow: {
-                        'neu-flat': '8px 8px 16px #D1D1CE, -8px -8px 16px #FFFFFF',
-                        'neu-pressed': 'inset 6px 6px 12px #D1D1CE, inset -6px -6px 12px #FFFFFF',
-                    }
-                },
-            },
-        }
-    </script>
+<head th:replace="~{fragments/head :: head('VocabularySpring - クイズ設定')}"></head>
+
+<body
+    class="bg-background-light font-display min-h-screen flex flex-col items-center justify-center text-text-main antialiased selection:bg-primary/30">
     <style>
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -61,10 +28,6 @@
             scrollbar-width: none;
         }
     </style>
-</head>
-
-<body
-    class="bg-background-light font-display min-h-screen flex flex-col items-center justify-center text-text-main antialiased selection:bg-primary/30">
     <div class="relative flex h-full min-h-screen w-full max-w-md flex-col bg-background-light shadow-2xl">
 
         <header class="flex items-center justify-between px-6 py-6 pt-14 z-10">
@@ -85,23 +48,13 @@
             <!-- Category Selection -->
             <section class="mb-10">
                 <h2 class="mb-5 text-base font-bold text-text-main font-jp pl-1">カテゴリー</h2>
-                <div class="flex gap-3 overflow-x-auto category-scroll pb-4 -mx-6 px-6">
-                    <!-- Select All -->
-                    <label class="cursor-pointer flex-shrink-0 relative">
-                        <input class="peer sr-only" name="categoryId" type="radio" value="" checked />
-                        <div
-                            class="px-5 py-2.5 rounded-full bg-surface-light shadow-neu-flat text-sm font-bold text-text-light peer-checked:text-primary peer-checked:shadow-neu-pressed transition-all duration-200 border border-transparent peer-checked:border-primary/20">
-                            すべてのカテゴリ
-                        </div>
-                    </label>
-                    <!-- Dynamic Categories -->
-                    <label class="cursor-pointer flex-shrink-0 relative" th:each="cat : ${categories}">
-                        <input class="peer sr-only" name="categoryId" type="radio" th:value="${cat.id}" />
-                        <div class="px-5 py-2.5 rounded-full bg-surface-light shadow-neu-flat text-sm font-bold text-text-light peer-checked:text-primary peer-checked:shadow-neu-pressed transition-all duration-200 border border-transparent peer-checked:border-primary/20"
-                            th:text="${cat.name}">
-                            Category
-                        </div>
-                    </label>
+                <div class="relative group mx-2">
+                    <select
+                        class="w-full h-14 rounded-full shadow-neu-flat bg-background-light px-6 text-base text-text-main focus:outline-none focus:ring-2 focus:ring-primary/10 active:shadow-neu-pressed transition-all cursor-pointer border-none ring-1 ring-white/60"
+                        name="categoryId">
+                        <option class="text-text-main font-bold" value="">すべてのカテゴリ</option>
+                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                    </select>
                 </div>
             </section>
 
@@ -140,47 +93,44 @@
             </section>
 
             <!-- Total Questions -->
-            <section class="mb-12">
+            <section class="mb-8">
                 <h2 class="mb-5 text-base font-bold text-text-main font-jp pl-1">問題数</h2>
-                <div class="flex gap-4">
-                    <label class="flex-1 cursor-pointer group">
+                <div class="flex gap-4 px-2">
+                    <label class="flex-1 cursor-pointer group relative">
                         <input checked class="peer sr-only" name="totalQuestions" type="radio" value="5" />
                         <div
-                            class="flex flex-col items-center justify-center py-6 rounded-2xl bg-surface-light shadow-neu-flat peer-checked:shadow-neu-pressed transition-all duration-200 border border-transparent peer-checked:border-primary/20">
+                            class="flex items-center justify-center py-3 rounded-2xl bg-surface-light shadow-neu-flat peer-checked:shadow-neu-pressed transition-all duration-200 border border-transparent peer-checked:border-primary/20 gap-1">
                             <span
-                                class="text-2xl font-bold text-text-light peer-checked:text-primary font-display mb-1 transition-colors">5</span>
+                                class="text-xl font-bold text-text-light peer-checked:text-primary font-display transition-colors">5</span>
                             <span
-                                class="text-[10px] font-bold text-text-light/70 peer-checked:text-primary/70 font-jp transition-colors">問</span>
+                                class="text-xs font-bold text-text-light/70 peer-checked:text-primary/70 font-jp transition-colors">問</span>
                         </div>
                     </label>
-                    <label class="flex-1 cursor-pointer group">
+                    <label class="flex-1 cursor-pointer group relative">
                         <input class="peer sr-only" name="totalQuestions" type="radio" value="10" />
                         <div
-                            class="flex flex-col items-center justify-center py-6 rounded-2xl bg-surface-light shadow-neu-flat peer-checked:shadow-neu-pressed transition-all duration-200 border border-transparent peer-checked:border-primary/20">
+                            class="flex items-center justify-center py-3 rounded-2xl bg-surface-light shadow-neu-flat peer-checked:shadow-neu-pressed transition-all duration-200 border border-transparent peer-checked:border-primary/20 gap-1">
                             <span
-                                class="text-2xl font-bold text-text-light peer-checked:text-primary font-display mb-1 transition-colors">10</span>
+                                class="text-xl font-bold text-text-light peer-checked:text-primary font-display transition-colors">10</span>
                             <span
-                                class="text-[10px] font-bold text-text-light/70 peer-checked:text-primary/70 font-jp transition-colors">問</span>
+                                class="text-xs font-bold text-text-light/70 peer-checked:text-primary/70 font-jp transition-colors">問</span>
                         </div>
                     </label>
                 </div>
             </section>
 
             <!-- Submit Button -->
-            <div
-                class="absolute bottom-24 left-0 w-full pointer-events-none z-20 bg-gradient-to-t from-background-light via-background-light/95 to-transparent h-40">
-                <div class="relative px-8 pt-16 pb-4 pointer-events-auto flex justify-center w-full h-full items-end">
-                    <button type="submit"
-                        class="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-8 py-4 text-white font-bold shadow-lg shadow-primary/30 active:scale-[0.98] transition-all duration-150 border-none">
-                        <span class="material-symbols-outlined text-[24px]">play_circle</span>
-                        <span class="text-base tracking-widest font-jp">クイズを開始</span>
-                    </button>
-                </div>
+            <div class="mt-6 mb-8 px-2">
+                <button type="submit"
+                    class="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-8 py-4 text-white font-bold shadow-[6px_6px_12px_rgba(161,142,120,0.35),-6px_-6px_12px_rgba(255,255,255,0.9)] active:scale-[0.98] active:shadow-inner transition-all duration-200 border-none">
+                    <span class="material-symbols-outlined text-[24px]">play_circle</span>
+                    <span class="text-base tracking-widest font-jp">クイズを開始</span>
+                </button>
             </div>
 
         </form>
 
-        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
+        <div th:replace="~{fragments/bottom_nav :: bottomNav('quiz')}"></div>
     </div>
 </body>
 

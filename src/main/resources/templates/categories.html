@@ -1,45 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <title>カテゴリ管理 - VocabSpring</title>
-</head>
+<head th:replace="~{fragments/head :: head('カテゴリ管理 - VocabSpring')}"></head>
 
-<body>
-    <h1>カテゴリ管理</h1>
+<body class="bg-background-light text-text-main font-display p-6">
+    <div
+        class="relative flex h-full min-h-screen w-full max-w-md flex-col bg-background-light shadow-2xl mx-auto pb-32">
+        <header class="flex items-center justify-between px-6 py-6 pt-14 z-10">
+            <a href="/"
+                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-light text-text-muted shadow-neu-flat active:shadow-neu-pressed transition-all duration-200">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <h1 class="text-lg font-bold text-text-main tracking-wider">カテゴリ管理</h1>
+            <div class="w-12"></div>
+        </header>
 
-    <nav>
-        <a href="/">ホームへ戻る</a>
-    </nav>
+        <main class="flex-1 px-6 mt-4">
+            <form th:action="@{/categories/add}" method="post" class="mb-8">
+                <label for="name" class="block text-sm font-bold text-text-muted mb-3 ml-2">新しいカテゴリを追加</label>
+                <div class="flex gap-3 h-14">
+                    <div
+                        class="relative flex-1 rounded-full shadow-neu-pressed bg-background-light overflow-hidden transition-all focus-within:shadow-neu-pressed ring-1 ring-white/50">
+                        <input type="text" id="name" name="name" required placeholder="カテゴリ名"
+                            class="w-full h-full bg-transparent border-none px-5 text-base font-bold text-text-main placeholder-text-muted/40 focus:ring-0" />
+                    </div>
+                    <button type="submit"
+                        class="h-full px-6 rounded-full bg-primary text-white shadow-neu-btn active:scale-95 transition-all text-sm font-bold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[18px]">add</span>
+                        追加
+                    </button>
+                </div>
+            </form>
 
-    <h2>新しいカテゴリを追加</h2>
-    <form th:action="@{/categories/add}" method="post">
-        <div>
-            <label for="name">カテゴリ名:</label>
-            <input type="text" id="name" name="name" required>
-            <button type="submit">追加</button>
-        </div>
-    </form>
+            <h2 class="text-sm font-bold text-text-muted mb-4 ml-2">カテゴリ一覧</h2>
+            <div class="flex flex-col gap-4">
+                <div th:each="category : ${categories}"
+                    class="flex items-center justify-between p-4 rounded-2xl bg-surface-light shadow-neu-flat">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="h-10 w-10 rounded-full bg-surface-light shadow-neu-pressed flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined">category</span>
+                        </div>
+                        <span class="text-base font-bold text-text-main" th:text="${category.name}">カテゴリ名</span>
+                    </div>
+                </div>
 
-    <h2>カテゴリ一覧</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>カテゴリ名</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="category : ${categories}">
-                <td th:text="${category.id}">1</td>
-                <td th:text="${category.name}">日常</td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(categories)}">
-                <td colspan="2">カテゴリが登録されていません。</td>
-            </tr>
-        </tbody>
-    </table>
+                <div th:if="${#lists.isEmpty(categories)}" class="flex flex-col items-center justify-center py-12">
+                    <div
+                        class="h-16 w-16 rounded-full bg-surface-light shadow-neu-pressed flex items-center justify-center text-text-muted mb-4">
+                        <span class="material-symbols-outlined text-3xl">category</span>
+                    </div>
+                    <p class="text-sm font-medium text-text-muted">カテゴリが登録されていません</p>
+                </div>
+            </div>
+        </main>
+
+        <div th:replace="~{fragments/bottom_nav :: bottomNav('categories')}"></div>
+    </div>
 </body>
 
 </html>

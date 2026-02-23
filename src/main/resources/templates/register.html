@@ -1,71 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>VocabularySpring - 新規登録</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <script id="tailwind-config">
-        // 同様の設定
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#A68B77", // Muted brown accent
-                        "bg-base": "#F4F2EE", // Very light warm off-white
-                        "text-main": "#4A3B32", // Dark brown for main text
-                        "text-sub": "#8C7A6D", // Muted text
-                        "shadow-light": "#FFFFFF",
-                        "shadow-dark": "#D1CDC7",
-                    },
-                    fontFamily: {
-                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
-                        "sans": ["Noto Sans JP", "sans-serif"]
-                    },
-                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px" },
-                },
-            },
-        }
-    </script>
-    <style>
-        body {
-            background-color: #F4F2EE;
-            font-family: 'Noto Sans JP', sans-serif;
-            color: #4A3B32;
-            min-height: max(800px, 100dvh);
-        }
+<head th:replace="~{fragments/head :: head('VocabularySpring - 新規登録')}"></head>
 
+<body
+    class="antialiased min-h-screen flex flex-col items-center py-6 justify-center selection:bg-[#A68B77] selection:text-white">
+    <style>
         .neu-raised {
             background: #F4F2EE;
             box-shadow: 9px 9px 18px #D1CDC7, -9px -9px 18px #FFFFFF;
             border: 1px solid rgba(255, 255, 255, 0.4);
-        }
-
-        .neu-pressed {
-            background: #F4F2EE;
-            box-shadow: inset 5px 5px 10px #D6D2CC, inset -5px -5px 10px #FFFFFF;
-            border: none;
-        }
-
-        .neu-icon-btn {
-            background: #F4F2EE;
-            box-shadow: 6px 6px 12px #D1CDC7, -6px -6px 12px #FFFFFF;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            color: #4A3B32;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-        }
-
-        .neu-icon-btn:active {
-            box-shadow: inset 4px 4px 8px #D1CDC7, inset -4px -4px 8px #FFFFFF;
-            transform: scale(0.96);
         }
 
         .neu-action-btn {
@@ -97,10 +41,6 @@
             opacity: 1;
         }
     </style>
-</head>
-
-<body
-    class="antialiased min-h-screen flex flex-col items-center py-6 justify-center selection:bg-[#A68B77] selection:text-white">
     <div class="w-full max-w-md px-8 py-8 flex flex-col h-full justify-center">
         <!-- Header -->
         <div class="flex flex-col items-center mb-8">

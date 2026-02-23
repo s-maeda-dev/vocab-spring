@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head(title)">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title th:text="${title}">VocabularySpring</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a18d7f", // Muted dusty brown
+                        "primary-dark": "#8a7566",
+                        "primary-light": "#d7ccc8",
+                        "background-light": "#f5f2f0", // Warm grey/beige
+                        "surface": "#f5f2f0",
+                        "text-main": "#4a403a", // Softer dark brown
+                        "text-muted": "#9d948e",
+                        // Old colors from login for compatibility if needed, though we should transition
+                        "bg-base": "#f5f2f0",
+                        "shadow-light": "#ffffff",
+                        "shadow-dark": "#dcd9d6",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
+                        "sans": ["Noto Sans JP", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "3xl": "2.5rem", "full": "9999px"
+                    },
+                    boxShadow: {
+                        'neu-flat': '8px 8px 16px #dcd9d6, -8px -8px 16px #ffffff',
+                        'neu-pressed': 'inset 4px 4px 8px #dcd9d6, inset -4px -4px 8px #ffffff',
+                        'neu-floating': '12px 12px 24px #d1ccc9, -12px -12px 24px #ffffff',
+                        'neu-btn': '6px 6px 12px #dcd9d6, -6px -6px 12px #ffffff',
+                        'nav-shadow': '0 -4px 20px rgba(0,0,0,0.03)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .neu-flat { @apply bg-background-light shadow-neu-flat border border-white/60; }
+            .neu-pressed { @apply bg-background-light shadow-neu-pressed border-none; }
+            .neu-icon-btn { @apply flex items-center justify-center rounded-full transition-all duration-300 active:shadow-neu-pressed active:scale-95 bg-background-light shadow-neu-flat border border-white/60; }
+            .nav-item-active { @apply shadow-neu-pressed text-primary; }
+            .no-scrollbar::-webkit-scrollbar { display: none; }
+            .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        }
+        body { background-color: #f5f2f0; min-height: max(884px, 100dvh); }
+    </style>
+</head>
+
+</html>

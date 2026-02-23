@@ -87,6 +87,10 @@ public class StatsService {
         Map<String, Long> weakCountMap = buildLongMap(
                 quizHistoryRepository.findWeakWordCountPerCategoryByUserId(userId));
 
+        // ── クエリ3.5: 全カテゴリの苦手単語リストを一括取得 ──
+        Map<String, List<String>> weakWordsMap = buildStringListMap(
+                quizHistoryRepository.findWeakWordsListPerCategoryByUserId(userId));
+
         // ── クエリ4: 全カテゴリの日別統計を一括取得 ──
         // キー=カテゴリ名, 値=DailyStatsDtoのリスト のマップに変換する
         Map<String, List<DailyStatsDto>> dailyStatsMap = buildDailyStatsMap(
@@ -103,10 +107,11 @@ public class StatsService {
             long wordCount = wordCountMap.getOrDefault(categoryName, 0L);
             long weakWordCount = weakCountMap.getOrDefault(categoryName, 0L);
             List<DailyStatsDto> dailyStats = dailyStatsMap.getOrDefault(categoryName, new ArrayList<>());
+            List<String> weakWords = weakWordsMap.getOrDefault(categoryName, new ArrayList<>());
 
             result.add(new CategoryDetailStatsDto(
                     categoryName, totalAnswered, totalCorrect, correctRate,
-                    wordCount, weakWordCount, dailyStats));
+                    wordCount, weakWordCount, dailyStats, weakWords));
         }
         return result;
     }
@@ -143,6 +148,16 @@ public class StatsService {
             // computeIfAbsent: キーがなければ空リストを作成してから追加する
             map.computeIfAbsent(categoryName, k -> new ArrayList<>())
                     .add(new DailyStatsDto(date, correct, incorrect));
+        }
+        return map;
+    }
+
+    private Map<String, List<String>> buildStringListMap(List<Object[]> rows) {
+        Map<String, List<String>> map = new HashMap<>();
+        for (Object[] row : rows) {
+            String categoryName = (String) row[0];
+            String term = (String) row[1];
+            map.computeIfAbsent(categoryName, k -> new ArrayList<>()).add(term);
         }
         return map;
     }

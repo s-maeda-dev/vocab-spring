@@ -1,45 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>クイズ実行中 - VocabularySpring</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
-        rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#A1887F",
-                        "primary-dark": "#8D6E63",
-                        "background-light": "#F2F0EB",
-                        "surface": "#F5F3EF",
-                        "text-main": "#4E4440",
-                        "text-sub": "#8D7B75",
-                    },
-                    fontFamily: {
-                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
-                        "body": ["Noto Sans JP", "sans-serif"]
-                    },
-                    boxShadow: {
-                        'neumorphic-flat': '8px 8px 16px #D6D2CC, -8px -8px 16px #FFFFFF',
-                        'neumorphic-pressed': 'inset 4px 4px 8px #D6D2CC, inset -4px -4px 8px #FFFFFF',
-                        'neumorphic-deep': '12px 12px 24px #D6D2CC, -12px -12px 24px #FFFFFF',
-                        'neumorphic-sm': '4px 4px 8px #D6D2CC, -4px -4px 8px #FFFFFF',
-                        'float': '0 10px 30px -10px rgba(161, 136, 127, 0.3)',
-                    }
-                },
-            },
-        }
-    </script>
+<head th:replace="~{fragments/head :: head('クイズ実行中 - VocabularySpring')}"></head>
+
+<body
+    class="bg-background-light text-text-main font-body min-h-screen flex flex-col items-center justify-center w-full selection:bg-primary/20 antialiased p-0 m-0">
     <style>
         .neu-input {
             box-shadow: inset 4px 4px 8px #D6D2CC, inset -4px -4px 8px #FFFFFF;
@@ -62,10 +27,6 @@
             min-height: max(884px, 100dvh);
         }
     </style>
-</head>
-
-<body
-    class="bg-background-light text-text-main font-body min-h-screen flex flex-col items-center justify-center w-full selection:bg-primary/20 antialiased p-0 m-0">
     <div class="relative w-full max-w-md bg-background-light h-screen min-h-[100dvh] flex flex-col shadow-2xl">
 
         <div class="px-6 pt-10 pb-4 flex items-center justify-between z-10 w-full">
@@ -133,7 +94,7 @@
             </div>
         </form>
 
-        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
+
     </div>
 </body>
 

@@ -1,54 +1,16 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>クイズ開始の確認 - VocabularySpring</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#A5907E",
-                        "primary-dark": "#8C7A6B",
-                        "background-light": "#F5F4F0",
-                        "surface-light": "#F5F4F0",
-                        "text-main": "#4a3b32",
-                        "text-light": "#9CA3AF",
-                    },
-                    fontFamily: {
-                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
-                        "jp": ["Noto Sans JP", "sans-serif"]
-                    },
-                    boxShadow: {
-                        'neu-flat': '8px 8px 16px #D1D1CE, -8px -8px 16px #FFFFFF',
-                        'neu-pressed': 'inset 6px 6px 12px #D1D1CE, inset -6px -6px 12px #FFFFFF',
-                        'neu-btn': '6px 6px 12px #D1D1CE, -6px -6px 12px #FFFFFF',
-                    }
-                },
-            },
-        }
-    </script>
+<head th:replace="~{fragments/head :: head('クイズ開始の確認 - VocabularySpring')}"></head>
+
+<body
+    class="bg-background-light font-jp min-h-screen flex flex-col items-center justify-center text-text-main antialiased selection:bg-primary/30">
     <style>
         body {
             min-height: max(884px, 100dvh);
             background-color: #F5F4F0;
         }
     </style>
-</head>
-
-<body
-    class="bg-background-light font-jp min-h-screen flex flex-col items-center justify-center text-text-main antialiased selection:bg-primary/30">
     <div class="relative flex h-full min-h-screen w-full max-w-md flex-col bg-background-light shadow-2xl pb-32">
 
         <header class="flex items-center justify-between px-6 py-6 pt-14 z-10">
@@ -111,7 +73,7 @@
         </main>
 
         <!-- Fragment location for bottom nav, to be replaced by regex later or manually included -->
-        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
+        <div th:replace="~{fragments/bottom_nav :: bottomNav('quiz')}"></div>
     </div>
 </body>
 

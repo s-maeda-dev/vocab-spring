@@ -1,46 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>VocabularySpring - 学習統計状況</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#a69383", // Muted dusty beige-brown
-                        "primary-dark": "#5d4037",
-                        "accent": "#9d8475",
-                        "background-light": "#e8e4df", // Creamy dusty base
-                        "text-main": "#4a403a",
-                        "text-sub": "#8c817b"
-                    },
-                    fontFamily: {
-                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
-                        "body": ["Noto Sans JP", "sans-serif"]
-                    },
-                    boxShadow: {
-                        'neu': '8px 8px 16px #c2beb9, -8px -8px 16px #ffffff',
-                        'neu-pressed': 'inset 6px 6px 12px #c2beb9, inset -6px -6px 12px #ffffff',
-                        'neu-sm': '4px 4px 8px #c2beb9, -4px -4px 8px #ffffff',
-                        'neu-float': '12px 12px 24px #c2beb9, -12px -12px 24px #ffffff',
-                    }
-                },
-            },
-        }
-    </script>
+<head th:replace="~{fragments/head :: head('VocabularySpring - 学習統計状況')}"></head>
+
+<body
+    class="bg-background-light text-text-main font-body min-h-screen flex flex-col items-center justify-start antialiased selection:bg-primary/20">
     <style>
         .neu-text-shadow {
             text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.6);
@@ -65,23 +29,15 @@
             padding: 10px 0;
         }
     </style>
-</head>
-
-<body
-    class="bg-background-light text-text-main font-body min-h-screen flex flex-col items-center justify-start antialiased selection:bg-primary/20">
     <div
         class="relative w-full max-w-md h-full min-h-[100dvh] flex flex-col bg-background-light shadow-2xl overflow-hidden pb-40">
 
         <header
             class="pt-12 pb-2 px-6 flex justify-between items-center sticky top-0 z-20 bg-background-light/95 backdrop-blur-sm shadow-[0_4px_10px_rgba(0,0,0,0.02)]">
             <div>
-                <h1 class="text-[22px] font-bold text-text-main neu-text-shadow tracking-tight">学習統計状況詳細</h1>
+                <h1 class="text-[22px] font-bold text-text-main neu-text-shadow tracking-tight">学習統計</h1>
                 <p class="text-[11px] text-text-sub font-medium mt-1 ml-1"
                     th:text="'総解答数 ' + ${totalStats.totalAnswered} + ' 回'">カテゴリ別分析データ</p>
-            </div>
-            <div
-                class="size-11 rounded-2xl bg-background-light shadow-neu flex items-center justify-center text-primary-dark">
-                <span class="material-symbols-outlined text-xl">analytics</span>
             </div>
         </header>
 
@@ -136,6 +92,7 @@
                                         stroke-width="3"></path>
                                 </svg>
                                 <div class="absolute flex flex-col items-center">
+                                    <span class="text-[10px] text-text-sub font-bold -mb-1">正答率</span>
                                     <span class="text-2xl font-display font-bold text-text-main"
                                         th:text="${#numbers.formatDecimal(cat.correctRate, 0, 0)} + '%'">85%</span>
                                 </div>
@@ -143,33 +100,33 @@
 
                             <div class="flex-1 grid grid-cols-2 gap-3">
                                 <div
-                                    class="flex flex-col justify-center p-3 rounded-2xl bg-background-light shadow-neu-sm text-center">
-                                    <span class="text-[9px] text-text-sub font-medium mb-1">解答</span>
-                                    <span class="text-sm font-bold text-text-main"
+                                    class="flex flex-col justify-center py-6 px-1 rounded-2xl bg-background-light shadow-neu-sm text-center">
+                                    <span class="text-[9px] text-text-sub font-medium mb-1 line-clamp-1">累計解答数</span>
+                                    <span class="text-base font-bold text-text-main"
                                         th:text="${cat.totalAnswered}">142</span>
                                 </div>
                                 <div
-                                    class="flex flex-col justify-center p-3 rounded-2xl bg-background-light shadow-neu-sm text-center">
-                                    <span class="text-[9px] text-text-sub font-medium mb-1">登録</span>
-                                    <span class="text-sm font-bold text-text-main" th:text="${cat.wordCount}">35</span>
-                                </div>
-                                <div
-                                    class="col-span-2 flex items-center justify-between p-3 rounded-2xl bg-background-light shadow-neu-sm group">
-                                    <div class="flex flex-col">
-                                        <span class="text-[9px] text-text-sub font-medium mb-1">苦手</span>
-                                        <span class="text-sm font-bold text-rose-800/80"
-                                            th:text="${cat.weakWordCount} + ' Words'">12 Words</span>
-                                    </div>
-                                    <span class="material-symbols-outlined text-rose-800/40 text-[18px]">warning</span>
+                                    class="flex flex-col justify-center py-6 px-1 rounded-2xl bg-background-light shadow-neu-sm text-center">
+                                    <span class="text-[9px] text-text-sub font-medium mb-1 line-clamp-1">登録単語数</span>
+                                    <span class="text-base font-bold text-text-main"
+                                        th:text="${cat.wordCount}">35</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Chart Line (If data exists) -->
-                        <div class="w-full pt-4 border-t border-[#c2beb9]/20" th:if="${!cat.dailyStats.isEmpty()}">
-                            <span class="text-[10px] text-text-sub font-bold px-2 block mb-2">直近14日間の推移</span>
-                            <div class="chart-wrapper">
-                                <canvas th:id="'chart-' + ${iterStat.index}"></canvas>
+                        <!-- Weak Words List -->
+                        <div class="w-full pt-4 border-t border-[#c2beb9]/20"
+                            th:if="${cat.weakWords != null and !cat.weakWords.isEmpty()}">
+                            <div class="flex items-center gap-2 mb-3 px-2">
+                                <span class="text-xs text-text-main font-bold">苦手単語</span>
+                                <span
+                                    class="text-[10px] text-text-sub font-bold bg-background-light shadow-[inset_2px_2px_5px_rgba(0,0,0,0.05),inset_-2px_-2px_5px_rgba(255,255,255,0.8)] px-2 py-0.5 rounded-full"
+                                    th:text="${#lists.size(cat.weakWords)} + ' Words'">3 Words</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2 px-1 pb-1">
+                                <span
+                                    class="px-3 py-1.5 rounded-lg bg-red-50 text-error font-medium text-xs border border-red-100/50 shadow-sm"
+                                    th:each="term : ${cat.weakWords}" th:text="${term}">word</span>
                             </div>
                         </div>
                     </div>
@@ -192,70 +149,10 @@
                 class="px-8 py-3 rounded-full bg-primary text-white font-bold shadow-neu-btn active:scale-95 transition-all text-sm">クイズに挑戦する</a>
         </main>
 
-        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
+        <div th:replace="~{fragments/bottom_nav :: bottomNav('stats')}"></div>
     </div>
 
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        // サーバーからカテゴリ別詳細統計を受け取る
-        const categoryDetailStats = /*[[${categoryDetailStats}]]*/[];
-
-        // カテゴリごとにグラフを描画
-        categoryDetailStats.forEach((cat, i) => {
-            const dailyData = cat.dailyStats;
-            if (!dailyData || dailyData.length === 0) return;
-
-            const canvasId = 'chart-' + i;
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) return;
-
-            new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels: dailyData.map(d => d.date.substring(5)), // MM-DD
-                    datasets: [
-                        {
-                            label: '正解',
-                            data: dailyData.map(d => d.correctCount),
-                            borderColor: '#a69383', // primary
-                            backgroundColor: 'rgba(166, 147, 131, 0.2)',
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 2,
-                            borderWidth: 2
-                        },
-                        {
-                            label: '不正解',
-                            data: dailyData.map(d => d.incorrectCount),
-                            borderColor: '#ef4444',
-                            backgroundColor: 'transparent',
-                            fill: false,
-                            tension: 0.4,
-                            pointRadius: 2,
-                            borderWidth: 2
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            mode: 'index', intersect: false,
-                            backgroundColor: 'rgba(74, 64, 58, 0.9)',
-                            titleFont: { size: 10 }, bodyFont: { size: 10 }
-                        }
-                    },
-                    scales: {
-                        x: { display: true, grid: { display: false }, ticks: { font: { size: 9 }, color: '#8c817b' } },
-                        y: { display: false, beginAtZero: true }
-                    }
-                }
-            });
-        });
-        /*]]>*/
-    </script>
+    <!-- Chart script removed as requested -->
 </body>
 
 </html>

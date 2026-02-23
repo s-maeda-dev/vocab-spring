@@ -1,68 +1,27 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>VocabularySpring - 単語帳一覧</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans+JP:wght@300;400;500;700&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#A68B77",
-                        "primary-dark": "#8a7362",
-                        "background-light": "#F5F3F0",
-                        "background-dark": "#2d2a26",
-                        "surface-light": "#F5F3F0",
-                        "surface-dark": "#2d2a26",
-                        "text-main": "#4A4A4A",
-                        "text-muted": "#9CA3AF",
-                    },
-                    fontFamily: {
-                        "display": ["Lexend", "Noto Sans JP", "sans-serif"],
-                        "body": ["Noto Sans JP", "sans-serif"]
-                    },
-                    boxShadow: {
-                        'neu-flat': '5px 5px 10px #d1cfcc, -5px -5px 10px #ffffff',
-                        'neu-flat-soft': '4px 4px 8px #d6d4d1, -4px -4px 8px #ffffff',
-                        'neu-pressed': 'inset 3px 3px 6px #d1cfcc, inset -3px -3px 6px #ffffff',
-                        'neu-pressed-deep': 'inset 5px 5px 10px #d1cfcc, inset -5px -5px 10px #ffffff',
-                        'neu-btn': '4px 4px 8px #d1cfcc, -4px -4px 8px #ffffff',
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
+<head th:replace="~{fragments/head :: head('VocabularySpring - 単語帳一覧')}"></head>
+<style>
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
 
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
 
-        body {
-            min-height: max(884px, 100dvh);
-            background-color: #F5F3F0;
-        }
+    body {
+        min-height: max(884px, 100dvh);
+        background-color: #F5F3F0;
+    }
 
-        /* Custom details marker hide */
-        details>summary::-webkit-details-marker {
-            display: none;
-        }
-    </style>
-</head>
+    /* Custom details marker hide */
+    details>summary::-webkit-details-marker {
+        display: none;
+    }
+</style>
 
 <body class="bg-background-light font-body text-text-main antialiased selection:bg-primary selection:text-white">
     <div
@@ -110,17 +69,17 @@
                             class="material-symbols-outlined text-text-muted transition-transform group-open:rotate-90">chevron_right</span>
                     </summary>
 
-                    <div class="flex flex-col gap-4 mt-4 px-1">
+                    <div class="flex flex-col gap-2 mt-2 px-1">
                         <div th:each="word : ${entry.value}"
-                            class="group/card flex items-center justify-between p-5 rounded-2xl bg-surface-light shadow-neu-flat-soft active:shadow-neu-pressed transition-all overflow-hidden relative">
+                            class="group/card flex items-center justify-between p-3 rounded-2xl bg-surface-light shadow-neu-flat-soft active:shadow-neu-pressed transition-all overflow-hidden relative">
                             <!-- Clickable area for editing -->
                             <a th:href="@{/words/edit/{id}(id=${word.id})}" class="flex-1 min-w-0 pr-4 outline-none"
                                 style="text-decoration:none;">
                                 <div class="flex flex-col w-full">
-                                    <div class="flex items-baseline gap-3 w-full mb-1">
-                                        <h3 class="text-text-main text-base font-bold font-display tracking-tight group-hover/card:text-primary transition-colors truncate"
+                                    <div class="flex flex-col gap-1 w-full mb-1">
+                                        <h3 class="text-text-main text-lg font-bold font-display tracking-tight group-hover/card:text-primary transition-colors truncate"
                                             th:text="${word.term}">Term</h3>
-                                        <span class="text-text-muted text-xs font-medium truncate"
+                                        <span class="text-text-muted text-sm font-medium truncate"
                                             th:text="${word.definition}">Definition</span>
                                     </div>
                                     <p class="text-[11px] text-text-muted/80 leading-snug w-full truncate"
@@ -157,7 +116,7 @@
 
         </div>
 
-        <div th:replace="~{fragments/bottom_nav :: bottomNav}"></div>
+        <div th:replace="~{fragments/bottom_nav :: bottomNav('words')}"></div>
     </div>
 
 </body>
