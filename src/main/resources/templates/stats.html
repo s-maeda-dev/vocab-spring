@@ -29,8 +29,7 @@
             padding: 10px 0;
         }
     </style>
-    <div
-        class="relative w-full max-w-md h-full min-h-[100dvh] flex flex-col bg-background-light shadow-2xl overflow-hidden pb-40">
+    <div class="relative w-full max-w-md h-full min-h-[100dvh] flex flex-col bg-background-light shadow-2xl pb-40">
 
         <header
             class="pt-12 pb-2 px-6 flex justify-between items-center sticky top-0 z-20 bg-background-light/95 backdrop-blur-sm shadow-[0_4px_10px_rgba(0,0,0,0.02)]">
@@ -130,14 +129,15 @@
                                     <span th:text="${ww.term}">word</span>
                                     <!-- Tooltip -->
                                     <div
-                                        class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs rounded-xl bg-gray-800/95 p-3 text-white opacity-0 transition-opacity group-hover:opacity-100 z-50 text-left">
-                                        <p class="font-bold text-sm mb-1 leading-tight" th:text="${ww.definition}">意味
+                                        class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-[180px] rounded-xl bg-[#4e342e]/95 p-3 text-[#f5f4f0] opacity-0 transition-opacity group-hover:opacity-100 z-50 text-left shadow-lg">
+                                        <p class="font-bold text-xs mb-1 leading-tight whitespace-normal"
+                                            th:text="${ww.definition}">意味
                                         </p>
-                                        <p class="text-[10px] text-gray-300 italic leading-snug"
+                                        <p class="text-[9px] text-[#f5f4f0]/80 italic leading-snug whitespace-normal"
                                             th:if="${ww.exampleSentence != null and !ww.exampleSentence.isEmpty()}"
                                             th:text="${ww.exampleSentence}">例文</p>
                                         <div
-                                            class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-800/95">
+                                            class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-[#4e342e]/95">
                                         </div>
                                     </div>
                                 </span>

@@ -93,7 +93,7 @@ public interface QuizHistoryRepository extends JpaRepository<QuizHistory, Long> 
                         "JOIN words w ON qh.word_id = w.id " +
                         "LEFT JOIN categories c ON w.category_id = c.id " +
                         "WHERE qh.user_id = :userId " +
-                        "GROUP BY c.name ORDER BY total_count DESC", nativeQuery = true)
+                        "GROUP BY c.id, c.name ORDER BY total_count DESC", nativeQuery = true)
         List<Object[]> findCategoryStatsByUserId(@Param("userId") Long userId);
 
         // ─────────────────────────────────────────────
@@ -125,7 +125,7 @@ public interface QuizHistoryRepository extends JpaRepository<QuizHistory, Long> 
                         "WHERE qh.user_id = :userId " +
                         "AND COALESCE(c.name, '未分類') = :categoryName " +
                         "AND qh.answered_at >= :sinceDate " +
-                        "GROUP BY DATE(qh.answered_at) ORDER BY answer_date", nativeQuery = true)
+                        "GROUP BY c.id, c.name, DATE(qh.answered_at) ORDER BY answer_date", nativeQuery = true)
         List<Object[]> findDailyStatsByUserIdAndCategoryName(@Param("userId") Long userId,
                         @Param("categoryName") String categoryName,
                         @Param("sinceDate") java.time.LocalDateTime sinceDate);
@@ -160,7 +160,7 @@ public interface QuizHistoryRepository extends JpaRepository<QuizHistory, Long> 
                         "JOIN words w ON qh.word_id = w.id " +
                         "LEFT JOIN categories c ON w.category_id = c.id " +
                         "WHERE qh.user_id = :userId AND qh.is_correct = false " +
-                        "GROUP BY c.name", nativeQuery = true)
+                        "GROUP BY c.id, c.name", nativeQuery = true)
         List<Object[]> findWeakWordCountPerCategoryByUserId(@Param("userId") Long userId);
 
         @Query(value = "SELECT COALESCE(c.name, '未分類') AS category_name, " +
@@ -185,7 +185,7 @@ public interface QuizHistoryRepository extends JpaRepository<QuizHistory, Long> 
                         "JOIN words w ON qh.word_id = w.id " +
                         "LEFT JOIN categories c ON w.category_id = c.id " +
                         "WHERE qh.user_id = :userId AND qh.answered_at >= :sinceDate " +
-                        "GROUP BY c.name, DATE(qh.answered_at) " +
+                        "GROUP BY c.id, c.name, DATE(qh.answered_at) " +
                         "ORDER BY category_name, answer_date", nativeQuery = true)
         List<Object[]> findDailyStatsPerCategoryByUserId(@Param("userId") Long userId,
                         @Param("sinceDate") java.time.LocalDateTime sinceDate);

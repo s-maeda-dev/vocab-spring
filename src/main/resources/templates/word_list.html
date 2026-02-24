@@ -39,17 +39,6 @@
             </div>
         </header>
 
-        <!-- Search / Filter (Visual only for now, as existing backend doesn't implement dynamic search easily) -->
-        <div class="px-6 py-2">
-            <div
-                class="flex items-center w-full h-12 rounded-xl bg-surface-light shadow-neu-pressed px-4 transition-all">
-                <span class="material-symbols-outlined text-text-muted mr-3 text-[20px]">search</span>
-                <input
-                    class="w-full bg-transparent border-none focus:ring-0 text-text-main placeholder-text-muted text-sm font-medium tracking-wide"
-                    placeholder="単語を検索..." type="text" />
-            </div>
-        </div>
-
         <!-- Grouped lists -->
         <div class="flex-1 overflow-y-auto px-6 pb-32 hide-scrollbar space-y-4 pt-4">
 
@@ -77,12 +66,12 @@
                                 style="text-decoration:none;">
                                 <div class="flex flex-col w-full">
                                     <div class="flex flex-col gap-1 w-full mb-1">
-                                        <h3 class="text-text-main text-lg font-bold font-display tracking-tight group-hover/card:text-primary transition-colors truncate"
+                                        <h3 class="text-text-main text-lg font-bold font-display tracking-tight group-hover/card:text-primary transition-colors"
                                             th:text="${word.term}">Term</h3>
-                                        <span class="text-text-muted text-sm font-medium truncate"
+                                        <span class="text-text-muted text-sm font-medium whitespace-normal"
                                             th:text="${word.definition}">Definition</span>
                                     </div>
-                                    <p class="text-[11px] text-text-muted/80 leading-snug w-full truncate"
+                                    <p class="text-[11px] text-text-muted/80 leading-snug w-full whitespace-normal"
                                         th:text="${word.exampleSentence != null and word.exampleSentence != '' ? word.exampleSentence : '例文なし'}">
                                         Example sentence</p>
                                 </div>

@@ -63,6 +63,6 @@ public interface WordRepository extends JpaRepository<Word, Long> {
                         "FROM words w " +
                         "LEFT JOIN categories c ON w.category_id = c.id " +
                         "WHERE w.user_id = :userId " +
-                        "GROUP BY c.name", nativeQuery = true)
+                        "GROUP BY c.id, c.name", nativeQuery = true)
         List<Object[]> findWordCountPerCategoryByUserId(@Param("userId") Long userId);
 }
