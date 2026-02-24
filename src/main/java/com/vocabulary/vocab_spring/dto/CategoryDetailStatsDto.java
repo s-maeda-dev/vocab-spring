@@ -19,5 +19,5 @@ public class CategoryDetailStatsDto {
     private long wordCount; // このカテゴリに登録されている単語数
     private long weakWordCount; // このカテゴリの苦手単語数
     private List<DailyStatsDto> dailyStats; // 直近N日間の日別統計（折れ線グラフ用）
-    private List<String> weakWords; // このカテゴリの苦手単語一覧
+    private List<WeakWordDto> weakWords; // このカテゴリの苦手単語一覧
 }

@@ -30,4 +30,32 @@ public class CategoryService {
         category.setUser(user);
         categoryRepository.save(category);
     }
+
+    @Autowired
+    private com.vocabulary.vocab_spring.repository.WordRepository wordRepository;
+
+    @Transactional
+    public void updateCategory(Long id, String name, User user) {
+        categoryRepository.findById(id).ifPresent(category -> {
+            if (category.getUser().getId().equals(user.getId())) {
+                category.setName(name);
+                categoryRepository.save(category);
+            }
+        });
+    }
+
+    @Transactional
+    public void deleteCategory(Long id, User user) {
+        categoryRepository.findById(id).ifPresent(category -> {
+            if (category.getUser().getId().equals(user.getId())) {
+                List<com.vocabulary.vocab_spring.entity.Word> words = wordRepository.findByUserAndCategory(user,
+                        category);
+                for (com.vocabulary.vocab_spring.entity.Word w : words) {
+                    w.setCategory(null);
+                    wordRepository.save(w);
+                }
+                categoryRepository.delete(category);
+            }
+        });
+    }
 }

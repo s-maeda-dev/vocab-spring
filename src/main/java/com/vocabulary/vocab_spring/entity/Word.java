@@ -38,4 +38,7 @@ public class Word {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @jakarta.persistence.OneToMany(mappedBy = "word", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<QuizHistory> quizHistories = new java.util.ArrayList<>();
 }

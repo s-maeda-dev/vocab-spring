@@ -1,194 +1,183 @@
 # 🚀 Vocab-Spring システム設計図 (System Blueprint)
 
-このドキュメントでは、汎用単語・用語学習アプリ `語彙の泉 VocabularySpring` の全体像を、エンジニアの視点と初学者のわかりやすさを両立して解説します。
+このドキュメントでは、汎用単語・用語学習アプリ `わたしの単語帳 VocabularySpring` の全体像を、エンジニアの視点とプログラミング初学者のわかりやすさを両立して解説します。
 
 ---
 
-## 1. システム概要
-`語彙の泉 VocabularySpring` は、英単語に限らず、専門用語、IT用語、資格試験の対策など、あらゆる「暗記と理解」をサポートする自分専用のデジタル単語帳アプリです。
-単語一覧表示による不明単語の確認、AI（Gemini）による学習フィードバックや、詳細な学習統計機能を備え、効率的な知識の定着を支援します。
+## 1. 🌟 システム概要
+`わたしの単語帳 VocabularySpring` は、英単語に限らず、専門用語、IT用語、資格試験の対策など、あらゆる「暗記と理解」をサポートする自分専用のデジタル単語帳アプリです。
+
+**主な特徴:**
+- **カテゴリ別管理**: 用語をカテゴリごとに分けて整理・学習。
+- **AI（Gemini）チューター**: 学習結果に対して、AIが専用のフィードバックや励ましのコメントを提供。
+- **データ分析（統計）**: 正答率や「苦手な単語」をカテゴリ別に自動で集計し、弱点克服をサポート。
+- **洗練されたデザイン**: 最新の Neumorphism（ニューモーフィズム）デザインを採用し、直感的で美しいUIを提供。
 
 ---
 
-## 2. システムアーキテクチャ
+## 2. 🏗️ システムアーキテクチャ（全体構造）
+アプリ全体は、画面（フロントエンド）と裏側の処理（バックエンド）が分担して働く「3層アーキテクチャ」で構築されています。
+
 ```mermaid
 graph TD
-    User[ユーザー (ブラウザ)] <--> UI[フロントエンド (Thymeleaf)]
+    User[ユーザー (ブラウザ)] <--> UI[フロントエンド (Thymeleaf / Tailwind CSS)]
     
-    subgraph Spring Boot Application
-        UI <--> Controller[Controller層: 窓口]
-        Controller <--> Service[Service層: 業務ロジック]
-        Service <--> Repository[Repository層: データ操作]
+    subgraph Local Development (自分のPC)
+        subgraph Spring Boot Application
+            UI <--> Controller[Controller層]
+            Controller <--> Service[Service層]
+            Service <--> Repository[Repository層]
+        end
+        IDE[Windsurf / VS Code] --> |開発・デバッグ| SpringBoot
+        Env[".env (API Key管理)"] -.-> Service
     end
-    
-    Repository <--> DB[(データベース: H2 Database)]
-    Service <--> GeminiAPI[外部API: Google Gemini API]
+
+    Repository <--> DB[(MySQL)]
+    Service <--> GeminiAPI[Google Gemini AI]
+
+    IDE --> |Push: バージョン管理| GitHub[(GitHub Repository)]
+    GitHub --> |管理| SourceCode[ソースコード / README]
 ```
 
 ---
 
-## 3. 技術スタック
-| カテゴリ | 技術 |
-| :--- | :--- |
-| **言語** | Java 17 |
-| **フレームワーク** | Spring Boot 3.4.x (Security, Data JPA, Validation, Web) |
-| **データベース** | H2 Database (開発/テスト用インメモリ) |
-| **テンプレートエンジン** | Thymeleaf (HTML5) |
-| **スタイリング** | Vanilla CSS (カスタムデザイン) |
-| **AI 連携** | Google Gemini API (gemini-2.0-flash) |
-| **認証・認可** | Spring Security (Form Login) |
-| **ビルドツール** | Maven |
+## 3. 🛠️ 技術スタック
+
+| カテゴリ | 使用技術 | ポイント解説 |
+| :--- | :--- | :--- |
+| **言語** | Java 17 | 厳密な型定義を持つJavaを採用し、バグの少ない堅牢なバックエンドを構築。 |
+| **フレームワーク** | Spring Boot 3.4.x | 実務のデファクトスタンダード。DIやAOPといった概念を学びながら実装。 |
+| **データベース** | MySQL | 業界標準のRDBMS。データの永続化と、履歴分析のための複雑なクエリ（SQL）を処理。 |
+| **AI 連携** | Google Gemini API | 最新の生成AIを活用し、ユーザー体験（UX）を向上させる独自のロジックを実装。 |
+| **コード管理** | GitHub | Gitを用いたバージョン管理を徹底。READMEの整備を含め、共同開発を意識した運用。 |
+| **セキュリティ** | Spring Security / .env | 認証・認可の仕組みを理解し、環境変数によるAPIキーの隠蔽など安全な開発を実践。 |
+| **デザイン** | Neumorphism / Tailwind | Tailwind CSSによる効率的なスタイリングと、直感的なニューモーフィズムUIの両立。 |
 
 ---
 
-## 4. データベース設計
-主に4つのテーブルで構成されています。
+## 4. 🗄️ データベース設計（データの保存ルール）
+システムは主に4つのテーブル（データの入れ物）で構成されています。
 
 ### ① `users` (ユーザー)
-- 役割: ログイン情報とユーザー設定を管理。
-- 主なカラム: `id`, `username`, `password`, `email`, `role`
+- **役割**: ログイン情報とユーザーごとの設定を管理。
+- **主な項目**: `id`, `username`, `password`
 
 ### ② `categories` (カテゴリ)
-- 役割: 用語をグループ化するための分類（例：「基本情報技術者」「TOEIC頻出」「医学用語」など）。
-- 主なカラム: `id`, `name`, `user_id`(FK)
+- **役割**: 単語をグループ分けする箱（例：「基本情報技術者」「TOEIC」など）。
+- **主な項目**: `id`, `name`, `user_id`
 
 ### ③ `words` (単語・用語)
-- 役割: 学習対象の用語データ。
-- 主なカラム: `id`, `term` (用語名), `definition` (意味・解説), `example_sentence` (例文・使用例), `user_id`(FK), `category_id`(FK)
+- **役割**: 実際に学習する用語のデータ。
+- **主な項目**: `id`, `term` (単語名/正解), `definition` (意味/問題), `category_id`
 
 ### ④ `quiz_histories` (クイズ履歴)
-- 役割: クイズの1問ごとの正誤を記録。統計データの元。
-- 主なカラム: `id`, `user_id`(FK), `word_id`(FK), `is_correct`, `answered_at`
+- **役割**: クイズ1問ごとの「いつ」「どの単語を」「正解したか」の記録。「苦手単語」の抽出に使われます。
+- **主な項目**: `id`, `user_id`, `word_id`, `is_correct` (正解したか)
 
 ---
 
-## 5. API / 画面パス 仕様
-主要なエンドポイントの役割です。
+## 5. 🗺️ 画面一覧とURL（ルーティング）
 
-| 種類 | パス | 役割 |
+| 画面名 | URLパス | 役割・機能 |
 | :--- | :--- | :--- |
-| **ホーム** | `/` | ログイン後のホームページ（学習サマリー表示） |
-| **認証** | `/login`, `/register` | ログイン画面、新規会員登録画面 |
-| **用語帳** | `/words` | 用語一覧（カテゴリ別グループ表示） |
-| **用語操作** | `/words/new`, `/words/edit/{id}` | 用語の新規登録と編集 |
-| **クイズ** | `/quiz/settings` | 出題モード（全用語/苦手）や問題数の設定 |
-| **クイズ実行** | `/quiz`, `/quiz/answer` | 問題表示と解答処理 |
-| **クイズ結果** | `/quiz/summary` | セッション完了後のAIコメントと名言表示 |
-| **統計** | `/stats` | 学習の進捗をグラフと数値で可視化 |
+| **ホーム** | `/` | ログイン後のトップページ。最新の学習サマリーを表示。 |
+| **ログイン/登録** | `/login`, `/register` | 認証画面。水滴のアイコンとおしゃれな凹凸デザイン。 |
+| **単語帳** | `/words` | 登録した単語をカテゴリごとに一覧表示。 |
+| **単語追加/編集** | `/words/new`, `/words/edit/{id}` | 新しい単語の登録、既存単語の修正。 |
+| **クイズ設定** | `/quiz/settings` | 出題カテゴリ、出題範囲（全単語/苦手のみ）、問題数（5/10問）を選択。 |
+| **クイズ実行** | `/quiz`, `/quiz/answer` | 1問ずつ問題を表示し、解答を判定して正誤を表示。 |
+| **クイズ完了** | `/quiz/summary` | 全問終了後の結果発表。AIからのフィードバックと偉人の名言を表示。 |
+| **学習統計** | `/stats` | カテゴリごとの正答率グラフ、累計解答数、登録単語数、そして「苦手単語一覧」を視覚的に表示。 |
 
 ---
 
-## 6. AI & インスピレーション機能
-学習を楽しく継続するための「知能」と「言葉」の仕組みです。
+## 6. 🤖 独自の魅力機能（AI & インスピレーション）
 
-### AI フィードバック (`GeminiService`)
-- クイズ終了時に今回の成績をAIに送信。
-- AIが「優しいチューター」として、間違えた用語の意味を補足したり、励ましのコメントを生成します。
+### 1. AI 専属チューター (`GeminiService`)
+- クイズが終わると、その成績（どの単語を間違えたか等）を裏側でGoogle Gemini AIに送信します。
+- AIが「優しいチューター」として、間違えた用語の補足説明や、次へ向けての励ましのコメントを自動生成します✨
 
-### 偉人の名言 (`QuoteService`)
-- プログラム内に厳選された名言リスト（エジソン、マンデラ等）を保持。
-- 学習の終わりにランダムで表示し、ユーザーのモチベーションを支えます。
+### 2. 偉人の名言システム (`QuoteService`)
+- プログラム内に厳選された名言リスト（エジソン、アインシュタイン等）を保持。
+- 学習の終わりにランダムで表示し、ユーザーの「あと一歩」のモチベーションを支えます。
+
+### 3. 動的「苦手単語」抽出システム (`StatsService`)
+- 過去のクイズ履歴（`quiz_histories`）を瞬時に分析し、一度でも間違えた単語を「苦手単語」としてピックアップします。
+- クイズ設定で「苦手な単語のみ」を選んで集中的に弱点を克服できます。
 
 ---
 
-## 7. プログラムの繋がり図（ファイル相関図）
+## 7. 🧩 プログラムの繋がり図（ファイル相関図）
 実際にコードを書く際に、どのファイルが連携しているかを表した図です。
 
 ```mermaid
 graph LR
-    subgraph "画面 (View)"
-        HTML["*.html<br/>(Thymeleaf)"]
+    subgraph "画面 (UI View)"
+        HTML["*.html (各画面)<br/>+<br/>fragments (共通部品)"]
     end
 
     subgraph "コントローラー (窓口)"
-        QC["QuizController<br/>StatsController<br/>WordController"]
+        QC["Controller群<br/>(Quiz, Stats, Word等)"]
     end
 
     subgraph "サービス (ロジック)"
-        QS["QuizService<br/>(問題選び・履歴)"]
-        SS["StatsService<br/>(統計の計算)"]
-        GS["GeminiService<br/>(AIとの連携)"]
+        QS["QuizService (出題・履歴)"]
+        SS["StatsService (集計・分析)"]
+        GS["GeminiService (AI連携)"]
     end
 
-    subgraph "データ管理 (Persistence)"
-        WR["WordRepository"]
-        QR["QuizHistoryRepository"]
-        E["Word / QuizHistory<br/>(Entity)"]
+    subgraph "データ管理 (DB操作)"
+        R["Repository群<br/>(Word, History等)"]
+        E["Entity<br/>(DBの形を表すJava)"]
     end
 
     HTML <--> QC
     QC --> QS
     QC --> SS
-    QS --> WR
-    SS --> QR
-    QS --> QR
-    WR ..> E
-    QR ..> E
+    QC --> GS
+    QS --> R
+    SS --> R
+    R ..> E
 ```
 
 ---
 
-## 8. 動作フロー（シーケンス図）
-「クイズに答えてから履歴に残り、AIが分析するまで」の流れです。
-
-```mermaid
-sequenceDiagram
-    actor User
-    participant Browser as ブラウザ
-    participant Controller as QuizController
-    participant Service as QuizService
-    participant AI as GeminiService
-    participant DB as データベース
-
-    User->>Browser: 解答を入力して送信
-    Browser->>Controller: POST /quiz/answer
-    Controller->>Service: saveQuizHistory(正誤)
-    Service->>DB: 履歴を保存
-    Controller-->>Browser: 1問ごとの結果表示 (正解/不正解)
-
-    Note over User, DB: これを規定回数（5回か10回）繰り返す
-
-    Browser->>Controller: GET /quiz/summary
-    Controller->>AI: getFeedback(今回の成績)
-    AI-->>Controller: 励ましのコメント
-    Controller-->>Browser: summary画面を表示 (AIコメント + 名言)
-```
-
----
-
-## 9. ファイルの場所マップ (File Location Map)
-VS Codeのエクスプローラーで迷ったときのためのガイドです。
+## 8. 📂 ファイルの場所ガイド (File Location Map)
+VS Codeのエクスプローラーで特定のファイルを探す際の地図です。
 
 ```text
 vocab-spring (プロジェクトのルート)
- ├── .env                         (← APIキーなどを隠しておく場所)
+ ├── .env                         ( APIキー(Gemini)を安全に隠しておく場所 )
  ├── src/main/java/com/vocabulary/vocab_spring
- │    ├── config/                 # セキュリティなどの設定
- │    ├── controller/             # ② 各機能の「窓口」
+ │    ├── config/                 # 認証・セキュリティ設定 (SecurityConfig)
+ │    ├── controller/             # ② 各機能の「窓口係」(ブラウザからのURLを受け取る)
  │    ├── entity/                 # ③ データの「設計図」(Word, User, Category)
- │    ├── repository/             # ④ データベースの「出し入れ係」
- │    ├── service/                # ⑤ みんなに指示を出す「司令塔」
- │    │    ├── QuizService.java      (問題選び・履歴記録)
- │    │    ├── StatsService.java     (グラフ用データの集計)
- │    │    └── GeminiService.java    (AI(Gemini)との通訳)
- │    └── dto/                    # 画面に渡す「集計データ用の中身」
+ │    ├── repository/             # ④ DBの「出し入れ係」(SQLを自動で作ってくれる)
+ │    ├── service/                # ⑤ みんなに指示を出す「司令塔」(高度な計算やAI通信)
+ │    │    ├── QuizService.java      (クイズ出題・苦手単語抽出)
+ │    │    ├── StatsService.java     (カテゴリ別統計データの集計)
+ │    │    └── GeminiService.java    (AI(Gemini)との双方向通信)
+ │    └── dto/                    # DBの生データではなく画面に渡すためだけの「まとめ箱」
  └── src/main/resources
-      ├── application.properties   (システム全体の基本設定)
-      └── templates/              # ① HTML（画面そのもの）
-           ├── fragments/            (共通パーツ: ヘッダー等)
-           └── *.html                (各画面)
+      ├── application.properties   (システム全体の基本設定、DB接続先など)
+      └── templates/              # ① HTML（ユーザーが見る画面そのもの）
+           ├── fragments/            (★便利！ 全画面で使い回す共通パーツ)
+           │    ├── head.html          (フォントやTailwind設定の共通化)
+           │    └── bottom_nav.html    (画面下のアイコン付きナビゲーション)
+           ├── login.html            (ログイン画面)
+           ├── stats.html            (統計画面)
+           └── ...その他各画面のHTML
 ```
 
 ---
 
-## 10. 全体のまとめ
-Vocab-Springは、単なる暗記アプリではなく、**「情報の整理（Entity）」「データの保存（Repository）」「複雑な処理（Service）」「画面の制御（Controller）」**が、プロの開発現場でも通用する「3層アーキテクチャ」に基づいて構築されています。
+## 9. 🎯 アプリ開発の基本ルール（まとめ）
+このアプリは、プロの開発現場で使われる**「3層アーキテクチャ」**という整理整頓のルールに基づいて作られています。新しい機能を追加するときは、以下の順番で作業するとスムーズです！
 
-英語学習はもちろん、IT資格や専門知識の習得など、あらゆる学習シーンで活用できる柔軟な設計になっています。新しい機能を追加したり、開発を進める際は：
-1. **Entity**: 扱うデータの項目を決める
-2. **Repository**: 保存・取得の命令を作る
-3. **Service**: 具体的な判定や計算のルールを作る
-4. **Controller**: 画面と情報のやり取りを繋ぐ
-5. **HTML**: ユーザーに見える画面を作る
+1. **Entity (エンティティ)**: 保存したいデータの「項目」を決める（単語名、意味など）
+2. **Repository (リポジトリ)**: データを保存・検索する「命令」を作る（例：「苦手な単語を探す」）
+3. **Service (サービス)**: 具体的な「計算・判定ルール」を作る（例：「正答率をパーセントで計算する」）
+4. **Controller (コントローラー)**: ブラウザからリクエストを受け取り、Serviceに指示を出し、結果をHTMLに渡す
+5. **HTML / Fragments**: Thymeleafを使って結果をきれいに画面に表示する（部品化して使い回す！）
 
-という順番で意識すると、迷わずスムーズに開発を進めることができます。この設計図を「地図」として活用しながら、さらにアプリを成長させていきましょう！
+

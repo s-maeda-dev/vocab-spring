@@ -125,8 +125,22 @@
                             </div>
                             <div class="flex flex-wrap gap-2 px-1 pb-1">
                                 <span
-                                    class="px-3 py-1.5 rounded-lg bg-red-50 text-error font-medium text-xs border border-red-100/50 shadow-sm"
-                                    th:each="term : ${cat.weakWords}" th:text="${term}">word</span>
+                                    class="group relative px-3 py-1.5 rounded-lg bg-red-50 text-error font-medium text-xs border border-red-100/50 shadow-sm cursor-help"
+                                    th:each="ww : ${cat.weakWords}">
+                                    <span th:text="${ww.term}">word</span>
+                                    <!-- Tooltip -->
+                                    <div
+                                        class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs rounded-xl bg-gray-800/95 p-3 text-white opacity-0 transition-opacity group-hover:opacity-100 z-50 text-left">
+                                        <p class="font-bold text-sm mb-1 leading-tight" th:text="${ww.definition}">意味
+                                        </p>
+                                        <p class="text-[10px] text-gray-300 italic leading-snug"
+                                            th:if="${ww.exampleSentence != null and !ww.exampleSentence.isEmpty()}"
+                                            th:text="${ww.exampleSentence}">例文</p>
+                                        <div
+                                            class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-800/95">
+                                        </div>
+                                    </div>
+                                </span>
                             </div>
                         </div>
                     </div>

@@ -43,6 +43,24 @@
                         </div>
                         <span class="text-base font-bold text-text-main" th:text="${category.name}">カテゴリ名</span>
                     </div>
+                    <div class="flex gap-2">
+                        <form th:action="@{/categories/edit/{id}(id=${category.id})}" method="post" class="inline"
+                            onsubmit="const newName = prompt('新しいカテゴリ名を入力してください:', this.dataset.name); if(newName){ this.name.value = newName; return true; } return false;"
+                            th:data-name="${category.name}">
+                            <input type="hidden" name="name" value="" />
+                            <button type="submit"
+                                class="text-xs text-text-muted hover:text-primary transition-colors p-2" title="編集">
+                                <span class="material-symbols-outlined text-[18px]">edit</span>
+                            </button>
+                        </form>
+                        <form th:action="@{/categories/delete/{id}(id=${category.id})}" method="post" class="inline"
+                            onsubmit="return confirm('本当にこのカテゴリを削除しますか？\n（関連する単語は削除されず「未分類」になります）');">
+                            <button type="submit" class="text-xs text-text-muted hover:text-error transition-colors p-2"
+                                title="削除">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 <div th:if="${#lists.isEmpty(categories)}" class="flex flex-col items-center justify-center py-12">

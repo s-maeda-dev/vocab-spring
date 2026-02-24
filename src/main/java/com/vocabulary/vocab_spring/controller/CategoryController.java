@@ -47,4 +47,24 @@ public class CategoryController {
         categoryService.addCategory(name, user);
         return "redirect:/categories";
     }
+
+    @PostMapping("/edit/{id}")
+    public String editCategory(@AuthenticationPrincipal UserDetails userDetails,
+            @org.springframework.web.bind.annotation.PathVariable Long id, @RequestParam String name) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        categoryService.updateCategory(id, name, user);
+        return "redirect:/categories";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteCategory(@AuthenticationPrincipal UserDetails userDetails,
+            @org.springframework.web.bind.annotation.PathVariable Long id) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        categoryService.deleteCategory(id, user);
+        return "redirect:/categories";
+    }
 }

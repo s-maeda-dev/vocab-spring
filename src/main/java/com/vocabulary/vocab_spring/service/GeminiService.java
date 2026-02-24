@@ -40,9 +40,9 @@ public class GeminiService {
         String mistakesText = recentMistakes.isEmpty() ? "特になし" : String.join(", ", recentMistakes);
 
         String prompt = String.format(
-                "あなたはユーザーの英語学習をサポートする優しいチューターです。以下の成績と今回のクイズで間違えた単語のリストを見て、ユーザーを励ます150文字程度の短いコメントを日本語で作成してください。\n" +
+                "あなたはユーザーの単語・用語学習をサポートする優しいチューターです。以下の成績と今回のクイズで間違えた用語のリストを見て、ユーザーを励ます150文字程度の短いコメントを日本語で作成してください。\n" +
                         "・正答率: %d問中 %d問正解 (%.1f%%)\n" +
-                        "・今回のクイズで間違えた単語: %s\n" +
+                        "・今回のクイズで間違えた用語: %s\n" +
                         "・今回のクイズ結果のみに基づいてコメントしてください（他の単語には触れないでください）\n" +
                         "・出力はコメントのテキストのみ（挨拶やマークダウン等は不要）",
                 totalQuestions, correctAnswers, correctRate, mistakesText);

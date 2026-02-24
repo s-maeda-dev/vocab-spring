@@ -164,12 +164,12 @@ public interface QuizHistoryRepository extends JpaRepository<QuizHistory, Long> 
         List<Object[]> findWeakWordCountPerCategoryByUserId(@Param("userId") Long userId);
 
         @Query(value = "SELECT COALESCE(c.name, '未分類') AS category_name, " +
-                        "w.term AS term " +
+                        "w.term AS term, w.definition AS definition, w.example_sentence AS example_sentence " +
                         "FROM quiz_histories qh " +
                         "JOIN words w ON qh.word_id = w.id " +
                         "LEFT JOIN categories c ON w.category_id = c.id " +
                         "WHERE qh.user_id = :userId AND qh.is_correct = false " +
-                        "GROUP BY c.name, w.id " +
+                        "GROUP BY c.name, w.id, w.term, w.definition, w.example_sentence " +
                         "ORDER BY c.name, MAX(qh.answered_at) DESC", nativeQuery = true)
         List<Object[]> findWeakWordsListPerCategoryByUserId(@Param("userId") Long userId);
 

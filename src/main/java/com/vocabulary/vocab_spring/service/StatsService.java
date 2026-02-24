@@ -9,6 +9,7 @@ import java.util.Map;
 import com.vocabulary.vocab_spring.dto.CategoryDetailStatsDto;
 import com.vocabulary.vocab_spring.dto.DailyStatsDto;
 import com.vocabulary.vocab_spring.dto.TotalStatsDto;
+import com.vocabulary.vocab_spring.dto.WeakWordDto;
 import com.vocabulary.vocab_spring.entity.User;
 import com.vocabulary.vocab_spring.repository.QuizHistoryRepository;
 import com.vocabulary.vocab_spring.repository.WordRepository;
@@ -88,7 +89,7 @@ public class StatsService {
                 quizHistoryRepository.findWeakWordCountPerCategoryByUserId(userId));
 
         // ── クエリ3.5: 全カテゴリの苦手単語リストを一括取得 ──
-        Map<String, List<String>> weakWordsMap = buildStringListMap(
+        Map<String, List<WeakWordDto>> weakWordsMap = buildWeakWordDtoMap(
                 quizHistoryRepository.findWeakWordsListPerCategoryByUserId(userId));
 
         // ── クエリ4: 全カテゴリの日別統計を一括取得 ──
@@ -107,7 +108,7 @@ public class StatsService {
             long wordCount = wordCountMap.getOrDefault(categoryName, 0L);
             long weakWordCount = weakCountMap.getOrDefault(categoryName, 0L);
             List<DailyStatsDto> dailyStats = dailyStatsMap.getOrDefault(categoryName, new ArrayList<>());
-            List<String> weakWords = weakWordsMap.getOrDefault(categoryName, new ArrayList<>());
+            List<WeakWordDto> weakWords = weakWordsMap.getOrDefault(categoryName, new ArrayList<>());
 
             result.add(new CategoryDetailStatsDto(
                     categoryName, totalAnswered, totalCorrect, correctRate,
@@ -152,12 +153,15 @@ public class StatsService {
         return map;
     }
 
-    private Map<String, List<String>> buildStringListMap(List<Object[]> rows) {
-        Map<String, List<String>> map = new HashMap<>();
+    private Map<String, List<WeakWordDto>> buildWeakWordDtoMap(List<Object[]> rows) {
+        Map<String, List<WeakWordDto>> map = new HashMap<>();
         for (Object[] row : rows) {
             String categoryName = (String) row[0];
             String term = (String) row[1];
-            map.computeIfAbsent(categoryName, k -> new ArrayList<>()).add(term);
+            String definition = (String) row[2];
+            String exampleSentence = (String) row[3];
+            map.computeIfAbsent(categoryName, k -> new ArrayList<>())
+                    .add(new WeakWordDto(term, definition, exampleSentence));
         }
         return map;
     }
