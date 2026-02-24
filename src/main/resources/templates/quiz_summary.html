@@ -47,8 +47,7 @@
     </style>
     <div class="relative mx-auto flex h-full min-h-screen w-full max-w-md flex-col pb-48">
 
-        <header
-            class="sticky top-0 z-20 flex items-center justify-between px-6 py-5 bg-background-base/90 backdrop-blur-md">
+        <header class="flex items-center justify-between px-6 py-5 bg-background-base/90 backdrop-blur-md">
             <a href="/" class="neu-btn-round size-10 text-text-main/70">
                 <span class="material-symbols-outlined text-xl">close</span>
             </a>
@@ -136,7 +135,7 @@
                             <span class="text-[13px] font-bold text-text-main font-display whitespace-normal"
                                 th:text="${result.term}">Architecture</span>
                         </div>
-                        <span class="text-xs font-bold text-text-sub/70 whitespace-normal text-right flex-1"
+                        <span class="text-xs font-bold text-text-sub/70 whitespace-normal text-left flex-1"
                             th:text="${result.meaning}">建築</span>
                     </div>
                 </div>
@@ -153,7 +152,7 @@
                 <div class="neu-inset p-5 pb-8 relative min-h-[120px]">
                     <p th:if="${aiFeedback != null and !#strings.isEmpty(aiFeedback)}"
                         class="text-sm text-text-main leading-relaxed tracking-wide whitespace-pre-wrap"
-                        th:text="${aiFeedback}">
+                        th:text="${#strings.trim(aiFeedback)}">
                         素晴らしいですね！...
                     </p>
                     <p th:unless="${aiFeedback != null and !#strings.isEmpty(aiFeedback)}"
