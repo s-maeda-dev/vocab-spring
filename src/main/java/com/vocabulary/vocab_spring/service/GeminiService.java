@@ -28,7 +28,8 @@ public class GeminiService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public String getFeedback(int correctAnswers, int totalQuestions, List<String> recentMistakes) {
+    public String getFeedback(int correctAnswers, int totalQuestions, String categoryName,
+            List<String> mistakeDetails) {
         if (apiKey == null || apiKey.isBlank()) {
             log.warn("[GeminiService] GEMINI_API_KEY が未設定のため、AIコメントをスキップします。");
             return "（Gemini APIキーが設定されていないため、AIからのコメントはスキップされました。.envファイルのGEMINI_API_KEYを確認してください。）";
@@ -37,15 +38,22 @@ public class GeminiService {
         log.info("[GeminiService] APIキー設定済み。Gemini APIを呼び出します...");
 
         double correctRate = totalQuestions > 0 ? (double) correctAnswers / totalQuestions * 100 : 0;
-        String mistakesText = recentMistakes.isEmpty() ? "特になし" : String.join(", ", recentMistakes);
+        String categoryText = (categoryName != null && !categoryName.isEmpty()) ? categoryName : "全般的な学習";
+        String mistakesText = mistakeDetails.isEmpty() ? "なし（全問正解です！）" : String.join("\n", mistakeDetails);
 
         String prompt = String.format(
-                "あなたはユーザーの単語・用語学習をサポートする優しいチューターです。以下の成績と今回のクイズで間違えた用語のリストを見て、ユーザーを励ます150文字程度の短いコメントを日本語で作成してください。\n" +
-                        "・正答率: %d問中 %d問正解 (%.1f%%)\n" +
-                        "・今回のクイズで間違えた用語: %s\n" +
-                        "・今回のクイズ結果のみに基づいてコメントしてください（他の単語には触れないでください）\n" +
-                        "・出力はコメントのテキストのみ（挨拶やマークダウン等は不要）",
-                totalQuestions, correctAnswers, correctRate, mistakesText);
+                "あなたはユーザーの「%s」の学習を支援する専門家です。以下の学習結果に基づき、学習者を励まし、間違えた問題については具体的な補足説明や覚え方のアドバイスを含む200文字程度のコメントを日本語で作成してください。\n\n"
+                        +
+                        "【学習結果】\n" +
+                        "・カテゴリ: %s\n" +
+                        "・正答率: %d問中 %d問正解 (%.1f%%)\n\n" +
+                        "【間違えた用語と意味】\n" +
+                        "%s\n\n" +
+                        "【制約事項】\n" +
+                        "・親しみやすく、かつ専門家らしい信頼感のある言葉遣い（です・ます調）で。\n" +
+                        "・出力はコメントのテキストのみ（挨拶、タイトル、マークダウン記法、余計な前置きは不要）。\n" +
+                        "・冒頭に空行を含めないでください。",
+                categoryText, categoryText, totalQuestions, correctAnswers, correctRate, mistakesText);
 
         return callGeminiApi(prompt);
     }

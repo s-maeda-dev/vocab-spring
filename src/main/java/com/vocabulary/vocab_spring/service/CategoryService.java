@@ -23,6 +23,10 @@ public class CategoryService {
         return categoryRepository.findByUser(user);
     }
 
+    public java.util.Optional<Category> getCategoryById(Long id) {
+        return categoryRepository.findById(id);
+    }
+
     @Transactional
     public void addCategory(String name, User user) {
         Category category = new Category();

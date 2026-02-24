@@ -276,15 +276,24 @@ public class QuizController {
             return "redirect:/quiz/settings";
         }
 
-        // 今回のクイズセッションで間違えた単語のみを抽出
+        // 今回のクイズセッションで間違えた単語のみを抽出（単語と意味を含める）
         List<String> currentMistakes = quizSession.getResults().stream()
                 .filter(r -> !r.isCorrect())
-                .map(QuizSessionDto.QuizResultDto::getTerm)
+                .map(r -> "・" + r.getTerm() + ": " + r.getMeaning())
                 .toList();
+
+        // カテゴリ名を取得
+        String categoryName = null;
+        if (quizSession.getCategoryId() != null) {
+            categoryName = categoryService.getCategoryById(quizSession.getCategoryId())
+                    .map(com.vocabulary.vocab_spring.entity.Category::getName)
+                    .orElse(null);
+        }
 
         String aiFeedback = geminiService.getFeedback(
                 quizSession.getCorrectAnswers(),
                 quizSession.getResults().size(),
+                categoryName,
                 currentMistakes);
 
         // QuoteService から名言を取得（ランダム）
