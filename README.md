@@ -1,6 +1,6 @@
 # 📖 わたしの単語帳 VocabularySpring
 
-溢れ出す単語や語彙の泉をイメージした、大人のための学習支援・単語帳Webアプリケーションです。
+『単語のCRUD管理』『 弱点克服のクイズ機能』『Gemini APIと連携したAIチャーター』などを備えた、大人のための学習支援・単語帳Webアプリケーション
 
 <img width="506" height="362" alt="image" src="https://github.com/user-attachments/assets/b051b718-4567-4e89-8d83-b36b1f556fe6" />
 
