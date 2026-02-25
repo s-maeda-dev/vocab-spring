@@ -2,7 +2,7 @@
 
 溢れ出す単語や語彙の泉をイメージした、大人のための学習支援・単語帳Webアプリケーションです。
 
-![トップ画面のスクリーンショット](画像のURLをここに貼る)
+<img width="506" height="362" alt="image" src="https://github.com/user-attachments/assets/b051b718-4567-4e89-8d83-b36b1f556fe6" />
 
 ## 💡 開発の背景とエピソード（Why I built this）
 
