@@ -33,7 +33,7 @@
 | **Security** | Spring Security, .env | 認証基盤の構築と、APIキー等機密情報の安全な管理（環境変数化）。 |
 
 ## 🏗️ アーキテクチャと設計のこだわり (Architecture)
-本アプリは実務を意識し、**3層アーキテクチャ（Controller / Service / Repository）**を採用しています。
+本アプリは実務を意識し、 **3層アーキテクチャ（Controller / Service / Repository）** を採用しています。
 
 
 
